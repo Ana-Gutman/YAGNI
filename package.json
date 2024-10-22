@@ -1,0 +1,31 @@
+{
+  "name": "255163_260956",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IngSoft-AR/255163_260956.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IngSoft-AR/255163_260956/issues"
+  },
+  "homepage": "https://github.com/IngSoft-AR/255163_260956#readme",
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.7.8",
+    "amqplib": "^0.10.4",
+    "bull": "^4.16.3",
+    "express": "^4.21.1",
+    "mysql2": "^3.11.3",
+    "redis": "^4.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}
