@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,13 +19,20 @@
   },
   "homepage": "https://github.com/IngSoft-AR/255163_260956#readme",
   "dependencies": {
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.7.8",
     "amqplib": "^0.10.4",
     "bull": "^4.16.3",
+    "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "mysql2": "^3.11.3",
     "redis": "^4.7.0",
+    "sequelize": "^6.37.4",
+    "sequelize-cli": "^6.6.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.7.9",
+    "@types/sequelize": "^4.28.20",
+    "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   }

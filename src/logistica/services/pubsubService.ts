@@ -7,7 +7,7 @@ export const subscribeToProductReady = async () => {
   await channel.assertQueue(queue, { durable: true });
   console.log('Esperando productos listos...');
 
-  channel.consume(queue, (msg) => {
+  channel.consume(queue, (msg: any) => {
     if (msg !== null) {
       const product = JSON.parse(msg.content.toString());
       console.log(`Producto listo recibido: ${product.nombre}`);

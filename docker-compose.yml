@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  mysql-db:
+    image: mysql
+    container_name: obligatorio_arq
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=obligatorio_arq
+    ports:
+      - "3306:3306"
+    networks:
+      - obligatorio_arq
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
+
+networks:
+  obligatorio_arq:
