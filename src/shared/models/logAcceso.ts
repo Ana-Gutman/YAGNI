@@ -2,7 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database';
 
 export class LogAcceso extends Model {
-    public id_log!: number;
+    public id_logAcceso!: number;
     public id_actor!: number;
     public tipo_actor!: 'Usuario' | 'Cliente';
     public accion!: string;
@@ -11,7 +11,7 @@ export class LogAcceso extends Model {
   
   LogAcceso.init(
     {
-      id_log: {
+      id_logAcceso: {
         type: DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
         primaryKey: true,

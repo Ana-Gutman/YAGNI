@@ -2,7 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database';
 
 export class LogError extends Model {
-    public id_error!: number;
+    public id_logError!: number;
     public codigo_error!: number;
     public mensaje!: string;
     public timestamp!: Date;
@@ -10,7 +10,7 @@ export class LogError extends Model {
   
   LogError.init(
     {
-      id_error: {
+      id_logError: {
         type: DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
         primaryKey: true,

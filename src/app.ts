@@ -1,33 +1,38 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { dbSync } from './shared/database/sync';
+import usuarioRoutes from './backoffice/routes/usuarioRoutes';
+import sequelize from './shared/database/database';
 
-// Cargar variables de entorno desde .env
 dotenv.config();
-
-// Crear la instancia de Express
 const app = express();
+const main = async () => {
+  await dbSync();
 
-// Middleware para parsear JSON
-app.use(express.json());
+  app.use(express.json());
+  app.use("/api", usuarioRoutes);
 
-// Sincronizar la base de datos
-dbSync().then(() => {
-  console.log('Base de datos sincronizada');
-});
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, async() => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+    try {
+      await sequelize.authenticate();
+      console.log(
+        "La conexión con la base de datos ha sido establecida correctamente."
+      );
+    } catch (error) {
+      console.error("No se pudo conectar a la base de datos:", error);
+    }
+  });
+};
 
-// Definir una ruta básica de prueba  TODO: CLASE ROUTER DE EXPRESS
-app.get('/', (req, res) => {
-  res.send('¡Hola, el servidor está funcionando!');
-});
+main();
 
-// Definir puerto en base a variables de entorno o usar 3000 por defecto
-const PORT = process.env.PORT || 3000;
 
-// Arrancar el servidor  TODO: SEQUELIZE.AUTHENTICATE
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
-  
-});
 
-export default app;
+
+
+
+
+
+

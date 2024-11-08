@@ -2,14 +2,14 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database';
 
 export class Usuario extends Model {
-  public id!: number;
+  public id_usuario!: number;
   public nombre!: string;
   public rol!: string;
 }
 
 Usuario.init(
   {
-    id: {
+    id_usuario: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
