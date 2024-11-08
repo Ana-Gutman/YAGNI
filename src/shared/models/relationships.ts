@@ -1,10 +1,50 @@
+import { Usuario } from './usuario';
 import { Producto } from './producto';
 import { Pedido } from './pedido';
-import { Usuario } from './usuario';
+import { Camioneta } from './camioneta';
+import { Cocina } from './cocina';
+import { Refrigerador } from './refrigerador';
+import { Local } from './local';
+import { Existencia } from './existencia';
+import { Cliente } from './cliente';
+import { DetallePedido } from './detallePedido';
+import { Lote } from './lote';
+import { LogAcceso } from './logAcceso';
 
 export const setRelationships = async () => {
-  Producto.hasMany(Pedido, { foreignKey: 'productoId', as: 'pedidos' });
-  Pedido.belongsTo(Producto, { foreignKey: 'productoId', as: 'producto' });
+  Cocina.belongsToMany(Local, { through: 'Cocina_Locales', foreignKey: 'id_cocina' });
+  Local.belongsToMany(Cocina, { through: 'Cocina_Locales', foreignKey: 'id_local' });
 
-  // Puedes agregar más relaciones si es necesario
+  Cocina.belongsToMany(Camioneta, { through: 'Cocina_Camionetas', foreignKey: 'id_cocina' });
+  Camioneta.belongsToMany(Cocina, { through: 'Cocina_Camionetas', foreignKey: 'id_camioneta' });
+
+  Local.hasMany(Refrigerador, { foreignKey: 'id_local' });
+  Refrigerador.belongsTo(Local, { foreignKey: 'id_local' });
+
+  Refrigerador.belongsToMany(Producto, { through: Existencia, foreignKey: 'id_refrigerador' });
+  Producto.belongsToMany(Refrigerador, { through: Existencia, foreignKey: 'id_producto' });
+
+  Cliente.hasMany(Pedido, { foreignKey: 'id_cliente' });
+  Pedido.belongsTo(Cliente, { foreignKey: 'id_cliente' });
+
+  Pedido.hasMany(DetallePedido, { foreignKey: 'id_pedido' });
+  DetallePedido.belongsTo(Pedido, { foreignKey: 'id_pedido' });
+
+  Producto.hasMany(Lote, { foreignKey: { name: 'id_producto', allowNull: true } });
+  Lote.belongsTo(Producto, { foreignKey: { name: 'id_producto', allowNull: true } });
+
+  Cocina.hasMany(Lote, { foreignKey: { name: 'id_cocina', allowNull: true } });
+  Lote.belongsTo(Cocina, { foreignKey: { name: 'id_cocina', allowNull: true } });
+
+  Local.hasMany(Lote, { foreignKey: { name: 'id_local_destino', allowNull: true } });
+  Lote.belongsTo(Local, { foreignKey: { name: 'id_local_destino', allowNull: true } });
+
+  Refrigerador.hasMany(Lote, { foreignKey: { name: 'id_refrigerador', allowNull: true } });
+  Lote.belongsTo(Refrigerador, { foreignKey: { name: 'id_refrigerador', allowNull: true } });
+
+  Usuario.hasMany(LogAcceso, { foreignKey: 'id_actor', constraints: false });
+  Cliente.hasMany(LogAcceso, { foreignKey: 'id_actor', constraints: false });
+
+  LogAcceso.belongsTo(Usuario, { foreignKey: 'id_actor', constraints: false, scope: { tipo_actor: 'Usuario' } });
+  LogAcceso.belongsTo(Cliente, { foreignKey: 'id_actor', constraints: false, scope: { tipo_actor: 'Cliente' } });
 };

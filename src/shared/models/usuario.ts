@@ -1,11 +1,10 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../database/sequelize';
+import sequelize from '../database/database';
 
 export class Usuario extends Model {
   public id!: number;
   public nombre!: string;
-  public email!: string;
-  public password!: string;
+  public rol!: string;
 }
 
 Usuario.init(
@@ -19,19 +18,14 @@ Usuario.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    email: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: DataTypes.STRING(255),
+    rol: {
+      type: DataTypes.ENUM('Admin', 'Supervisor Cocina', 'Supervisor Local', 'Dispositivo'),
       allowNull: false,
     },
   },
   {
     sequelize,
-    tableName: 'usuarios',
+    tableName: 'Usuarios',
     timestamps: true,
   }
 );

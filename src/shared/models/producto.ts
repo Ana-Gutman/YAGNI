@@ -1,36 +1,41 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../database/sequelize';
+import sequelize from '../database/database';
 
 export class Producto extends Model {
-  public id!: number;
+  public id_producto!: number;
   public nombre!: string;
-  public precio!: number;
-  public stock!: number;
+  public descripcion!: string;
+  public ingredientes!: string;
+  public precioLista!: number;
 }
 
 Producto.init(
   {
-    id: {
+    id_producto: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
     },
     nombre: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING,
       allowNull: false,
     },
-    precio: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
+    descripcion: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
-    stock: {
-      type: DataTypes.INTEGER,
+    ingredientes: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    precioLista: {
+      type: DataTypes.DECIMAL,
       allowNull: false,
     },
   },
   {
     sequelize,
-    tableName: 'productos',
-    timestamps: true, // Para manejar createdAt y updatedAt automáticamente
+    tableName: 'Productos',
+    timestamps: false,
   }
 );

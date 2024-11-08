@@ -1,15 +1,37 @@
-import { Sequelize } from 'sequelize';
-import { setRelationships } from '../models/relationships'; // Archivo donde estarán las relaciones
+import { setRelationships } from '../models/relationships'; 
 import { Producto } from '../models/producto';
 import { Pedido } from '../models/pedido';
 import { Usuario } from '../models/usuario';
+import { Camioneta } from '../models/camioneta';
+import { Cocina } from '../models/cocina';
+import { Refrigerador } from '../models/refrigerador';
+import { Local } from '../models/local';
+import sequelize from './database';
+import { Cliente } from '../models/cliente';
+import { Existencia } from '../models/existencia';
+import { MedioPago } from '../models/medioPago';
+import { DetallePedido } from '../models/detallePedido';
+import { Lote } from '../models/lote';
+import { LogAcceso } from '../models/logAcceso';
+import { LogError } from '../models/logError';
 
 const syncTables = async () => {
   try {
     if (process.env.DB_SYNC === 'true') {
-      await Producto.sync();
-      await Pedido.sync();
       await Usuario.sync();
+      await Cliente.sync();
+      await Producto.sync();
+      await Camioneta.sync();
+      await Cocina.sync();
+      await MedioPago.sync();
+      await Local.sync();
+      await Refrigerador.sync();
+      await Existencia.sync();
+      await Pedido.sync();
+      await DetallePedido.sync();
+      await Lote.sync();
+      await LogAcceso.sync();
+      await LogError.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }
   } catch (error) {
@@ -18,8 +40,8 @@ const syncTables = async () => {
 };
 
 const dbSync = async () => {
-  await setRelationships(); // Establecer relaciones antes de sincronizar
-  await syncTables();       // Sincronizar las tablas
+  await setRelationships(); 
+  await syncTables();
 };
 
-export { Sequelize, dbSync };
+export { sequelize, dbSync };

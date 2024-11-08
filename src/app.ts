@@ -16,7 +16,7 @@ dbSync().then(() => {
   console.log('Base de datos sincronizada');
 });
 
-// Definir una ruta básica de prueba
+// Definir una ruta básica de prueba  TODO: CLASE ROUTER DE EXPRESS
 app.get('/', (req, res) => {
   res.send('¡Hola, el servidor está funcionando!');
 });
@@ -24,9 +24,10 @@ app.get('/', (req, res) => {
 // Definir puerto en base a variables de entorno o usar 3000 por defecto
 const PORT = process.env.PORT || 3000;
 
-// Arrancar el servidor
+// Arrancar el servidor  TODO: SEQUELIZE.AUTHENTICATE
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
+  
 });
 
 export default app;
