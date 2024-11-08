@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import { dbSync } from './shared/database/sync';
 import usuarioRoutes from './backoffice/routes/usuarioRoutes';
 import sequelize from './shared/database/database';
+import productoRoutes from './backoffice/routes/productoRoutes';
+import localRoutes from './backoffice/routes/localRoutes';
 
 dotenv.config();
 const app = express();
@@ -11,6 +13,8 @@ const main = async () => {
 
   app.use(express.json());
   app.use("/api", usuarioRoutes);
+  app.use("/api", productoRoutes);
+  app.use("/api", localRoutes);
 
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, async() => {

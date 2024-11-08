@@ -6,7 +6,7 @@ export class Producto extends Model {
   public nombre!: string;
   public descripcion!: string;
   public ingredientes!: string;
-  public precioLista!: number;
+  public precio_lista!: number;
 }
 
 Producto.init(
@@ -28,7 +28,7 @@ Producto.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    precioLista: {
+    precio_lista: {
       type: DataTypes.DECIMAL,
       allowNull: false,
     },
