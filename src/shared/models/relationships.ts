@@ -10,6 +10,7 @@ import { Cliente } from './cliente';
 import { DetallePedido } from './detallePedido';
 import { Lote } from './lote';
 import { LogAcceso } from './logAcceso';
+import { MedioPago } from './medioPago';
 
 export const setRelationships = async () => {
   Cocina.belongsToMany(Local, { through: 'Cocina_Locales', foreignKey: 'id_cocina' });
@@ -23,6 +24,9 @@ export const setRelationships = async () => {
 
   Refrigerador.belongsToMany(Producto, { through: Existencia, foreignKey: 'id_refrigerador' });
   Producto.belongsToMany(Refrigerador, { through: Existencia, foreignKey: 'id_producto' });
+
+  Cliente.hasMany(MedioPago, { foreignKey: 'id_cliente' });
+  MedioPago.belongsTo(Cliente, { foreignKey: 'id_cliente' });
 
   Cliente.hasMany(Pedido, { foreignKey: 'id_cliente' });
   Pedido.belongsTo(Cliente, { foreignKey: 'id_cliente' });
