@@ -1,10 +1,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { dbSync } from './shared/database/sync';
-import usuarioRoutes from './backoffice/routes/usuarioRoutes';
+import usuarioRoutes from './usuarioClientes/routes/usuarioRoutes';
 import sequelize from './shared/database/database';
-import productoRoutes from './backoffice/routes/productoRoutes';
-import localRoutes from './backoffice/routes/localRoutes';
+import productoRoutes from './pedidosProductos/routes/productoRoutes';
+import localRoutes from './inventario/routes/localRoutes';
 
 dotenv.config();
 const app = express();

@@ -11,6 +11,7 @@ import { DetallePedido } from './detallePedido';
 import { Lote } from './lote';
 import { LogAcceso } from './logAcceso';
 import { MedioPago } from './medioPago';
+import { Produccion } from './produccion';
 
 export const setRelationships = async () => {
   Cocina.belongsToMany(Local, { through: 'Cocina_Locales', foreignKey: 'id_cocina' });
@@ -51,4 +52,11 @@ export const setRelationships = async () => {
 
   LogAcceso.belongsTo(Usuario, { foreignKey: 'id_actor', constraints: false, scope: { tipo_actor: 'Usuario' } });
   LogAcceso.belongsTo(Cliente, { foreignKey: 'id_actor', constraints: false, scope: { tipo_actor: 'Cliente' } });
+
+  Produccion.belongsTo(Producto, { foreignKey: 'id_producto' });
+  Produccion.belongsTo(Cocina, { foreignKey: 'id_cocina' });
+  Produccion.belongsTo(Refrigerador, { foreignKey: 'id_refrigerador' });
+  Producto.hasMany(Produccion, { foreignKey: 'id_producto' });
+  Cocina.hasMany(Produccion, { foreignKey: 'id_cocina' });
+  Refrigerador.hasMany(Produccion, { foreignKey: 'id_refrigerador' });
 };

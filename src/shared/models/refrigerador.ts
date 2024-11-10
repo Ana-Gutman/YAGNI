@@ -2,7 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database';
 
 export class Refrigerador extends Model {
-  public id_refrigerador!: string;
+  public id_refrigerador!: number;
   public marca!: string;
   public id_local!: number;
 }
@@ -10,7 +10,7 @@ export class Refrigerador extends Model {
 Refrigerador.init(
   {
     id_refrigerador: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER.UNSIGNED,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },

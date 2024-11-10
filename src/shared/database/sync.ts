@@ -14,6 +14,7 @@ import { DetallePedido } from '../models/detallePedido';
 import { Lote } from '../models/lote';
 import { LogAcceso } from '../models/logAcceso';
 import { LogError } from '../models/logError';
+import { Produccion } from '../models/produccion';
 
 const syncTables = async () => {
   try {
@@ -32,6 +33,7 @@ const syncTables = async () => {
       await Lote.sync();
       await LogAcceso.sync();
       await LogError.sync();
+      await Produccion.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }
   } catch (error) {

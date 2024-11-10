@@ -1,4 +1,4 @@
-import connectRabbitMQ from '../../shared/database/rabbitmq';
+import connectRabbitMQ from '../shared/database/rabbitmq';
 
 export const publishProductReady = async (product: any) => {
   const channel = await connectRabbitMQ();

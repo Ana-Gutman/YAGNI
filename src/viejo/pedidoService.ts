@@ -1,4 +1,4 @@
-import pedidoQueue from '../../shared/queues/pedidoQueue';
+import pedidoQueue from '../shared/queues/pedidoQueue';
 
 export const agregarPedido = async (pedido: any) => {
   await pedidoQueue.add(pedido);
