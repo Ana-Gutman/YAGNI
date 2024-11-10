@@ -5,6 +5,7 @@ import usuarioRoutes from './usuarioClientes/routes/usuarioRoutes';
 import sequelize from './shared/database/database';
 import productoRoutes from './pedidosProductos/routes/productoRoutes';
 import localRoutes from './inventario/routes/localRoutes';
+import { errorMiddleware } from './shared/middleware/errorMiddleware';
 
 dotenv.config();
 const app = express();
@@ -15,6 +16,11 @@ const main = async () => {
   app.use("/api", usuarioRoutes);
   app.use("/api", productoRoutes);
   app.use("/api", localRoutes);
+
+
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    errorMiddleware(err, req, res, next);
+  });
 
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, async() => {
