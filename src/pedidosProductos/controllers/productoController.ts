@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import * as productoService from "../services/productoService";
 
-// Obtener todos los productos
 export const getProductos = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const productos = await productoService.getAllProductos();
@@ -11,7 +10,6 @@ export const getProductos = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
-// Obtener un producto por su id
 export const getProductoById = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = parseInt(req.params.id);
@@ -22,7 +20,6 @@ export const getProductoById = async (req: Request, res: Response, next: NextFun
     }
 };
 
-// Crear un producto
 export const createProducto = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const producto = req.body;
@@ -33,7 +30,6 @@ export const createProducto = async (req: Request, res: Response, next: NextFunc
     }
 };
 
-// Actualizar un producto
 export const updateProducto = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = parseInt(req.params.id);
@@ -45,7 +41,6 @@ export const updateProducto = async (req: Request, res: Response, next: NextFunc
     }
 };  
 
-// Eliminar un producto
 export const deleteProducto = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = parseInt(req.params.id);

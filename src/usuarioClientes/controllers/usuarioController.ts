@@ -1,86 +1,53 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import * as usuarioService from "../services/usuarioService";
 
-// Obtener todos los usuarios
-export const getUsuarios = async (req: Request, res: Response) => {
-    try{
-        const usuarios = await usuarioService.findAllUsuarios();
+export const getUsuarios = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const usuarios = await usuarioService.getAllUsuarios();
         res.status(200).json(usuarios);
     } catch (error) {
-        res
-        .status(400)
-        .json({
-            message: "Error al obtener los clientes"
-        //error: getErrorMessage(error),
-      });
+        next(error);
     }
 };
 
-// Obtener un usuario por su id
-export const getUsuarioById = async (req: Request, res: Response) => {
+export const getUsuarioById = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = parseInt(req.params.id);
-        const usuario = await usuarioService.findUsuarioById(id);
-        if (usuario) {
-            res.status(200).json(usuario);
-        } else {
-            res.status(404).json({ message: "Usuario no encontrado" });
-        }
+        const usuario = await usuarioService.getUsuarioById(id);
+        res.status(200).json(usuario);
     } catch (error) {
-        res.status(400).json({
-            message: "Error al obtener el usuario",
-            //error: getErrorMessage(error),
-        });
+        next(error);
     }
 };
 
-// Crear un usuario
-export const createUsuario = async (req: Request, res: Response) => {
+export const createUsuario = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const usuario = req.body;
         const usuarioCreado = await usuarioService.createUsuario(usuario);
         res.status(201).json(usuarioCreado);
     } catch (error) {
-        res.status(400).json({
-            message: "Error al crear el usuario",
-            //error: getErrorMessage(error),
-        });
+        next(error);
     }
 };
 
-// Actualizar un usuario 
-export const updateUsuario = async (req: Request, res: Response) => {
+export const updateUsuario = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id } = req.params;
-        const usuario = req.body;
-        const usuarioActualizado = await usuarioService.updateUsuario(parseInt(id), usuario);
-        
-        if (usuarioActualizado[0] === 1) {
-            res.status(200).json({ message: "Usuario actualizado" });
-        } else {
-            res.status(404).json({ message: "usuario no encontrado" });
-        }
+        const id = parseInt(req.params.id);
+        const usuarioDto = req.body;
+        const usuario = await usuarioService.updateUsuario(id, usuarioDto);
+        res.status(200).json(usuario);
     } catch (error) {
-        res.status(400).json({message: "Error al actualizar el usuario",
-              //error: getErrorMessage(error),
-        });
+        next(error);
     }
 };
 
-// Eliminar un usuario
-export const deleteUsuario = async (req: Request, res: Response) => {
+export const deleteUsuario = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id } = req.params;
-        const usuarioEliminado = await usuarioService.deleteUsuario(parseInt(id));
-        if (usuarioEliminado === 1) {
-            res.status(200).json({ message: "Usuario eliminado" });
-        } else {
-            res.status(404).json({ message: "Usuario no encontrado" });
-        }
+        const id = parseInt(req.params.id);
+        await usuarioService.deleteUsuario(id);
+        res.status(200).json({ message: `Usuario con ID ${id} eliminado` });
     } catch (error) {
-        res.status(400).json({
-            message: "Error al eliminar el usuario",
-            //error: getErrorMessage(error),
-        });
+        next(error);
     }
 };
+

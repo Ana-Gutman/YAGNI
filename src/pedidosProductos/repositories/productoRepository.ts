@@ -1,5 +1,4 @@
 import { Producto } from "../../shared/models/producto";
-import { Sequelize, Op } from "sequelize";
 import { ProductoDTO } from "../dto/ProductoDto";
 
 // interface ProductoFilter {

@@ -1,7 +1,7 @@
 import { ProductoRepository } from '../repositories/productoRepository';
 import { ProductoDTO } from '../dto/ProductoDto';
 import { Producto } from '../../shared/models/producto';
-import { ValidationError, DatabaseError , NotFoundError} from '../../shared/errors';
+import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors';
 
 const productoRepository = new ProductoRepository();
 
@@ -14,7 +14,7 @@ export const getAllProductos = async (): Promise<Producto[]> => {
 };
 
 export const getProductoById = async (id: number): Promise<Producto | null> => {
-    if (!id) throw new ValidationError('El ID del producto es requerido');
+    if (!id) throw new MissingParameterError('El ID del producto es requerido');
     try {
         const producto = await productoRepository.findById(id);
         if (!producto) 
@@ -30,7 +30,7 @@ export const getProductoById = async (id: number): Promise<Producto | null> => {
 
 export const createProducto = async (productoDto: ProductoDTO): Promise<Producto> => {
     if (!productoDto || !productoDto.nombre || !productoDto.precio_lista) {
-        throw new ValidationError("ProductoDTO es nulo o faltan campos obligatorios");
+        throw new MissingParameterError("ProductoDTO es nulo o faltan campos obligatorios");
     }
     try {
         const producto = await productoRepository.create(productoDto);
@@ -44,9 +44,9 @@ export const createProducto = async (productoDto: ProductoDTO): Promise<Producto
 
 export const updateProducto = async (id: number, productoDto: ProductoDTO): Promise<Producto | null> => {
     if (!id || !productoDto) 
-        throw new ValidationError('El ID y ProductoDTO son requeridos');
+        throw new MissingParameterError('El ID y ProductoDTO son requeridos');
     if (!productoDto.nombre || !productoDto.precio_lista) {
-        throw new ValidationError("Los campos 'nombre' y 'precio_lista' son obligatorios en ProductoDTO");
+        throw new RequiredFieldError("Los campos 'nombre' y 'precio_lista' son obligatorios en ProductoDTO");
     }
     try {
         const producto = await productoRepository.update(id, productoDto);
@@ -62,7 +62,7 @@ export const updateProducto = async (id: number, productoDto: ProductoDTO): Prom
 };
 
 export const deleteProducto = async (id: number): Promise<void> => {
-    if (!id) throw new ValidationError('El ID del producto es requerido');
+    if (!id) throw new MissingParameterError('El ID del producto es requerido');
     try {
         const filasEliminadas = await productoRepository.delete(id);
         if (filasEliminadas === 0) throw new NotFoundError(`El producto a eliminar con ID ${id} no se encuentra en la base de datos`);
