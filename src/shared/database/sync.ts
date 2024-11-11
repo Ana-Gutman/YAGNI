@@ -26,16 +26,18 @@ const syncTables = async () => {
       await Camioneta.sync();
       await Cocina.sync();
       await MedioPago.sync();
+      await MedioPagoCliente.sync();
       await Local.sync();
-      await Refrigerador.sync();
-      await Existencia.sync();
       await Pedido.sync();
       await DetallePedido.sync();
       await Lote.sync();
       await LogAcceso.sync();
       await LogError.sync();
       await Produccion.sync();
-      await MedioPagoCliente.sync();
+      await Refrigerador.sync();
+      await Existencia.sync();
+      
+      
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }
   } catch (error) {

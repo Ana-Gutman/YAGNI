@@ -32,19 +32,20 @@ export const setRelationships = async () => {
 
   Cliente.hasMany(Pedido, { foreignKey: 'id_cliente' });
   Pedido.belongsTo(Cliente, { foreignKey: 'id_cliente' });
+  MedioPago.hasMany(Pedido, { foreignKey: 'id_medio_pago'});
+  Pedido.belongsTo(MedioPago, { foreignKey: 'id_medio_pago' });
+  Local.hasMany(Pedido, { foreignKey: 'id_local' });
+  Pedido.belongsTo(Local, { foreignKey: 'id_local' });
 
   Pedido.hasMany(DetallePedido, { foreignKey: 'id_pedido' });
   DetallePedido.belongsTo(Pedido, { foreignKey: 'id_pedido' });
 
   Producto.hasMany(Lote, { foreignKey: { name: 'id_producto', allowNull: true } });
   Lote.belongsTo(Producto, { foreignKey: { name: 'id_producto', allowNull: true } });
-
   Cocina.hasMany(Lote, { foreignKey: { name: 'id_cocina', allowNull: true } });
   Lote.belongsTo(Cocina, { foreignKey: { name: 'id_cocina', allowNull: true } });
-
   Local.hasMany(Lote, { foreignKey: { name: 'id_local_destino', allowNull: true } });
   Lote.belongsTo(Local, { foreignKey: { name: 'id_local_destino', allowNull: true } });
-
   Refrigerador.hasMany(Lote, { foreignKey: { name: 'id_refrigerador', allowNull: true } });
   Lote.belongsTo(Refrigerador, { foreignKey: { name: 'id_refrigerador', allowNull: true } });
 

@@ -2,11 +2,6 @@ import { Producto } from "../../shared/models/producto";
 import { ProductoDTO } from "../dto/ProductoDto";
 
 // interface ProductoFilter {
-//     id_producto?: number;
-//     nombre?: string;
-//     descripcion?: string;
-//     ingredientes?: string;
-//     precio_lista?: number;
 // }
 
 class ProductoRepository {

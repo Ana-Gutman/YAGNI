@@ -4,11 +4,10 @@ import sequelize from '../database/database';
 export class Pedido extends Model {
   public id_pedido!: number;
   public id_cliente!: number;
+  public id_medio_pago!: number;
   public id_local!: number;
-  public fecha_pedido!: Date;
-  public hora_realizado!: Date | null;
-  public hora_retirado!: Date | null;
-  public estado!: 'Completo' | 'Incompleto';
+  public retirado!: Date | null;
+  public estado!: 'Iniciado'| 'Completo' | 'Incompleto';
 }
 
 Pedido.init(
@@ -23,25 +22,22 @@ Pedido.init(
       references: { model: 'Clientes', key: 'id_cliente' },
       allowNull: false,
     },
+    id_medio_pago: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      references: { model: 'Medios_Pago', key: 'id_medio_pago' },
+      allowNull: false,
+    },
     id_local: {
       type: DataTypes.INTEGER.UNSIGNED,
       references: { model: 'Locales', key: 'id_local' },
       allowNull: false,
     },
-    fecha_pedido: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    hora_realizado: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    hora_retirado: {
+    retirado: {
       type: DataTypes.DATE,
       allowNull: true,
     },
     estado: {
-      type: DataTypes.ENUM('Completo', 'Incompleto'),
+      type: DataTypes.ENUM('Iniciado','Completo', 'Incompleto'),
       allowNull: false,
     },
   },

@@ -4,6 +4,7 @@ import { dbSync } from './shared/database/sync';
 import usuarioRoutes from './usuarioClientes/routes/usuarioRoutes';
 import sequelize from './shared/database/database';
 import productoRoutes from './pedidosProductos/routes/productoRoutes';
+import pedidoRoutes from './pedidosProductos/routes/pedidoRoutes';
 import localRoutes from './inventario/routes/localRoutes';
 import { errorMiddleware } from './shared/middleware/errorMiddleware';
 import { createBullBoard } from 'bull-board';
@@ -28,10 +29,12 @@ const main = async () => {
   app.use(express.json());
   app.use("/api", usuarioRoutes);
   app.use("/api", productoRoutes);
+  app.use("/api", pedidoRoutes);
   app.use("/api", localRoutes);
   app.use("/api", clienteRoutes);
   app.use("/api", camionetaRoutes);
   app.use("/api", cocinaRoutes);  
+
   //app.use('/api', inventarioRoutes); 
 
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
