@@ -13,12 +13,12 @@ export const errorMiddleware = (
       return res.status(400).json({ message: err.message });
     }
   
-    if (err instanceof DatabaseError) {
-      return res.status(500).json({ message: `Error en la base de datos: ${err.message}` });
-    }
-  
     if (err instanceof NotFoundError) {
       return res.status(404).json({ message: err.message });
+    }
+
+    if (err instanceof DatabaseError) {
+      return res.status(500).json({ message: `Error en la base de datos: ${err.message}` });
     }
   
     return res.status(500).json({ message: `Error desconocido: ${err.message}` });

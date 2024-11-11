@@ -18,9 +18,12 @@ export const getProductoById = async (id: number): Promise<Producto | null> => {
     try {
         const producto = await productoRepository.findById(id);
         if (!producto) 
-            throw new NotFoundError(`Producto con ID ${id} no encontrado`);
+            throw new NotFoundError(`El producto con ID ${id} no se encuentra en la base de datos`);
         return producto;
     } catch (error:any) {
+        if (error instanceof NotFoundError) {
+            throw error;  
+        }
         throw new DatabaseError(`Error al obtener producto con ID ${id}: ${error.message}`);
     }
 };
@@ -46,12 +49,15 @@ export const updateProducto = async (id: number, productoDto: ProductoDTO): Prom
         throw new ValidationError("Los campos 'nombre' y 'precio_lista' son obligatorios en ProductoDTO");
     }
     try {
-        const producto= productoRepository.update(id, productoDto);
+        const producto = await productoRepository.update(id, productoDto);
         if (!producto) 
-            throw new NotFoundError(`Producto con ID ${id} no encontrado`);
+            throw new NotFoundError(`El producto a modificar con ID ${id} no se encuentra en la base de datos`);
         return producto;
     } catch (error:any) {
-        throw new DatabaseError(`Error al actualizar producto con ID ${id}: ${error.message}`);
+        if (error instanceof NotFoundError) {
+            throw error;  
+        }
+        throw new DatabaseError(`Error al obtener producto con ID ${id}: ${error.message}`);
     }
 };
 
@@ -59,8 +65,11 @@ export const deleteProducto = async (id: number): Promise<void> => {
     if (!id) throw new ValidationError('El ID del producto es requerido');
     try {
         const filasEliminadas = await productoRepository.delete(id);
-        if (filasEliminadas === 0) throw new Error(`No se pudo eliminar el producto con ID ${id}`);
+        if (filasEliminadas === 0) throw new NotFoundError(`El producto a eliminar con ID ${id} no se encuentra en la base de datos`);
     } catch (error:any) {
+        if (error instanceof NotFoundError) {
+            throw error;  
+        }
         throw new DatabaseError(`Error al eliminar producto con ID ${id}: ${error.message}`);
     }
 };
