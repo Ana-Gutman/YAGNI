@@ -50,3 +50,13 @@ export const deleteCliente = async (req: Request, res: Response, next: NextFunct
         next(error);
     }
 };
+
+export const addMedioPagoToCliente = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { idCliente, idMedioPago } = req.body;
+        await clienteService.addMedioPagoToCliente(idCliente, idMedioPago);
+        res.status(200).json({ message: "Medio de pago agregado al cliente exitosamente" });
+    } catch (error) {
+        next(error);
+    }
+};

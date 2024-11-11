@@ -8,5 +8,6 @@ router.get("/clientes/:id", clienteController.getClienteById);
 router.post("/clientes", clienteController.createCliente);
 router.put("/clientes/:id", clienteController.updateCliente);    
 router.delete("/clientes/:id", clienteController.deleteCliente);
+router.post("/clientes/medioPago", clienteController.addMedioPagoToCliente);
 
 export default router;

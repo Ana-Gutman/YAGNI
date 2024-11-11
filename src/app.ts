@@ -13,14 +13,15 @@ import { connectRedis } from './shared/database/redis';
 import clienteRoutes from './usuarioClientes/routes/clienteRoutes';
 import camionetaRoutes from './inventario/routes/camionetaRoutes';
 import cocinaRoutes from './inventario/routes/cocinaRoutes';
+import { Cliente } from './shared/models/cliente';
 
 dotenv.config();
 
 const app = express();
 
 const main = async () => {
-  await connectRedis(); 
-  console.log('Redis conectado');
+  // await connectRedis(); 
+  // console.log('Redis conectado');
 
   await dbSync();
 
@@ -30,8 +31,8 @@ const main = async () => {
   app.use("/api", localRoutes);
   app.use("/api", clienteRoutes);
   app.use("/api", camionetaRoutes);
-  app.use("/api", cocinaRoutes);  app.use('/api', inventarioRoutes); 
-
+  app.use("/api", cocinaRoutes);  
+  //app.use('/api', inventarioRoutes); 
 
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     errorMiddleware(err, req, res, next);
@@ -47,8 +48,8 @@ const main = async () => {
         "La conexión con la base de datos ha sido establecida correctamente."
       );
 
-      await sequelize.sync({ force: true });
-      console.log("Base de datos sincronizada con éxito (force: true).");
+      // await sequelize.sync({ force: true });
+      // console.log("Base de datos sincronizada con éxito (force: true).");
 
     } catch (error) {
       console.error("No se pudo conectar a la base de datos:", error);

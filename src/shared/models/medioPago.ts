@@ -20,6 +20,7 @@ export class MedioPago extends Model {
     },
     {
       sequelize,
+      modelName: 'MedioPago',
       tableName: 'Medios_Pago',
       timestamps: false,
     }

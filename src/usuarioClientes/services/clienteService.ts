@@ -76,3 +76,20 @@ export const deleteCliente = async (id: number): Promise<void> => {
         throw new DatabaseError(`Error al eliminar cliente con ID ${id}: ${error.message}`);
     }
 };
+
+export const addMedioPagoToCliente = async (clienteId: number, medioPagoId: number): Promise<void> => {
+    if (!clienteId || !medioPagoId) {
+        throw new MissingParameterError('Los IDs del cliente y del medio de pago son requeridos');
+    }
+    const cliente = await clienteRepository.findById(clienteId);
+    if (!cliente) {
+        throw new NotFoundError(`Cliente con ID ${clienteId} no encontrado`);
+    }
+
+    const medioPago = await clienteRepository.findMedioPagoById(medioPagoId);
+    if (!medioPago) {
+        throw new NotFoundError(`Medio de pago con ID ${medioPagoId} no encontrado`);
+    }
+
+    await clienteRepository.addMedioPagoToCliente(cliente, medioPago); 
+};

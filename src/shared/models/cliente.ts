@@ -1,10 +1,12 @@
 import sequelize from '../database/database';
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, BelongsToManyAddAssociationMixin } from "sequelize";
+import { MedioPago } from './medioPago';
 
 export class Cliente extends Model {
     public id_cliente!: number;
     public nombre!: string;
     public celular!: string;
+    public addMedioPago!: BelongsToManyAddAssociationMixin<MedioPago, number>;
   }
   
   Cliente.init(
@@ -25,6 +27,7 @@ export class Cliente extends Model {
     },
     {
       sequelize,
+      modelName: 'Cliente',
       tableName: 'Clientes',
       timestamps: true,
     }

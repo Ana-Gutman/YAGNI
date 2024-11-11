@@ -6,10 +6,9 @@ services:
     container_name: obligatorio_arq
     environment:
       - MYSQL_ROOT_PASSWORD=secret
-      - MYSQL_ALLOW_EMPTY_PASSWORD=true
       - MYSQL_DATABASE=obligatorio_arq
     ports:
-      - "3307:3306"
+      - "3306:3306"
     networks:
       - obligatorio_arq
     volumes:

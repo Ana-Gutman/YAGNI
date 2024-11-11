@@ -1,4 +1,5 @@
 import { Cliente } from "../../shared/models/cliente";
+import { MedioPago } from "../../shared/models/medioPago";
 import { ClienteDTO } from "../dto/ClienteDto";
 
 // interface ClienteFilter {
@@ -6,12 +7,21 @@ import { ClienteDTO } from "../dto/ClienteDto";
 // }
 
 class ClienteRepository {
+    
     async findAll(): Promise<Cliente[]> {
         return Cliente.findAll();
     }
 
     async findById(id: number): Promise<Cliente | null> {
         return await Cliente.findByPk(id);
+    }
+    
+    async findMedioPagoById(id:number) : Promise<MedioPago | null>{
+        return await MedioPago.findByPk(id);
+    }
+
+    async addMedioPagoToCliente(cliente: Cliente, medioPago: MedioPago): Promise<void>  {
+        await cliente.addMedioPago(medioPago);
     }
 
     async create(clienteDto: ClienteDTO): Promise<Cliente> {
