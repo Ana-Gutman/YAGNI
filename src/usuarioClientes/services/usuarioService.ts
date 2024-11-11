@@ -29,8 +29,8 @@ export const getUsuarioById = async (id: number): Promise<Usuario | null> => {
 };
 
 export const createUsuario = async (usuarioDto: UsuarioDTO): Promise<Usuario> => {
-    if (!usuarioDto) {
-        throw new MissingParameterError("UsuarioDTO es nulo o faltan campos obligatorios");
+    if (Object.keys(usuarioDto).length === 0) {
+        throw new MissingParameterError("El UsuarioDTO es requerido");
     }
     if (!usuarioDto.nombre || !usuarioDto.rol) {
         throw new RequiredFieldError("Los campos 'nombre' y 'rol' son obligatorios en UsuarioDTO");
@@ -49,7 +49,7 @@ export const createUsuario = async (usuarioDto: UsuarioDTO): Promise<Usuario> =>
 };
 
 export const updateUsuario = async (id: number, usuarioDto: UsuarioDTO): Promise<Usuario | null> => {
-    if (!id || !usuarioDto)
+    if (!id || Object.keys(usuarioDto).length === 0)
         throw new MissingParameterError('El ID y UsuarioDTO son requeridos');
     if (!usuarioDto.nombre || !usuarioDto.rol) {
         throw new RequiredFieldError("Los campos 'nombre' y 'rol' son obligatorios en UsuarioDTO");

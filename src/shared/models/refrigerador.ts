@@ -18,6 +18,10 @@ Refrigerador.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    tipo_codigo: {
+      type: DataTypes.ENUM('QR', 'NFC'),
+      allowNull: false,
+    },
     id_local: {
       type: DataTypes.INTEGER.UNSIGNED,
       references: { model: 'Locales', key: 'id_local' },

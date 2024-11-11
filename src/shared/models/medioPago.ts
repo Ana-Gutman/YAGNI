@@ -3,8 +3,7 @@ import sequelize from '../database/database';
 
 export class MedioPago extends Model {
     public id_medio_pago!: number;
-    public id_cliente!: number;
-    public identificador!: string;
+    public nombre!: string;
   }
   
   MedioPago.init(
@@ -14,12 +13,7 @@ export class MedioPago extends Model {
         autoIncrement: true,
         primaryKey: true,
       },
-      id_cliente: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        references: { model: 'Clientes', key: 'id_cliente' },
-        allowNull: false,
-      },
-      identificador: {
+      nombre: {
         type: DataTypes.STRING,
         allowNull: false,
       },

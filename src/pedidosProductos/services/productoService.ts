@@ -29,8 +29,11 @@ export const getProductoById = async (id: number): Promise<Producto | null> => {
 };
 
 export const createProducto = async (productoDto: ProductoDTO): Promise<Producto> => {
-    if (!productoDto || !productoDto.nombre || !productoDto.precio_lista) {
-        throw new MissingParameterError("ProductoDTO es nulo o faltan campos obligatorios");
+    if (Object.keys(productoDto).length === 0) {
+        throw new MissingParameterError("El ProductoDTO es requerido");
+    }
+    if (!productoDto.nombre || !productoDto.precio_lista) {
+        throw new RequiredFieldError("Los campos 'nombre' y 'precio_lista' son obligatorios en ProductoDTO");
     }
     try {
         const producto = await productoRepository.create(productoDto);
@@ -43,7 +46,7 @@ export const createProducto = async (productoDto: ProductoDTO): Promise<Producto
 };
 
 export const updateProducto = async (id: number, productoDto: ProductoDTO): Promise<Producto | null> => {
-    if (!id || !productoDto) 
+    if (!id || Object.keys(productoDto).length === 0) 
         throw new MissingParameterError('El ID y ProductoDTO son requeridos');
     if (!productoDto.nombre || !productoDto.precio_lista) {
         throw new RequiredFieldError("Los campos 'nombre' y 'precio_lista' son obligatorios en ProductoDTO");

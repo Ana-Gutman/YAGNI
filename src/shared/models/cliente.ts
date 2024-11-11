@@ -4,7 +4,7 @@ import { DataTypes, Model } from "sequelize";
 export class Cliente extends Model {
     public id_cliente!: number;
     public nombre!: string;
-    public numero_celular!: string;
+    public celular!: string;
   }
   
   Cliente.init(
@@ -18,7 +18,7 @@ export class Cliente extends Model {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      numero_celular: {
+      celular: {
         type: DataTypes.STRING,
         allowNull: true,
       },

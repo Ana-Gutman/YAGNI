@@ -26,8 +26,8 @@ export const setRelationships = async () => {
   Refrigerador.belongsToMany(Producto, { through: Existencia, foreignKey: 'id_refrigerador' });
   Producto.belongsToMany(Refrigerador, { through: Existencia, foreignKey: 'id_producto' });
 
-  Cliente.hasMany(MedioPago, { foreignKey: 'id_cliente' });
-  MedioPago.belongsTo(Cliente, { foreignKey: 'id_cliente' });
+  Cliente.belongsToMany(MedioPago, { through:'Medios_pago_cliente', foreignKey: 'id_cliente' });
+  MedioPago.belongsToMany(Cliente, { through:'Medios_pago_cliente', foreignKey: 'id_medio_pago' });
 
   Cliente.hasMany(Pedido, { foreignKey: 'id_cliente' });
   Pedido.belongsTo(Cliente, { foreignKey: 'id_cliente' });
@@ -49,7 +49,6 @@ export const setRelationships = async () => {
 
   Usuario.hasMany(LogAcceso, { foreignKey: 'id_actor', constraints: false });
   Cliente.hasMany(LogAcceso, { foreignKey: 'id_actor', constraints: false });
-
   LogAcceso.belongsTo(Usuario, { foreignKey: 'id_actor', constraints: false, scope: { tipo_actor: 'Usuario' } });
   LogAcceso.belongsTo(Cliente, { foreignKey: 'id_actor', constraints: false, scope: { tipo_actor: 'Cliente' } });
 

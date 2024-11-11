@@ -29,8 +29,8 @@ export const getLocalById = async (id: number): Promise<Local | null> => {
 };
 
 export const createLocal = async (localDto: LocalDTO): Promise<Local> => {
-    if (!localDto) {
-        throw new MissingParameterError("LocalDTO es nulo o faltan campos obligatorios");
+    if (Object.keys(localDto).length === 0) {
+        throw new MissingParameterError("El LocalDTO es requerido");
     }
     if (!localDto.nombre || !localDto.direccion) {
         throw new RequiredFieldError("Los campos 'nombre' y 'direccion' son obligatorios en LocalDTO");
@@ -46,7 +46,7 @@ export const createLocal = async (localDto: LocalDTO): Promise<Local> => {
 };
 
 export const updateLocal = async (id: number, localDto: LocalDTO): Promise<Local | null> => {
-    if (!id || !localDto) 
+    if (!id || Object.keys(localDto).length === 0)
         throw new MissingParameterError('El ID y LocalDTO son requeridos');
     if (!localDto.nombre || !localDto.direccion) {
         throw new RequiredFieldError("Los campos 'nombre' y 'direccion' son obligatorios en LocalDTO");
