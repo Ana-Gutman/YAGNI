@@ -9,7 +9,7 @@ import localRoutes from './inventario/routes/localRoutes';
 import { errorMiddleware } from './shared/middleware/errorMiddleware';
 import { createBullBoard } from 'bull-board';
 import { BullAdapter } from 'bull-board/bullAdapter';
-import inventarioRoutes from './inventarioFede/routes/InventarioRoutes';
+import inventarioRoutes from './inventario/routes/InventarioRoutes';
 import { connectRedis } from './shared/database/redis';
 import clienteRoutes from './usuarioClientes/routes/clienteRoutes';
 import camionetaRoutes from './inventario/routes/camionetaRoutes';
