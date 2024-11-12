@@ -8,6 +8,7 @@ export class Lote extends Model {
     public id_refrigerador!: number;
     public cantidad!: number;
     public fecha_retirado!: Date | null;
+    public entregado!: boolean;
   }
   
   Lote.init(
@@ -45,6 +46,11 @@ export class Lote extends Model {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      entregado: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      }
     },
     {
       sequelize,

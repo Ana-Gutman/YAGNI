@@ -6,8 +6,8 @@ export class MissingParameterError extends Error {
 }
 
 export class InvalidValueError extends Error {
-    constructor(field: string, value: string) {
-        super(`El valor '${value}' para el campo ${field} no es válido.`);
+    constructor(field: string, value: string, message?: string) {
+        super(`El valor '${value}' para el campo ${field} no es válido porque ${message}`);
         this.name = "InvalidValueError";
     }
 }

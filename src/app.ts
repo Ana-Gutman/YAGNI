@@ -15,6 +15,7 @@ import clienteRoutes from './usuarioClientes/routes/clienteRoutes';
 import camionetaRoutes from './inventario/routes/camionetaRoutes';
 import cocinaRoutes from './inventario/routes/cocinaRoutes';
 import refrigeradorRoutes from './inventario/routes/refrigeradorRoutes';
+import lotesRoutes from './inventario/routes/lotesRoutes';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ const main = async () => {
   app.use("/api", camionetaRoutes);
   app.use("/api", cocinaRoutes);  
   app.use("/api", refrigeradorRoutes);
+  app.use('/api', lotesRoutes);
   //app.use('/api', inventarioRoutes); 
 
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
