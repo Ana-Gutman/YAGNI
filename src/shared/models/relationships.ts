@@ -14,13 +14,15 @@ import { ProductoEnvasado } from './productoEnvasado';
 import { MedioPagoCliente } from './medioPagoCliente';
 import { MarcaRefrigerador } from './marcaRefrigerador';
 import { ProductoRefrigerador } from './productoRefrigerador';
+import { CocinaCamioneta } from './cocinaCamioneta';
+import { CocinaLocal } from './cocinaLocal';
 
 export const setRelationships = async () => {
-  Cocina.belongsToMany(Local, { through: 'Cocina_Locales', foreignKey: 'id_cocina' });
-  Local.belongsToMany(Cocina, { through: 'Cocina_Locales', foreignKey: 'id_local' });
+  Cocina.belongsToMany(Local, { through: CocinaLocal, foreignKey: 'id_cocina' });
+  Local.belongsToMany(Cocina, { through: CocinaLocal, foreignKey: 'id_local' });
 
-  Cocina.belongsToMany(Camioneta, { through: 'Cocina_Camionetas', foreignKey: 'id_cocina' });
-  Camioneta.belongsToMany(Cocina, { through: 'Cocina_Camionetas', foreignKey: 'id_camioneta' });
+  Cocina.belongsToMany(Camioneta, { through: CocinaCamioneta, foreignKey: 'id_cocina' });
+  Camioneta.belongsToMany(Cocina, { through: CocinaCamioneta, foreignKey: 'id_camioneta' });
 
   Local.hasMany(Refrigerador, { foreignKey: 'id_local' });
   Refrigerador.belongsTo(Local, { foreignKey: 'id_local' });
@@ -28,17 +30,8 @@ export const setRelationships = async () => {
   Cliente.belongsToMany(MedioPago, { through: MedioPagoCliente, foreignKey: 'id_cliente' });
   MedioPago.belongsToMany(Cliente, { through: MedioPagoCliente, foreignKey: 'id_medio_pago' });
 
-  Refrigerador.belongsTo(MarcaRefrigerador, { 
-    foreignKey: 'marca_nombre', 
-    targetKey: 'nombre',
-    as: 'marcaRefrigerador',  
-  });
-  
-  MarcaRefrigerador.hasMany(Refrigerador, {
-    foreignKey: 'marca_nombre', 
-    sourceKey: 'nombre',
-    as: 'refrigeradores', 
-  });
+  Refrigerador.belongsTo(MarcaRefrigerador, { foreignKey: 'marca_nombre', targetKey: 'nombre',as: 'marcaRefrigerador',  });
+  MarcaRefrigerador.hasMany(Refrigerador, {foreignKey: 'marca_nombre', sourceKey: 'nombre', as: 'refrigeradores', });
 
   Producto.belongsToMany(Refrigerador, { through: ProductoRefrigerador, foreignKey: 'id_producto' });
 
