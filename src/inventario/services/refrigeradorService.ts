@@ -2,6 +2,7 @@ import { RefrigeradorRepository } from '../repositories/refrigeradorRepository';
 import { RefrigeradorDTO } from '../dto/RefrigeradorDto';
 import { Refrigerador } from '../../shared/models/refrigerador';
 import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors';
+import { MarcaRefrigerador } from '../../shared/models/marcaRefrigerador';
 
 const refrigeradorRepository = new RefrigeradorRepository();
 
@@ -28,11 +29,27 @@ export const getRefrigeradorById = async (id: number): Promise<Refrigerador | nu
     }
 };
 
+// export const getCodigoSegunMarca = async (marca: string): Promise<MarcaRefrigerador | null> => { 
+//     if (!marca) throw new MissingParameterError(' del refrigerador es requerido');
+//     try {
+//         const marcaRefrigerador = await refrigeradorRepository.findByMarca(marca);
+//         if (!marcaRefrigerador)
+//             throw new NotFoundError(`La marca con nombre ${marca} no se encuentra en la base de datos`);
+//         return marcaRefrigerador;
+//     } catch (error: any) {
+//         if (error instanceof NotFoundError) {
+//             throw error;
+//         }
+//         throw new DatabaseError(`Error al obtener marca ${marca}: ${error.message}`);
+//     }
+// };
+
+
 export const createRefrigerador = async (refrigeradorDto: RefrigeradorDTO): Promise<Refrigerador> => {
     if (Object.keys(refrigeradorDto).length === 0) {
         throw new MissingParameterError("El RefrigeradorDTO es requerido");
     }
-    if (!refrigeradorDto.marca || !refrigeradorDto.id_local) {
+    if (!refrigeradorDto.marca_nombre || !refrigeradorDto.id_local) {
         throw new RequiredFieldError("Los campos 'marca' y 'id_local' son obligatorios en RefrigeradorDTO");
     }
     try {

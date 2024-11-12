@@ -17,10 +17,14 @@ class RefrigeradorRepository {
     async findById(id: number): Promise<Refrigerador | null> {
         return await Refrigerador.findByPk(id);
     }
+
+    // async findByMarca(marca: string): Promise<MarcaRefrigerador | null> {
+    //     return await MarcaRefrigerador.findByPk(marca);
+    // }
   
     async create(refrigeradorDto: RefrigeradorDTO): Promise<Refrigerador | null>    {
         const refrigerador = { ...refrigeradorDto };
-        const marca = await MarcaRefrigerador.findByPk(refrigeradorDto.marca);
+        const marca = await MarcaRefrigerador.findByPk(refrigeradorDto.marca_nombre);
         const local = await Local.findByPk(refrigeradorDto.id_local);
         if (!marca || !local) {
             return null;

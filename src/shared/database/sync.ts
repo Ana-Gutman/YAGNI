@@ -13,7 +13,7 @@ import { ProductoPedido } from '../models/productoPedido';
 import { Lote } from '../models/lote';
 import { LogAcceso } from '../models/logAcceso';
 import { LogError } from '../models/logError';
-import { Produccion } from '../models/produccion';
+import { ProductoEnvasado } from '../models/productoEnvasado';
 import { MedioPagoCliente } from '../models/medioPagoCliente';
 import { MarcaRefrigerador } from '../models/marcaRefrigerador';
 import { ProductoRefrigerador } from '../models/productoRefrigerador';
@@ -36,7 +36,7 @@ const syncTables = async () => {
       await Lote.sync();
       await LogAcceso.sync();
       await LogError.sync();
-      await Produccion.sync();
+      await ProductoEnvasado.sync();
       await ProductoRefrigerador.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }

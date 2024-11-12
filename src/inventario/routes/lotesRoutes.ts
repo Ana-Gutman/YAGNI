@@ -8,7 +8,6 @@ router.post("/lotes", loteController.createLote);
 router.delete("/lotes/:id", loteController.deleteLote);
 router.put("/lotes/:id", loteController.updateEntregaLote);
 router.put("/lotes/retiro/:id", loteController.updateRetiroLote);
-router.put("/lotes/cantidad/:id", loteController.agregarCantidadDeProductoALote);
 
 
 export default router;

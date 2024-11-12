@@ -1,17 +1,17 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database';
 
-export class Produccion extends Model {
-  public id_produccion!: number;
+export class ProductoEnvasado extends Model {
+  public id_envase!: number;
   public id_producto!: number;
   public id_cocina!: number;
-  public id_refrigerador!: number;
-  public fecha!: Date;
+  public id_lote!: number;
+  public codigo!: string;
 }
 
-Produccion.init(
+ProductoEnvasado.init(
   {
-    id_produccion: {
+    id_envase: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
@@ -26,19 +26,20 @@ Produccion.init(
       references: { model: 'Cocinas', key: 'id_cocina' },
       allowNull: false,
     },
-    id_refrigerador: {
+    id_lote: {
       type: DataTypes.INTEGER.UNSIGNED,
-      references: { model: 'Refrigeradores', key: 'id_refrigerador' },
+      references: { model: 'Lotes', key: 'id_lote' },
       allowNull: false,
     },
-    fecha: {
-      type: DataTypes.DATE,
+    codigo: {
+      type: DataTypes.ENUM('QR', 'NFC'),
       allowNull: false,
     },
   },
   {
     sequelize,
-    tableName: 'Producciones',
-    timestamps: false,
+    modelName: 'ProductoEnvasado',
+    tableName: 'Productos_envasados',
+    timestamps: true,
   }
 );

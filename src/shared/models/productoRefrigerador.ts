@@ -15,7 +15,7 @@ ProductoRefrigerador.init(
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
-        model: Producto,  
+        model: Refrigerador,  
         key: 'id_refrigerador',
       },
     },
@@ -23,7 +23,7 @@ ProductoRefrigerador.init(
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
-        model: Refrigerador,  
+        model: Producto,  
         key: 'id_producto',
       },
     },

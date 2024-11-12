@@ -10,7 +10,7 @@ import { ProductoPedido } from './productoPedido';
 import { Lote } from './lote';
 import { LogAcceso } from './logAcceso';
 import { MedioPago } from './medioPago';
-import { Produccion } from './produccion';
+import { ProductoEnvasado } from './productoEnvasado';
 import { MedioPagoCliente } from './medioPagoCliente';
 import { MarcaRefrigerador } from './marcaRefrigerador';
 import { ProductoRefrigerador } from './productoRefrigerador';
@@ -28,9 +28,18 @@ export const setRelationships = async () => {
   Cliente.belongsToMany(MedioPago, { through: MedioPagoCliente, foreignKey: 'id_cliente' });
   MedioPago.belongsToMany(Cliente, { through: MedioPagoCliente, foreignKey: 'id_medio_pago' });
 
-  Refrigerador.belongsTo(MarcaRefrigerador, { foreignKey: 'nombre' });
-  MarcaRefrigerador.hasMany(Refrigerador, { foreignKey: 'nombre' });
-  Refrigerador.belongsToMany(Producto, { through: ProductoRefrigerador, foreignKey: 'id_refrigerador' });
+  Refrigerador.belongsTo(MarcaRefrigerador, { 
+    foreignKey: 'marca_nombre', 
+    targetKey: 'nombre',
+    as: 'marcaRefrigerador',  
+  });
+  
+  MarcaRefrigerador.hasMany(Refrigerador, {
+    foreignKey: 'marca_nombre', 
+    sourceKey: 'nombre',
+    as: 'refrigeradores', 
+  });
+
   Producto.belongsToMany(Refrigerador, { through: ProductoRefrigerador, foreignKey: 'id_producto' });
 
   Cliente.hasMany(Pedido, { foreignKey: 'id_cliente' });
@@ -57,10 +66,10 @@ export const setRelationships = async () => {
   LogAcceso.belongsTo(Usuario, { foreignKey: 'id_actor', constraints: false, scope: { tipo_actor: 'Usuario' } });
   LogAcceso.belongsTo(Cliente, { foreignKey: 'id_actor', constraints: false, scope: { tipo_actor: 'Cliente' } });
 
-  Produccion.belongsTo(Producto, { foreignKey: 'id_producto' });
-  Produccion.belongsTo(Cocina, { foreignKey: 'id_cocina' });
-  Produccion.belongsTo(Refrigerador, { foreignKey: 'id_refrigerador' });
-  Producto.hasMany(Produccion, { foreignKey: 'id_producto' });
-  Cocina.hasMany(Produccion, { foreignKey: 'id_cocina' });
-  Refrigerador.hasMany(Produccion, { foreignKey: 'id_refrigerador' });
+  ProductoEnvasado.belongsTo(Producto, { foreignKey: 'id_producto' });
+  ProductoEnvasado.belongsTo(Cocina, { foreignKey: 'id_cocina' });
+  ProductoEnvasado.belongsTo(Lote, { foreignKey: 'id_lote' });
+  Producto.hasMany(ProductoEnvasado, { foreignKey: 'id_producto' });
+  Cocina.hasMany(ProductoEnvasado, { foreignKey: 'id_cocina' });
+  Refrigerador.hasMany(ProductoEnvasado, { foreignKey: 'id_lote' });
 };

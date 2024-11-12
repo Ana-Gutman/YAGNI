@@ -1,13 +1,14 @@
-import { BelongsToManyAddAssociationMixin, DataTypes, Model } from 'sequelize';
+import { BelongsToGetAssociationMixin, BelongsToManyAddAssociationMixin, DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database';
 import { Producto } from './producto';
+import { MarcaRefrigerador } from './marcaRefrigerador';
 
 export class Refrigerador extends Model {
   public id_refrigerador!: number;
-  public marca!: string;
+  public marca_nombre!: string;
   public id_local!: number;
   public addProducto!: BelongsToManyAddAssociationMixin<Producto, number>;
-
+  public getMarcaRefrigerador!: BelongsToGetAssociationMixin<MarcaRefrigerador>;
 }
 
 Refrigerador.init(
@@ -17,7 +18,7 @@ Refrigerador.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    marca: {
+    marca_nombre: {
       type: DataTypes.STRING,
       references: { model: 'MarcasRefrigerador', key: 'nombre' },
       allowNull: false,
