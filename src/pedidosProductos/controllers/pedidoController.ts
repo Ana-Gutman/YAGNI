@@ -22,8 +22,8 @@ export const getPedidoById = async (req: Request, res: Response, next: NextFunct
 
 export const createPedido = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const pedido = req.body;
-        const pedidoCreado = await pedidoService.createPedido(pedido);
+        const PedidoDTO = req.body;
+        const pedidoCreado = await pedidoService.createPedido(PedidoDTO);
         res.status(201).json(pedidoCreado);
     } catch (error) {
         next(error);

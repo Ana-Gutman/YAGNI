@@ -32,13 +32,13 @@ export const createPedido = async (pedidoDto: PedidoDTO): Promise<Pedido> => {
     if (Object.keys(pedidoDto).length === 0) {
         throw new MissingParameterError("El PedidoDTO es requerido");
     }
-    if (!pedidoDto.id_cliente || !pedidoDto.id_medio_pago || !pedidoDto.id_local) {
-        throw new RequiredFieldError("Los campos 'id_cliente', 'id_medio_pago' e 'id_local' son obligatorios en PedidoDTO");
+    if (!pedidoDto.id_cliente || !pedidoDto.id_medio_pago || !pedidoDto.id_local || !pedidoDto.productos) {
+        throw new RequiredFieldError("Los campos 'id_cliente', 'id_medio_pago', 'id_local', y 'productos' son obligatorios en PedidoDTO");
     }
     try {
         const pedido = await pedidoRepository.create(pedidoDto);
         if (!pedido) 
-            throw new NotFoundError("El cliente, medio de pago o local no existe en la base de datos");
+            throw new NotFoundError("El cliente, medio de pago, local o productos no existen en la base de datos");
         return pedido;
     } catch (error: any) {
         if (error instanceof NotFoundError) {

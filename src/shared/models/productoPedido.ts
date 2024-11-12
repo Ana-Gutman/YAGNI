@@ -1,20 +1,14 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database';
 
-export class DetallePedido extends Model {
-    public id_detalle_pedido!: number;
+export class ProductoPedido extends Model {
     public id_pedido!: number;
     public id_producto!: number;
     public cantidad!: number;
   }
   
-  DetallePedido.init(
+  ProductoPedido.init(
     {
-      id_detalle_pedido: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        autoIncrement: true,
-        primaryKey: true,
-      },
       id_pedido: {
         type: DataTypes.INTEGER.UNSIGNED,
         references: { model: 'Pedidos', key: 'id_pedido' },
@@ -32,7 +26,8 @@ export class DetallePedido extends Model {
     },
     {
       sequelize,
-      tableName: 'Detalle_Pedidos',
+      modelName: 'ProductoPedido',
+      tableName: 'Productos_Pedidos',
       timestamps: true,
     }
   );

@@ -9,7 +9,7 @@ import { Local } from '../models/local';
 import sequelize from './database';
 import { Cliente } from '../models/cliente';
 import { MedioPago } from '../models/medioPago';
-import { DetallePedido } from '../models/detallePedido';
+import { ProductoPedido } from '../models/productoPedido';
 import { Lote } from '../models/lote';
 import { LogAcceso } from '../models/logAcceso';
 import { LogError } from '../models/logError';
@@ -30,7 +30,7 @@ const syncTables = async () => {
       await MedioPagoCliente.sync();
       await Local.sync();
       await Pedido.sync();
-      await DetallePedido.sync();
+      await ProductoPedido.sync();
       await MarcaRefrigerador.sync();
       await Refrigerador.sync();
       await Lote.sync();
