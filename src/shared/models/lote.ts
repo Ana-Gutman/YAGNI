@@ -3,8 +3,9 @@ import sequelize from '../database/database';
 export class Lote extends Model {
     public id_lote!: number;
     public id_cocina!: number;
+    public id_producto!: number;
     public id_local_destino!: number;
-    public fecha_elaboracion!: Date;
+    public id_refrigerador!: number;
     public cantidad!: number;
     public fecha_retirado!: Date | null;
   }
@@ -21,13 +22,19 @@ export class Lote extends Model {
         references: { model: 'Cocinas', key: 'id_cocina' },
         allowNull: false,
       },
+      id_producto: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        references: { model: 'Productos', key: 'id_producto' },
+        allowNull: false,
+      },
       id_local_destino: {
         type: DataTypes.INTEGER.UNSIGNED,
         references: { model: 'Locales', key: 'id_local' },
         allowNull: false,
       },
-      fecha_elaboracion: {
-        type: DataTypes.DATE,
+      id_refrigerador: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        references: { model: 'Refrigeradores', key: 'id_refrigerador' },
         allowNull: false,
       },
       cantidad: {

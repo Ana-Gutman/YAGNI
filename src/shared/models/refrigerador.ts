@@ -1,25 +1,25 @@
-import { DataTypes, Model } from 'sequelize';
+import { BelongsToManyAddAssociationMixin, DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database';
+import { Producto } from './producto';
 
 export class Refrigerador extends Model {
   public id_refrigerador!: number;
   public marca!: string;
   public id_local!: number;
+  public addProducto!: BelongsToManyAddAssociationMixin<Producto, number>;
+
 }
 
 Refrigerador.init(
   {
     id_refrigerador: {
       type: DataTypes.INTEGER.UNSIGNED,
-      defaultValue: DataTypes.UUIDV4,
+      autoIncrement: true,
       primaryKey: true,
     },
     marca: {
       type: DataTypes.STRING,
-      allowNull: false,
-    },
-    tipo_codigo: {
-      type: DataTypes.ENUM('QR', 'NFC'),
+      references: { model: 'MarcasRefrigerador', key: 'nombre' },
       allowNull: false,
     },
     id_local: {
@@ -30,6 +30,7 @@ Refrigerador.init(
   },
   {
     sequelize,
+    modelName: 'Refrigerador',
     tableName: 'Refrigeradores',
     timestamps: false,
   }

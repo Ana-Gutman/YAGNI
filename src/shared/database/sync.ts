@@ -8,7 +8,6 @@ import { Refrigerador } from '../models/refrigerador';
 import { Local } from '../models/local';
 import sequelize from './database';
 import { Cliente } from '../models/cliente';
-import { Existencia } from '../models/existencia';
 import { MedioPago } from '../models/medioPago';
 import { DetallePedido } from '../models/detallePedido';
 import { Lote } from '../models/lote';
@@ -16,6 +15,8 @@ import { LogAcceso } from '../models/logAcceso';
 import { LogError } from '../models/logError';
 import { Produccion } from '../models/produccion';
 import { MedioPagoCliente } from '../models/medioPagoCliente';
+import { MarcaRefrigerador } from '../models/marcaRefrigerador';
+import { ProductoRefrigerador } from '../models/productoRefrigerador';
 
 const syncTables = async () => {
   try {
@@ -30,14 +31,13 @@ const syncTables = async () => {
       await Local.sync();
       await Pedido.sync();
       await DetallePedido.sync();
+      await MarcaRefrigerador.sync();
+      await Refrigerador.sync();
       await Lote.sync();
       await LogAcceso.sync();
       await LogError.sync();
       await Produccion.sync();
-      await Refrigerador.sync();
-      await Existencia.sync();
-      
-      
+      await ProductoRefrigerador.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }
   } catch (error) {

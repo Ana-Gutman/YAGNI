@@ -14,7 +14,7 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
 
-  redis:
+  redis_service:
     image: redis
     container_name: redis_service
     ports:
@@ -27,13 +27,13 @@ services:
       context: .
     container_name: obligatorio_app
     ports:
-      - "3000:3000"
+      - "3001:3001"
     networks:
       - obligatorio_arq
     environment:
       - DB_HOST=mysql-db
       - REDIS_HOST=redis_service
-      - PORT=3000
+      - PORT=3001
       - NODE_ENV=development
 
 volumes:
