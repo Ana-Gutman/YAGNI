@@ -1,5 +1,7 @@
 import amqp from 'amqplib';
 
+let consumerCamionetas: { [key: number]: any } = {}; 
+
 export const startListeningForLotes = async (camionetaId: number) => {
   const connection = await amqp.connect('amqp://user:secret@localhost:5672');
   const channel = await connection.createChannel();
@@ -13,6 +15,8 @@ export const startListeningForLotes = async (camionetaId: number) => {
   const routingKey = `camioneta.${camionetaId}`;
   await channel.bindQueue(queue, exchange, routingKey);
 
+  consumerCamionetas[camionetaId] = channel;
+
   console.log(`Camioneta ${camionetaId} esperando lotes...`);
   
   channel.consume(queue, (message) => {
@@ -23,4 +27,3 @@ export const startListeningForLotes = async (camionetaId: number) => {
     }
   });
 };
-

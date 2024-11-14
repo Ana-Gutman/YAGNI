@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import * as camionetaService from "../services/camionetaService";
+import { startListeningForLotes } from "../queues/camionetaSubscriber";
 
 export const getCamionetas = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -24,6 +25,7 @@ export const createCamioneta = async (req: Request, res: Response, next: NextFun
     try {
         const camioneta = req.body;
         const camionetaCreada = await camionetaService.createCamioneta(camioneta);
+        await startListeningForLotes(camionetaCreada.id_camioneta);
         res.status(201).json(camionetaCreada);
     } catch (error) {
         next(error);

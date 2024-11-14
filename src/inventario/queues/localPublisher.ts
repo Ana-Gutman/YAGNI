@@ -7,7 +7,6 @@ export const publishPedidoNotification = async (productosPedido: {id_producto: n
   const exchange = 'exchange_pedidos';
 
   await channel.assertExchange(exchange, 'direct', { durable: true });
-  
   const routingKey = `cocina.${ActualCocina}`; 
   channel.publish(exchange, routingKey, Buffer.from(JSON.stringify({productosPedido, id_local})));
   

@@ -1,5 +1,7 @@
 import amqp from 'amqplib';
 
+let consumerCocinas: { [key: number]: any } = {}; 
+
 export const startListeningForPedidos = async (cocinaId: number) => {
   const connection = await amqp.connect('amqp://user:secret@localhost:5672');
   const channel = await connection.createChannel();
@@ -13,6 +15,7 @@ export const startListeningForPedidos = async (cocinaId: number) => {
   const routingKey = `cocina.${cocinaId}`;
   await channel.bindQueue(queue, exchange, routingKey);
 
+  consumerCocinas[cocinaId] = channel;
   console.log(`Cocina ${cocinaId} esperando pedidos...`);
 
   channel.consume(queue, (message) => {
@@ -23,4 +26,3 @@ export const startListeningForPedidos = async (cocinaId: number) => {
     }
   });
 };
-

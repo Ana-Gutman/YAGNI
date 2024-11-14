@@ -8,7 +8,6 @@ export const publishLoteNotification = async (lote: Lote) => {
   const exchange = 'exchange_lotes';
 
   await channel.assertExchange(exchange, 'direct', { durable: true });
-
   const routingKey = `camioneta.${ActualCamioneta}`; 
   channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(lote)));
   

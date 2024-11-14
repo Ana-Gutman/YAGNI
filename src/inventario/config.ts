@@ -16,7 +16,8 @@ export const siguienteCamioneta = async () => {
         ActualCamioneta++;
     }
 
-    if (!await getCamionetaById(ActualCamioneta)){ 
+    const camionetaActual = await getCamionetaById(ActualCamioneta);
+    if (!camionetaActual) { 
         await siguienteCamioneta();
     }
 };
@@ -29,7 +30,8 @@ export const siguienteCocina = async () => {
         ActualCocina++;
     }
 
-    if (!await getCocinaById(ActualCocina)) {
+    const cocinaActual = await getCocinaById(ActualCocina);
+    if (!cocinaActual) {
         await siguienteCocina();
     }
 };

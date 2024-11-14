@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import * as cocinaService from "../services/cocinaService";
+import { startListeningForPedidos } from "../queues/cocinaSubscriber";
 
 export const getCocinas = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -24,6 +25,7 @@ export const createCocina = async (req: Request, res: Response, next: NextFuncti
     try {
         const cocina = req.body;
         const cocinaCreada = await cocinaService.createCocina(cocina);
+        await startListeningForPedidos(cocinaCreada.id_cocina);
         res.status(201).json(cocinaCreada);
     } catch (error) {
         next(error);
