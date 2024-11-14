@@ -1,4 +1,4 @@
-import { InvalidValueError } from "../../shared/errors";
+import { InvalidValueError } from "../../shared/errors/customErrors";
 import { Cocina } from "../../shared/models/cocina";
 import { Local } from "../../shared/models/local";
 import { Lote } from "../../shared/models/lote";
@@ -6,8 +6,7 @@ import { Producto } from "../../shared/models/producto";
 import { ProductoEnvasado } from "../../shared/models/productoEnvasado";
 import { Refrigerador } from "../../shared/models/refrigerador";
 import { LoteDTO,LoteUpdateRetiroDto } from "../dto/LoteDto";
-
-const X=10;
+import { X } from "../config";
 
 class LoteRepository {
     async updateEntrega(id: number): Promise<Lote | null> {

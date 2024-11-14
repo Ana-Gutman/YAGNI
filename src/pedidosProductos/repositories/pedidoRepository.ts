@@ -21,7 +21,7 @@ class PedidoRepository {
         return await Pedido.findByPk(id);
     }
   
-    async create(pedidoDto: PedidoDTO): Promise<Pedido | null> {
+    async create(pedidoDto: PedidoDTO): Promise<{ pedido: Pedido, productosPedido: ProductoPedidoDTO[] } | null> {
         const transaction = await sequelize.transaction();
         try {
             pedidoDto.estado = "Iniciado";
@@ -36,16 +36,15 @@ class PedidoRepository {
             }
 
             const pedido = await Pedido.create({ id_cliente, id_medio_pago, id_local, estado: pedidoDto.estado }, { transaction });
-
             const productosEnPedido = productos.map((producto) => ({
                 id_pedido: pedido.id_pedido,
                 id_producto: producto.id_producto,
                 cantidad: producto.cantidad,
             }));
             await ProductoPedido.bulkCreate(productosEnPedido, { transaction });
-
             await transaction.commit();
-            return pedido;
+
+            return {pedido: pedido, productosPedido: pedidoDto.productos};
         } catch (error:any) {
             await transaction.rollback();
             throw new Error(`Error al crear el pedido: ${error.message}`);

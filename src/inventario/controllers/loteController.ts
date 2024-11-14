@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import * as loteService from "../services/loteService";
 import { LoteUpdateCantidadDto, LoteUpdateRetiroDto } from "../dto/LoteDto";
+import { publishLoteNotification } from "../queues/cocinaPublisher";
 
-const X = 10;
 
 export const getLotes = async (req: Request, res: Response, next: NextFunction) => {
     try {

@@ -1,7 +1,7 @@
 import { UsuarioRepository } from '../repositories/usuarioRepository';
 import { UsuarioDTO } from '../dto/UsuarioDto';
 import { Usuario } from '../../shared/models/usuario';
-import { MissingParameterError, InvalidValueError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors';
+import { MissingParameterError, InvalidValueError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors/customErrors';
 
 const usuarioRepository = new UsuarioRepository();
 

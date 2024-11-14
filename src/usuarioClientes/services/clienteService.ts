@@ -1,7 +1,7 @@
 import { ClienteRepository } from '../repositories/clienteRepository';
 import { ClienteDTO } from '../dto/ClienteDto';
 import { Cliente } from '../../shared/models/cliente';
-import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors';
+import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors/customErrors';
 
 const clienteRepository = new ClienteRepository();
 

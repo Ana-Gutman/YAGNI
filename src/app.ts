@@ -16,6 +16,9 @@ import camionetaRoutes from './inventario/routes/camionetaRoutes';
 import cocinaRoutes from './inventario/routes/cocinaRoutes';
 import refrigeradorRoutes from './inventario/routes/refrigeradorRoutes';
 import lotesRoutes from './inventario/routes/lotesRoutes';
+import { loadEntidades, startCamionetaQueues, startCocinaQueues } from './shared/database/initialize';
+import { startListeningForLotes } from './inventario/queues/camionetaSubscriber';
+import { startListeningForPedidos } from './inventario/queues/cocinaSubscriber';
 
 dotenv.config();
 
@@ -26,7 +29,7 @@ const main = async () => {
   // console.log('Redis conectado');
 
   await dbSync();
-
+  await loadEntidades();
   app.use(express.json());
   app.use("/api", usuarioRoutes);
   app.use("/api", productoRoutes);
@@ -53,6 +56,8 @@ const main = async () => {
         "La conexión con la base de datos ha sido establecida correctamente."
       );
 
+      await startCamionetaQueues();
+      await startCocinaQueues();
       // await sequelize.sync({ force: true });
       // console.log("Base de datos sincronizada con éxito (force: true).");
 
