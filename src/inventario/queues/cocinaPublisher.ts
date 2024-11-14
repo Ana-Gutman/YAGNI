@@ -1,5 +1,6 @@
 import amqp from 'amqplib';
 import { Lote } from '../../shared/models/lote';
+import { siguienteCamioneta } from '../config';
 
 export const publishLoteNotification = async (lote: Lote) => {
   const connection = await amqp.connect('amqp://user:secret@localhost:5672');
@@ -10,6 +11,7 @@ export const publishLoteNotification = async (lote: Lote) => {
   channel.sendToQueue(queue, Buffer.from(JSON.stringify(lote)));
 
   console.log(`Lote ${lote.id_lote} enviado a la cola ${queue}`);
+  siguienteCamioneta();
   await channel.close();
   await connection.close();
 };

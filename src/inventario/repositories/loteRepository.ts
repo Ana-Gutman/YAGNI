@@ -6,8 +6,7 @@ import { Producto } from "../../shared/models/producto";
 import { ProductoEnvasado } from "../../shared/models/productoEnvasado";
 import { Refrigerador } from "../../shared/models/refrigerador";
 import { LoteDTO,LoteUpdateRetiroDto } from "../dto/LoteDto";
-
-const X=10;
+import { X } from "../config";
 
 class LoteRepository {
     async updateEntrega(id: number): Promise<Lote | null> {

@@ -5,7 +5,6 @@ import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError
 import { ProductoEnvasado } from '../../shared/models/productoEnvasado';
 
 const loteRepository = new LoteRepository();
-const X = 10;
 
 export const getAllLotes = async (): Promise<Lote[]> => {
     try {

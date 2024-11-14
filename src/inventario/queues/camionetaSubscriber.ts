@@ -1,19 +1,30 @@
 import amqp from 'amqplib';
-import { CocinaCamioneta } from '../../shared/models/cocinaCamioneta';
+import { Cocina } from '../../shared/models/cocina';
+import { Camioneta } from '../../shared/models/camioneta';
+import { ActualCamioneta, siguienteCamioneta } from '../config';
 
 export const startListeningForLotes = async () => {
   const connection = await amqp.connect('amqp://user:secret@localhost:5672');
   const channel = await connection.createChannel();
 
-  const cocinaCamionetas = await CocinaCamioneta.findAll();
+  const cocinas = await Cocina.findAll();
+  const camioneta = await Camioneta.findOne({ where: { id_camioneta: ActualCamioneta } });
 
-  for (const cc of cocinaCamionetas) {
-    const queue = `cocina-${cc.id_cocina}-notifications`;
+  if (!camioneta) {
+    siguienteCamioneta();
+  }
+
+  console.log(`Escuchando notificaciones para la camioneta ${ActualCamioneta}...`);
+
+  for (const co of cocinas) {
+    const queue = `cocina-${co.id_cocina}-notifications`;
+
     await channel.assertQueue(queue, { durable: true });
+
     channel.consume(queue, (msg) => {
       if (msg) {
         const lote = JSON.parse(msg.content.toString());
-        console.log(`Camioneta asociada a Cocina ${cc.id_camioneta} recibió notificación de Lote:`, lote);
+        console.log(`Camioneta con id ${ActualCamioneta} recibió notificación para buscar Lote: `, lote);
       }
     });
   }
@@ -21,4 +32,3 @@ export const startListeningForLotes = async () => {
   console.log('Escuchando notificaciones de Lotes...');
 };
 
-startListeningForLotes();
