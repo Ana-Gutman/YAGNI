@@ -1,4 +1,6 @@
 import { Local } from "../../shared/models/local";
+import { ProductoRefrigerador } from "../../shared/models/productoRefrigerador";
+import { Refrigerador } from "../../shared/models/refrigerador";
 import { LocalDTO } from "../dto/LocalDto";
 
 // interface LocalFilter {
@@ -31,6 +33,34 @@ class LocalRepository {
         return Local.destroy({
             where: { id_local: id },
         });
+    }
+
+    async getStockDeProducto(id_local: number, id_producto: number): Promise<number> {
+        try {
+            const productosRefrigerador = await ProductoRefrigerador.findAll({
+              where: {
+                id_producto: id_producto,
+              },
+              include: [
+                {
+                  model: Refrigerador,
+                  where: {
+                    id_local: id_local,
+                  },
+                  required: true, 
+                },
+              ],
+            });
+        
+            const cantidadTotal = productosRefrigerador.reduce((total, productoRefrigerador) => {
+              return total + productoRefrigerador.cantidad;
+            }, 0);
+        
+            return cantidadTotal;
+        } catch (error) {
+            console.error('Error al obtener la cantidad del producto:', error);
+            throw error;
+        }
     }
 }
 

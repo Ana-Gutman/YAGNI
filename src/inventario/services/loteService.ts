@@ -3,6 +3,7 @@ import { LoteDTO, LoteUpdateCantidadDto, LoteUpdateRetiroDto } from '../dto/Lote
 import { Lote } from '../../shared/models/lote';
 import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors/customErrors';
 import { ProductoEnvasado } from '../../shared/models/productoEnvasado';
+import { publishLoteNotification } from '../queues/cocinaPublisher';
 
 const loteRepository = new LoteRepository();
 
@@ -40,6 +41,7 @@ export const createLote = async (loteDto: LoteDTO): Promise<{ lote: Lote, produc
         const lote = await loteRepository.create(loteDto);
         if (!lote) 
             throw new NotFoundError("No existe la cocina, local, producto o refrigerador en la base de datos");
+        await publishLoteNotification(lote.lote);
         return lote;
     } catch (error: any) {
         if (error instanceof NotFoundError) 
