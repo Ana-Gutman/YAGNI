@@ -1,7 +1,10 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database';
 
-export class CocinaCamioneta extends Model {}
+export class CocinaCamioneta extends Model {
+  public id_cocina!: number;
+  public id_camioneta!: number;
+}
 CocinaCamioneta.init(
   {
     id_cocina: {

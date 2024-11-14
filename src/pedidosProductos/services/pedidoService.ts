@@ -1,7 +1,7 @@
 import { PedidoRepository } from '../repositories/pedidoRepository';
 import { PedidoDTO } from '../dto/PedidoDto';
 import { Pedido } from '../../shared/models/pedido';
-import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors';
+import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors/customErrors';
 
 const pedidoRepository = new PedidoRepository();
 

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import * as loteService from "../services/loteService";
 import { LoteUpdateCantidadDto, LoteUpdateRetiroDto } from "../dto/LoteDto";
+import { publishLoteNotification } from "../queues/cocinaPublisher";
 
 const X = 10;
 
@@ -27,6 +28,7 @@ export const createLote = async (req: Request, res: Response, next: NextFunction
     try {
         const loteDto = req.body;
         const { lote, productosEnvasados } = await loteService.createLote(loteDto);
+        await publishLoteNotification(lote);
         res.status(201).json({ lote, productosEnvasados });
     } catch (error) {
         next(error);

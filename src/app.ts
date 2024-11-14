@@ -16,6 +16,8 @@ import camionetaRoutes from './inventario/routes/camionetaRoutes';
 import cocinaRoutes from './inventario/routes/cocinaRoutes';
 import refrigeradorRoutes from './inventario/routes/refrigeradorRoutes';
 import lotesRoutes from './inventario/routes/lotesRoutes';
+import { loadCocinaCamionetas } from './shared/database/initialize';
+import { startListeningForLotes } from './inventario/queues/camionetaSubscriber';
 
 dotenv.config();
 
@@ -26,7 +28,7 @@ const main = async () => {
   // console.log('Redis conectado');
 
   await dbSync();
-
+  //loadCocinaCamionetas();
   app.use(express.json());
   app.use("/api", usuarioRoutes);
   app.use("/api", productoRoutes);
@@ -47,6 +49,7 @@ const main = async () => {
 
   app.listen(PORT, async () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
+    startListeningForLotes();
     try {
       await sequelize.authenticate();
       console.log(

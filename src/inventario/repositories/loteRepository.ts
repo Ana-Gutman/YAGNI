@@ -1,4 +1,4 @@
-import { InvalidValueError } from "../../shared/errors";
+import { InvalidValueError } from "../../shared/errors/customErrors";
 import { Cocina } from "../../shared/models/cocina";
 import { Local } from "../../shared/models/local";
 import { Lote } from "../../shared/models/lote";

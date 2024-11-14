@@ -1,7 +1,7 @@
 import { CocinaRepository } from '../repositories/cocinaRepository';
 import { CocinaDTO } from '../dto/CocinaDto';
 import { Cocina } from '../../shared/models/cocina';
-import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors';
+import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors/customErrors';
 
 const cocinaRepository = new CocinaRepository();
 

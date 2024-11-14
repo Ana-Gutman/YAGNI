@@ -2,13 +2,13 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database';
 
 export class Camioneta extends Model {
-  public idVehiculo!: number;
+  public id_camioneta!: number;
   public matricula!: string;
 }
 
 Camioneta.init(
   {
-    idVehiculo: {
+    id_camioneta: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,

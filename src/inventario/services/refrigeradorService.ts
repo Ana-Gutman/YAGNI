@@ -1,7 +1,7 @@
 import { RefrigeradorRepository } from '../repositories/refrigeradorRepository';
 import { RefrigeradorDTO } from '../dto/RefrigeradorDto';
 import { Refrigerador } from '../../shared/models/refrigerador';
-import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors';
+import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors/customErrors';
 import { MarcaRefrigerador } from '../../shared/models/marcaRefrigerador';
 
 const refrigeradorRepository = new RefrigeradorRepository();
