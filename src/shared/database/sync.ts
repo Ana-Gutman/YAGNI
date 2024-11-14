@@ -17,8 +17,6 @@ import { ProductoEnvasado } from '../models/productoEnvasado';
 import { MedioPagoCliente } from '../models/medioPagoCliente';
 import { MarcaRefrigerador } from '../models/marcaRefrigerador';
 import { ProductoRefrigerador } from '../models/productoRefrigerador';
-import { CocinaLocal } from '../models/cocinaLocal';
-import { CocinaCamioneta } from '../models/cocinaCamioneta';
 
 const syncTables = async () => {
   try {
@@ -29,8 +27,6 @@ const syncTables = async () => {
       await Camioneta.sync();
       await Cocina.sync();
       await Local.sync();
-      await CocinaLocal.sync();
-      await CocinaCamioneta.sync();
       await MedioPago.sync();
       await MedioPagoCliente.sync();
       await Pedido.sync();
