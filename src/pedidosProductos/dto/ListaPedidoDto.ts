@@ -1,5 +1,5 @@
 export interface ListaPedidoDTO {
-    idCliente: number;
+    id_cliente: number;
     nombreCliente: string;
     fechaPedido: Date;
     horaRealizado: string;
@@ -11,9 +11,11 @@ export class ListaPedidosDeClienteDto{
     public id_cliente!: number;
     public fechaInicio!: Date;
     public fechaFin!: Date;
-    constructor(id_cliente: number, fechaInicio: Date, fechaFin: Date){
+    public estado?: 'Completo' | 'Incompleto';
+    constructor(id_cliente: number, fechaInicio: Date, fechaFin: Date, estado?: 'Completo' | 'Incompleto'){
         this.id_cliente = id_cliente;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
+        this.estado = estado;
     }
 }

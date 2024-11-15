@@ -39,4 +39,16 @@ export const listPedidosCliente= async (req: Request, res: Response, next: NextF
     } catch (error) {
       next(error);
     }
-  }
+}
+
+export const updatePedido = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    try {
+        const updatedPedido = await pedidoService.updatePedidoRetirado(parseInt(id), estado);
+        res.status(200).json(updatedPedido);
+    } catch (error) {
+        next(error);
+    }
+}

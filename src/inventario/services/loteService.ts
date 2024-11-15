@@ -1,5 +1,5 @@
 import { LoteRepository } from '../repositories/loteRepository';
-import { LoteDTO, LoteUpdateCantidadDto, LoteUpdateRetiroDto } from '../dto/LoteDto';
+import { LoteDTO, LoteUpdateRetiroDto } from '../dto/LoteDto';
 import { Lote } from '../../shared/models/lote';
 import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors/customErrors';
 import { ProductoEnvasado } from '../../shared/models/productoEnvasado';

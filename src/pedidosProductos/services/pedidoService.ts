@@ -1,7 +1,7 @@
 import { PedidoRepository } from '../repositories/pedidoRepository';
 import { PedidoDTO } from '../dto/PedidoDto';
 import { Pedido } from '../../shared/models/pedido';
-import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors/customErrors';
+import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors/customErrors';
 import { ProductoPedidoDTO } from '../dto/ProductoPedidoDto';
 import { LocalRepository } from '../../inventario/repositories/localRepository';
 import { publishPedidoNotification } from '../../inventario/queues/localPublisher';
@@ -72,19 +72,42 @@ export const getPedidoACocina = async (pedido: Pedido, productosPedido: Producto
 
 export const listarPedidosPorClienteYPeriodo = async (listaPedidoCli: ListaPedidosDeClienteDto): Promise<ListaPedidoDTO[]> => {
     try{
-        const { id_cliente, fechaInicio, fechaFin } = listaPedidoCli;
+        const { id_cliente, fechaInicio, fechaFin, estado } = listaPedidoCli;
         if (!id_cliente || !fechaInicio || !fechaFin) {
             console.log(id_cliente, fechaInicio, fechaFin);
             throw new MissingParameterError('Los parámetros id_cliente, fechaInicio y fechaFin son requeridos');
         }
-        const pedidos = await pedidoRepository.listarPedidosPorClienteYPeriodo(id_cliente, fechaInicio, fechaFin);
+        if (estado && estado !== 'Completo' && estado !== 'Incompleto') {
+            throw new InvalidValueError("estado", estado ,'El estado debe ser Completo o Incompleto');
+        }
+        const pedidos = await pedidoRepository.listarPedidosPorClienteYPeriodo(id_cliente, fechaInicio, fechaFin, estado);
         return pedidos;
     }
     catch (error: any) {
-        if (error instanceof MissingParameterError) {
+        if (error instanceof MissingParameterError || error instanceof InvalidValueError) {
             throw error;
         }
         throw new DatabaseError(`Error al listar pedidos: ${error.message}`);
     }
     
   }
+
+export const updatePedidoRetirado = async (id: number, estado: string): Promise<Pedido | null> => {
+    if (!id)
+        throw new MissingParameterError('El ID y es requerido');
+    console.log("estado", estado);
+    if (!estado || estado === '{}') throw new RequiredFieldError("El campo 'estado' es obligatorio");
+    if (estado !== 'Completo' && estado !== 'Incompleto') throw new InvalidValueError("estado", estado, 'El estado debe ser Completo o Incompleto');
+    try {
+        const pedido = await pedidoRepository.updateRetirado(id, estado);
+        if (!pedido) 
+            throw new NotFoundError(`El pedido a marcar como retirado con ID ${id} no se encuentra en la base de datos`);
+        return pedido;
+    } catch (error: any) {
+        if (error instanceof NotFoundError || error instanceof InvalidValueError || error instanceof MissingParameterError 
+            || error instanceof RequiredFieldError) {
+            throw error;  
+        }
+        throw new DatabaseError(`Error al obtener pedido con ID ${id}: ${error.message}`);
+    }
+}

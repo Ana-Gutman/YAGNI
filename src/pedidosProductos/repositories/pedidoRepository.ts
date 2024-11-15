@@ -8,20 +8,21 @@ import { Producto } from "../../shared/models/producto";
 import { PedidoDTO } from "../dto/PedidoDto";
 import { ProductoPedido } from "../../shared/models/productoPedido";
 import { ProductoPedidoDTO } from "../dto/ProductoPedidoDto";
+import { ListaPedidoDTO } from "../dto/ListaPedidoDto";
 
 // interface PedidoFilter {
 // }
 
 class PedidoRepository {
-    
+
     async findAll(): Promise<Pedido[]> {
         return Pedido.findAll();
     }
-  
+
     async findById(id: number): Promise<Pedido | null> {
         return await Pedido.findByPk(id);
     }
-  
+
     async create(pedidoDto: PedidoDTO): Promise<{ pedido: Pedido, productosPedido: ProductoPedidoDTO[] } | null> {
         const transaction = await sequelize.transaction();
         try {
@@ -45,13 +46,13 @@ class PedidoRepository {
             await ProductoPedido.bulkCreate(productosEnPedido, { transaction });
             await transaction.commit();
 
-            return {pedido: pedido, productosPedido: pedidoDto.productos};
-        } catch (error:any) {
+            return { pedido: pedido, productosPedido: pedidoDto.productos };
+        } catch (error: any) {
             await transaction.rollback();
             throw new Error(`Error al crear el pedido: ${error.message}`);
         }
     }
-    
+
     async checkExistence(id_cliente: number, id_local: number, id_medio_pago: number): Promise<boolean> {
         const cliente = await Cliente.findByPk(id_cliente);
         const local = await Local.findByPk(id_local);
@@ -63,7 +64,7 @@ class PedidoRepository {
         return true;
     }
 
-    async checkProductExistence(products: ProductoPedidoDTO[], transaction:Transaction): Promise<boolean> {
+    async checkProductExistence(products: ProductoPedidoDTO[], transaction: Transaction): Promise<boolean> {
         const productoIds = products.map((producto) => producto.id_producto);
         const productosExistentes = await Producto.findAll({
             where: { id_producto: productoIds },
@@ -74,40 +75,63 @@ class PedidoRepository {
         return (productosExistentes.length === productoIds.length);
     }
 
-    async listarPedidosPorClienteYPeriodo(idCliente: number, fechaInicio: Date, fechaFin: Date) {
-      const pedidos = await Pedido.findAll({
-      where: {
-        id_cliente: idCliente,
-        createdAt: {
-          [Op.between]: [fechaInicio, fechaFin],
-        },
-      },
-      include: [
-        {
-          model: Cliente,
-          attributes: ['nombre'],
-        },
-      ],
-    });
+    async listarPedidosPorClienteYPeriodo(id_cliente: number, fechaInicio: Date, fechaFin: Date, estado?: string): Promise<ListaPedidoDTO[]> {
+        const whereCondition: any = {
+            id_cliente,
+            createdAt: {
+                [Op.between]: [fechaInicio, fechaFin],
+            },
+        };
 
-    return pedidos.map((pedido) => {
-      const fechaPedido = pedido.createdAt;
-      const horaRealizado = fechaPedido.toISOString().split('T')[1].substring(0, 5);
-      const horaRetirado = pedido.retirado ? pedido.retirado.toISOString().split('T')[1].substring(0, 5) : null;
+        if (estado) {
+            whereCondition.estado = estado;
+        }
 
-      const tiempoTranscurrido = pedido.retirado
-        ? `${Math.floor((pedido.retirado.getTime() - fechaPedido.getTime()) / (1000 * 60))} minutos`
-        : null;
+        const pedidos = await Pedido.findAll({
+            where: whereCondition,
+            include: [
+                {
+                    model: Cliente,
+                    attributes: ['nombre'],
+                },
 
-      return {
-        idCliente: pedido.id_cliente,
-        nombreCliente: (pedido as any).Cliente.nombre, //getclientebyid?/Clientee.findByPk
-        fechaPedido,
-        horaRealizado,
-        horaRetirado,
-        tiempoTranscurrido,
-      };
-    });
+            ],
+        });
+
+        return this.mapPedidos(pedidos);
+    }
+
+    async mapPedidos(pedidos: Pedido[]): Promise<ListaPedidoDTO[]> {
+        return pedidos.map((pedido) => {
+            const fechaPedido = pedido.createdAt;
+            const horaRealizado = fechaPedido.toISOString().split('T')[1].substring(0, 5);
+            const horaRetirado = pedido.retirado ? pedido.retirado.toISOString().split('T')[1].substring(0, 5) : null;
+
+            const tiempoTranscurrido = pedido.retirado
+                ? `${Math.floor((pedido.retirado.getTime() - fechaPedido.getTime()) / (1000 * 60))} minutos`
+                : null;
+
+            return {
+                id_cliente: pedido.id_cliente,
+                nombreCliente: (pedido as any).Cliente.nombre, 
+                fechaPedido,
+                horaRealizado,
+                horaRetirado,
+                tiempoTranscurrido,
+                estado: pedido.estado,
+            };
+        });
+    }
+
+    async updateRetirado(id: number, estado: 'Completo' | 'Incompleto'): Promise<Pedido | null> {
+        const pedido = await Pedido.findByPk(id);
+        if (!pedido) {
+            return null;
+        }
+        pedido.estado = estado;
+        pedido.retirado = new Date();
+        await pedido.save();
+        return pedido;
     }
 
 
