@@ -28,11 +28,11 @@ const syncTables = async () => {
       await Producto.sync();
       await Camioneta.sync();
       await Cocina.sync();
+      await Local.sync();
       await CocinaLocal.sync();
       await CocinaCamioneta.sync();
       await MedioPago.sync();
       await MedioPagoCliente.sync();
-      await Local.sync();
       await Pedido.sync();
       await ProductoPedido.sync();
       await MarcaRefrigerador.sync();

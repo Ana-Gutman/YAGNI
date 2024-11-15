@@ -22,8 +22,8 @@ dotenv.config();
 const app = express();
 
 const main = async () => {
-  // await connectRedis(); 
-  // console.log('Redis conectado');
+  await connectRedis(); 
+  console.log('Redis conectado');
 
   await dbSync();
 
@@ -37,7 +37,7 @@ const main = async () => {
   app.use("/api", cocinaRoutes);  
   app.use("/api", refrigeradorRoutes);
   app.use('/api', lotesRoutes);
-  //app.use('/api', inventarioRoutes); 
+  app.use('/api/inventario', inventarioRoutes);
 
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     errorMiddleware(err, req, res, next);

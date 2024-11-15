@@ -4,9 +4,9 @@ import dotenv from 'dotenv';
 dotenv.config(); 
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME!,
-  process.env.DB_USER!,
-  process.env.DB_PASS!,
+  process.env.DB_NAME || 'obligatorio_arq',
+  process.env.DB_USER || 'root',
+  process.env.DB_PASS || 'secret',
   {
     host: process.env.DB_HOST!,
     dialect: process.env.DB_DIALECT ?? ("mysql" as any),

@@ -59,3 +59,35 @@ export const takeProductoFromRefrigerador = async (req: Request, res: Response, 
         next(error);
     }
 };
+
+export const generarOTP = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const idRefrigerador = req.params.idRefrigerador;
+        const otp = await refrigeradorService.generarOTP(idRefrigerador);
+        res.status(200).json({ otp });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const validarIngresoStock = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const idRefrigerador = req.params.idRefrigerador;
+        const { otp, productos } = req.body; // productos: [{id_producto, cantidad}]
+        const resultado = await refrigeradorService.validarIngresoStock(idRefrigerador, otp, productos);
+        res.status(200).json(resultado);
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+export const obtenerRefrigeradoresPorLocal = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { idLocal } = req.params;
+        const refrigeradores = await refrigeradorService.obtenerRefrigeradoresPorLocal(idLocal);
+        res.status(200).json(refrigeradores);
+      } catch (error) {
+        next(error);
+      }
+};
