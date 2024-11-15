@@ -40,26 +40,6 @@ export const deleteRefrigerador = async (req: Request, res: Response, next: Next
     }
 };
 
-export const putProductoInRefrigerador = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { id_refrigerador, id_producto, cantidad } = req.body;
-        await refrigeradorService.putProductoInRefrigerador(id_refrigerador, id_producto, cantidad);
-        res.status(200).json({ message: `Producto con ID ${id_producto} agregado al refrigerador con ID ${id_refrigerador}` });
-    } catch (error) {
-        next(error);
-    }
-};
-
-export const takeProductoFromRefrigerador = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { id_refrigerador, id_producto, cantidad } = req.body;
-        await refrigeradorService.takeProductoFromRefrigerador(id_refrigerador, id_producto, cantidad);
-        res.status(200).json({ message: `Producto con ID ${id_producto} retirado del refrigerador con ID ${id_refrigerador}` });
-    } catch (error) {
-        next(error);
-    }
-};
-
 export const generarOTP = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const idRefrigerador = req.params.idRefrigerador;
@@ -91,3 +71,18 @@ export const obtenerRefrigeradoresPorLocal = async (req: Request, res: Response,
         next(error);
       }
 };
+
+
+export const modificarInventarioConOTP = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const idRefrigerador = req.params.idRefrigerador;
+      const { otp, productos, operacion } = req.body; // operacion: 'agregar' o 'retirar'
+  
+      await refrigeradorService.modificarInventarioConOTP(idRefrigerador, otp, productos, operacion);
+      res.status(200).json({ message: `Stock ${operacion}do exitosamente` });
+    } catch (error) {
+      next(error);
+    }
+  };
+  
+  

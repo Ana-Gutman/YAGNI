@@ -39,3 +39,10 @@ export class GeneralError extends Error {
         this.name = "GeneralError";
     }
 }
+
+export class InsufficientStockError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = "InsufficientStockError";
+    }
+}

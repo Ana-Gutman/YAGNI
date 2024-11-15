@@ -5,6 +5,7 @@ import { ProductoRefrigerador } from "../../shared/models/productoRefrigerador";
 import { Refrigerador } from "../../shared/models/refrigerador";
 import { RefrigeradorDTO } from "../dto/RefrigeradorDto";
 import { ProductoDTO } from "../dto/ProductoDto"; // DTO para manejar productos en las actualizaciones
+import { InsufficientStockError, NotFoundError } from "../../shared/errors/customErrors";
 
 class RefrigeradorRepository {
     async findAll(): Promise<Refrigerador[]> {
@@ -38,48 +39,6 @@ class RefrigeradorRepository {
         });
     }
 
-    async putProductoInRefrigerador(id_refrigerador: number, id_producto: number, cantidad: number): Promise<ProductoRefrigerador | null> {
-        const producto = await Producto.findByPk(id_producto);
-        const refrigerador = await Refrigerador.findByPk(id_refrigerador);
-        if (!producto || !refrigerador) return null;
-
-        let productoEnRefrigerador = await ProductoRefrigerador.findOne({
-            where: { id_refrigerador, id_producto },
-        });
-
-        if (!productoEnRefrigerador) {
-            productoEnRefrigerador = await ProductoRefrigerador.create({
-                id_refrigerador,
-                id_producto,
-                cantidad,
-            });
-        } else {
-            productoEnRefrigerador.cantidad += cantidad;
-            await productoEnRefrigerador.save();
-        }
-
-        return productoEnRefrigerador;
-    }
-
-    async takeProductoFromRefrigerador(id_refrigerador: number, id_producto: number, cantidad: number): Promise<ProductoRefrigerador | null> {
-        const producto = await Producto.findByPk(id_producto);
-        const refrigerador = await Refrigerador.findByPk(id_refrigerador);
-        if (!producto || !refrigerador) return null;
-
-        const productoEnRefrigerador = await ProductoRefrigerador.findOne({
-            where: { id_refrigerador, id_producto },
-        });
-        if (!productoEnRefrigerador) return null;
-
-        if (productoEnRefrigerador.cantidad < cantidad) {
-            cantidad = productoEnRefrigerador.cantidad; // Ajuste a la cantidad máxima disponible
-        }
-
-        productoEnRefrigerador.cantidad -= cantidad;
-        await productoEnRefrigerador.save();
-        return productoEnRefrigerador;
-    }
-
     async findByLocalId(idLocal: string): Promise<Refrigerador[]> {
         return await Refrigerador.findAll({
             where: { id_local: idLocal },
@@ -95,7 +54,6 @@ class RefrigeradorRepository {
             let productoEnRefrigerador = await ProductoRefrigerador.findOne({
                 where: { id_refrigerador: idRefrigerador, id_producto },
             });
-            console.log(`idRefrigerador: ${idRefrigerador}`);
 
             if (!productoEnRefrigerador) {
                 await ProductoRefrigerador.create({
@@ -109,6 +67,30 @@ class RefrigeradorRepository {
             }
         }
     }
+
+
+    async retirarInventario(idRefrigerador: string, productos: ProductoDTO[]): Promise<void> {
+        for (const producto of productos) {
+          const { id_producto, cantidad } = producto;
+      
+          const productoEnRefrigerador = await ProductoRefrigerador.findOne({
+            where: { id_refrigerador: idRefrigerador, id_producto },
+          });
+      
+          if (!productoEnRefrigerador) {
+            throw new NotFoundError(`El producto con ID ${id_producto} no se encuentra en el refrigerador`);
+          }
+      
+          if (productoEnRefrigerador.cantidad < cantidad) {
+            throw new InsufficientStockError(`Stock insuficiente para el producto con ID ${id_producto}`);
+          }
+      
+          productoEnRefrigerador.cantidad -= cantidad;
+          await productoEnRefrigerador.save();
+        }
+      }
+      
+    
 }
 
 export { RefrigeradorRepository };
