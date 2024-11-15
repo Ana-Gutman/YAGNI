@@ -19,12 +19,6 @@ export class LoteDTO {
     }
 }
 
-export class LoteUpdateCantidadDto{
-    public cantidad!: number;
-    constructor(cantidad: number) {
-        this.cantidad = cantidad;
-    }
-}
 
 export class LoteUpdateRetiroDto{
     public fecha_retirado!: Date;
