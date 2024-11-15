@@ -5,6 +5,9 @@ import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError
 import { ProductoPedidoDTO } from '../dto/ProductoPedidoDto';
 import { LocalRepository } from '../../inventario/repositories/localRepository';
 import { publishPedidoNotification } from '../../inventario/queues/localPublisher';
+import { ListaPedidoDTO, ListaPedidosDeClienteDto } from '../dto/ListaPedidoDto';
+import { Op } from 'sequelize';
+import { Cliente } from '../../shared/models/cliente';
 
 const pedidoRepository = new PedidoRepository();
 const localRepository = new LocalRepository();
@@ -67,3 +70,21 @@ export const getPedidoACocina = async (pedido: Pedido, productosPedido: Producto
     }));
 }
 
+export const listarPedidosPorClienteYPeriodo = async (listaPedidoCli: ListaPedidosDeClienteDto): Promise<ListaPedidoDTO[]> => {
+    try{
+        const { id_cliente, fechaInicio, fechaFin } = listaPedidoCli;
+        if (!id_cliente || !fechaInicio || !fechaFin) {
+            console.log(id_cliente, fechaInicio, fechaFin);
+            throw new MissingParameterError('Los parámetros id_cliente, fechaInicio y fechaFin son requeridos');
+        }
+        const pedidos = await pedidoRepository.listarPedidosPorClienteYPeriodo(id_cliente, fechaInicio, fechaFin);
+        return pedidos;
+    }
+    catch (error: any) {
+        if (error instanceof MissingParameterError) {
+            throw error;
+        }
+        throw new DatabaseError(`Error al listar pedidos: ${error.message}`);
+    }
+    
+  }

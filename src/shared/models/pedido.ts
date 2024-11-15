@@ -8,6 +8,7 @@ export class Pedido extends Model {
   public id_local!: number;
   public retirado!: Date | null;
   public estado!: 'Iniciado'| 'Completo' | 'Incompleto';
+  public createdAt!: Date;
 }
 
 Pedido.init(
@@ -38,6 +39,10 @@ Pedido.init(
     },
     estado: {
       type: DataTypes.ENUM('Iniciado','Completo', 'Incompleto'),
+      allowNull: false,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
       allowNull: false,
     },
   },

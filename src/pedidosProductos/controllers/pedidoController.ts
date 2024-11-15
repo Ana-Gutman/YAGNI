@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import * as pedidoService from "../services/pedidoService";
+import { ListaPedidosDeClienteDto } from "../dto/ListaPedidoDto";
 
 export const getPedidos = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -29,3 +30,13 @@ export const createPedido = async (req: Request, res: Response, next: NextFuncti
         next(error);
     }
 };
+
+export const listPedidosCliente= async (req: Request, res: Response, next: NextFunction) => {
+    const listaPedidoCli : ListaPedidosDeClienteDto = req.body;
+    try {
+      const pedidos = await pedidoService.listarPedidosPorClienteYPeriodo(listaPedidoCli);
+        res.status(200).json(pedidos);
+    } catch (error) {
+      next(error);
+    }
+  }

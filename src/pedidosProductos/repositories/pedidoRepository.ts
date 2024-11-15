@@ -1,4 +1,4 @@
-import { Transaction } from "sequelize";
+import { Op, Transaction } from "sequelize";
 import sequelize from "../../shared/database/database";
 import { Cliente } from "../../shared/models/cliente";
 import { Local } from "../../shared/models/local";
@@ -13,6 +13,7 @@ import { ProductoPedidoDTO } from "../dto/ProductoPedidoDto";
 // }
 
 class PedidoRepository {
+    
     async findAll(): Promise<Pedido[]> {
         return Pedido.findAll();
     }
@@ -71,6 +72,42 @@ class PedidoRepository {
         });
 
         return (productosExistentes.length === productoIds.length);
+    }
+
+    async listarPedidosPorClienteYPeriodo(idCliente: number, fechaInicio: Date, fechaFin: Date) {
+      const pedidos = await Pedido.findAll({
+      where: {
+        id_cliente: idCliente,
+        createdAt: {
+          [Op.between]: [fechaInicio, fechaFin],
+        },
+      },
+      include: [
+        {
+          model: Cliente,
+          attributes: ['nombre'],
+        },
+      ],
+    });
+
+    return pedidos.map((pedido) => {
+      const fechaPedido = pedido.createdAt;
+      const horaRealizado = fechaPedido.toISOString().split('T')[1].substring(0, 5);
+      const horaRetirado = pedido.retirado ? pedido.retirado.toISOString().split('T')[1].substring(0, 5) : null;
+
+      const tiempoTranscurrido = pedido.retirado
+        ? `${Math.floor((pedido.retirado.getTime() - fechaPedido.getTime()) / (1000 * 60))} minutos`
+        : null;
+
+      return {
+        idCliente: pedido.id_cliente,
+        nombreCliente: (pedido as any).Cliente.nombre, //getclientebyid?/Clientee.findByPk
+        fechaPedido,
+        horaRealizado,
+        horaRetirado,
+        tiempoTranscurrido,
+      };
+    });
     }
 
 
