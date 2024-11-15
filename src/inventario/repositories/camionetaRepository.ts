@@ -1,10 +1,6 @@
 import { Camioneta } from "../../shared/models/camioneta";
 import { CamionetaDTO } from "../dto/CamionetaDto";
 
-// interface CamionetaFilter {
-
-// }
-
 class CamionetaRepository {
     async findAll(): Promise<Camioneta[]> {
         return Camioneta.findAll();

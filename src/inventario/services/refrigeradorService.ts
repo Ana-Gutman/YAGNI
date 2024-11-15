@@ -2,11 +2,8 @@ import { RefrigeradorRepository } from '../repositories/refrigeradorRepository';
 import { RefrigeradorDTO } from '../dto/RefrigeradorDto';
 import { Refrigerador } from '../../shared/models/refrigerador';
 import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors/customErrors';
-import { MarcaRefrigerador } from '../../shared/models/marcaRefrigerador';
-import OTPGenerator from '../../utils/OTPGenerator'; // Importamos el generador de OTP
-import { ProductoDTO } from '../dto/ProductoDto'; // Asegúrate de tener este DTO
-import redisClient from '../../shared/database/redis';
-import { ProductoRefrigerador } from '../../shared/models/productoRefrigerador';
+import OTPGenerator from '../../utils/OTPGenerator'; 
+import { ProductoDTO } from '../dto/ProductoDto'; 
 
 const refrigeradorRepository = new RefrigeradorRepository();
 
@@ -66,7 +63,6 @@ export const deleteRefrigerador = async (id: number): Promise<void> => {
     }
 };
 
-// Nueva funcionalidad: Generar OTP
 export const generarOTP = async (idRefrigerador: string): Promise<string> => {
     if (!idRefrigerador) {
         throw new MissingParameterError('El ID del refrigerador es requerido');

@@ -4,7 +4,7 @@ import { Producto } from "../../shared/models/producto";
 import { ProductoRefrigerador } from "../../shared/models/productoRefrigerador";
 import { Refrigerador } from "../../shared/models/refrigerador";
 import { RefrigeradorDTO } from "../dto/RefrigeradorDto";
-import { ProductoDTO } from "../dto/ProductoDto"; // DTO para manejar productos en las actualizaciones
+import { ProductoDTO } from "../dto/ProductoDto"; 
 import { InsufficientStockError, NotFoundError } from "../../shared/errors/customErrors";
 
 class RefrigeradorRepository {
@@ -46,7 +46,6 @@ class RefrigeradorRepository {
         });
     }
 
-    // Nueva funcionalidad: Actualizar inventario de un refrigerador con una lista de productos
     async actualizarInventario(idRefrigerador: string, productos: ProductoDTO[]): Promise<void> {
         for (const producto of productos) {
             const { id_producto, cantidad } = producto;
@@ -57,7 +56,7 @@ class RefrigeradorRepository {
 
             if (!productoEnRefrigerador) {
                 await ProductoRefrigerador.create({
-                    id_refrigerador: idRefrigerador,  // Este valor no debe ser null
+                    id_refrigerador: idRefrigerador, 
                     id_producto,
                     cantidad,
                 });

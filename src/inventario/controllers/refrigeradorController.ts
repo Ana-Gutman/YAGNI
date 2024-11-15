@@ -53,7 +53,7 @@ export const generarOTP = async (req: Request, res: Response, next: NextFunction
 export const validarIngresoStock = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const idRefrigerador = req.params.idRefrigerador;
-        const { otp, productos } = req.body; // productos: [{id_producto, cantidad}]
+        const { otp, productos } = req.body; 
         const resultado = await refrigeradorService.validarIngresoStock(idRefrigerador, otp, productos);
         res.status(200).json(resultado);
     } catch (error) {
@@ -76,7 +76,7 @@ export const obtenerRefrigeradoresPorLocal = async (req: Request, res: Response,
 export const modificarInventarioConOTP = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const idRefrigerador = req.params.idRefrigerador;
-      const { otp, productos, operacion } = req.body; // operacion: 'agregar' o 'retirar'
+      const { otp, productos, operacion } = req.body; 
   
       await refrigeradorService.modificarInventarioConOTP(idRefrigerador, otp, productos, operacion);
       res.status(200).json({ message: `Stock ${operacion}do exitosamente` });
