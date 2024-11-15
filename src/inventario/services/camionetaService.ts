@@ -1,7 +1,7 @@
 import { CamionetaRepository } from '../repositories/camionetaRepository';
 import { CamionetaDTO } from '../dto/CamionetaDto';
 import { Camioneta } from '../../shared/models/camioneta';
-import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors';
+import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors/customErrors';
 
 const camionetaRepository = new CamionetaRepository();
 
@@ -76,3 +76,4 @@ export const deleteCamioneta = async (id: number): Promise<void> => {
         throw new DatabaseError(`Error al eliminar camioneta con ID ${id}: ${error.message}`);
     }
 };
+

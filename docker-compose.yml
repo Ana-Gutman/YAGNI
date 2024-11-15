@@ -23,6 +23,18 @@ services:
     networks:
       - obligatorio_arq
 
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"  
+      - "15672:15672"  
+    networks:
+      - obligatorio_arq
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: secret
+
   app:
     build:
       context: .
@@ -36,9 +48,13 @@ services:
       - REDIS_HOST=redis_service
       - PORT=3001
       - NODE_ENV=development
+    depends_on:
+      - mysql-db
+      - redis_service
 
 volumes:
   mysql-data:
 
 networks:
   obligatorio_arq:
+    driver: bridge

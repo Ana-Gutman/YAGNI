@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../database/database';
 
-export class Local extends Model {
+export class  Local extends Model {
   public id_local!: number;
   public nombre!: string;
   public direccion!: string;

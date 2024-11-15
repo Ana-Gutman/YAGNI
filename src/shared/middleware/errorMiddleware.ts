@@ -1,4 +1,4 @@
-import { MissingParameterError, InvalidValueError, RequiredFieldError, DatabaseError, NotFoundError, GeneralError } from '../errors';
+import { MissingParameterError, InvalidValueError, RequiredFieldError, DatabaseError, NotFoundError, GeneralError } from '../errors/customErrors';
 import { Request, Response, NextFunction } from 'express';
 
 export const errorMiddleware = (

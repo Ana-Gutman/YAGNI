@@ -14,6 +14,7 @@ ProductoRefrigerador.init(
     id_refrigerador: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: Refrigerador,  
         key: 'id_refrigerador',
@@ -22,6 +23,7 @@ ProductoRefrigerador.init(
     id_producto: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: Producto,  
         key: 'id_producto',

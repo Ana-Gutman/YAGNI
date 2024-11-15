@@ -1,7 +1,7 @@
 import { RefrigeradorRepository } from '../repositories/refrigeradorRepository';
 import { RefrigeradorDTO } from '../dto/RefrigeradorDto';
 import { Refrigerador } from '../../shared/models/refrigerador';
-import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors';
+import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors/customErrors';
 import { MarcaRefrigerador } from '../../shared/models/marcaRefrigerador';
 import OTPGenerator from '../../utils/OTPGenerator'; // Importamos el generador de OTP
 import { ProductoDTO } from '../dto/ProductoDto'; // Asegúrate de tener este DTO
