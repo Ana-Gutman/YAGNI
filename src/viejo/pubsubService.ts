@@ -11,7 +11,6 @@ export const subscribeToProductReady = async () => {
     if (msg !== null) {
       const product = JSON.parse(msg.content.toString());
       console.log(`Producto listo recibido: ${product.nombre}`);
-      // Procesar el producto recibido en logística
       channel.ack(msg);
     }
   });

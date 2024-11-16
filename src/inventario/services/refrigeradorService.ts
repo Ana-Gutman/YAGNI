@@ -2,7 +2,8 @@ import { RefrigeradorRepository } from '../repositories/refrigeradorRepository';
 import { RefrigeradorDTO } from '../dto/RefrigeradorDto';
 import { Refrigerador } from '../../shared/models/refrigerador';
 import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors/customErrors';
-import { MarcaRefrigerador } from '../../shared/models/marcaRefrigerador';
+import OTPGenerator from '../../utils/OTPGenerator'; 
+import { ProductoDTO } from '../dto/ProductoDto'; 
 
 const refrigeradorRepository = new RefrigeradorRepository();
 
@@ -28,22 +29,6 @@ export const getRefrigeradorById = async (id: number): Promise<Refrigerador | nu
         throw new DatabaseError(`Error al obtener refrigerador con ID ${id}: ${error.message}`);
     }
 };
-
-// export const getCodigoSegunMarca = async (marca: string): Promise<MarcaRefrigerador | null> => { 
-//     if (!marca) throw new MissingParameterError(' del refrigerador es requerido');
-//     try {
-//         const marcaRefrigerador = await refrigeradorRepository.findByMarca(marca);
-//         if (!marcaRefrigerador)
-//             throw new NotFoundError(`La marca con nombre ${marca} no se encuentra en la base de datos`);
-//         return marcaRefrigerador;
-//     } catch (error: any) {
-//         if (error instanceof NotFoundError) {
-//             throw error;
-//         }
-//         throw new DatabaseError(`Error al obtener marca ${marca}: ${error.message}`);
-//     }
-// };
-
 
 export const createRefrigerador = async (refrigeradorDto: RefrigeradorDTO): Promise<Refrigerador> => {
     if (Object.keys(refrigeradorDto).length === 0) {
@@ -78,38 +63,51 @@ export const deleteRefrigerador = async (id: number): Promise<void> => {
     }
 };
 
-export const putProductoInRefrigerador = async (id_refrigerador: number, id_producto: number, cantidad: number): Promise<void> => {
-    if (!id_refrigerador || !id_producto || !cantidad) {
-        throw new MissingParameterError('Los IDs del refrigerador y producto, y la cantidad son requeridos');
+export const generarOTP = async (idRefrigerador: string): Promise<string> => {
+    if (!idRefrigerador) {
+        throw new MissingParameterError('El ID del refrigerador es requerido');
     }
-    if (cantidad <= 0) {
-        throw new InvalidValueError('cantidad', cantidad.toString());
-    }
-    try {
-        const productoEnRefrigerador = await refrigeradorRepository.putProductoInRefrigerador(id_refrigerador, id_producto, cantidad);
-        if (!productoEnRefrigerador) throw new NotFoundError(`No existe el producto con ID ${id_producto} en el refrigerador con ID ${id_refrigerador}`);
-    } catch (error: any) {
-        if (error instanceof NotFoundError) {
-            throw error;
-        }
-        throw new DatabaseError(`Error al agregar producto al refrigerador: ${error.message}`);
-    }
-}
+    return await OTPGenerator.generateOTP(idRefrigerador);
+};
 
-export const takeProductoFromRefrigerador = async (id_refrigerador: number, id_producto: number, cantidad: number): Promise<void> => {
-    if (!id_refrigerador || !id_producto || !cantidad) {
-        throw new MissingParameterError('Los IDs del refrigerador y producto, y la cantidad son requeridos');
+export const validarIngresoStock = async (idRefrigerador: string, otp: string, productos: any[]): Promise<void> => {
+    if (!idRefrigerador || !otp || !productos || productos.length === 0) {
+        throw new MissingParameterError('El ID del refrigerador, OTP y productos son requeridos');
     }
-    if (cantidad <= 0) {
-        throw new InvalidValueError('cantidad', cantidad.toString());
+
+    const isValid = await OTPGenerator.validateOTP(idRefrigerador, otp);
+    if (!isValid) {
+        throw new InvalidValueError('OTP inválido o expirado', otp);
     }
-    try {
-        const productoEnRefrigerador = await refrigeradorRepository.takeProductoFromRefrigerador(id_refrigerador, id_producto, cantidad);
-        if (!productoEnRefrigerador) throw new NotFoundError(`No existe el producto con ID ${id_producto} en el refrigerador con ID ${id_refrigerador}`);
-    } catch (error: any) {
-        if (error instanceof NotFoundError) {
-            throw error;
-        }
-        throw new DatabaseError(`Error al quitar producto del refrigerador: ${error.message}`);
+
+    await refrigeradorRepository.actualizarInventario(idRefrigerador, productos);
+};
+
+export const modificarInventarioConOTP = async (
+    idRefrigerador: string,
+    otp: string,
+    productos: ProductoDTO[],
+    operacion: 'agregar' | 'retirar'
+  ): Promise<void> => {
+    if (!idRefrigerador || !otp || !productos || productos.length === 0) {
+      throw new MissingParameterError('El ID del refrigerador, OTP y productos son requeridos');
     }
-}
+  
+    const isValid = await OTPGenerator.validateOTP(idRefrigerador, otp);
+    if (!isValid) {
+      throw new InvalidValueError('OTP inválido o expirado', otp);
+    }
+  
+    if (operacion === 'agregar') {
+      await refrigeradorRepository.actualizarInventario(idRefrigerador, productos);
+    } else {
+      await refrigeradorRepository.retirarInventario(idRefrigerador, productos);
+    }
+  };
+  
+
+
+export const obtenerRefrigeradoresPorLocal = async (idLocal: string) => {
+    if (!idLocal) throw new Error('El ID del local es requerido.');
+    return await refrigeradorRepository.findByLocalId(idLocal);
+};

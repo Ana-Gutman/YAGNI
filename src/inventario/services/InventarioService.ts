@@ -8,7 +8,7 @@ class InventarioService {
         const stateInTransit = await redisClient.sIsMember('transit_products', productId);
         if (stateInTransit) return 'En Tránsito';
     
-        return 'En Cocina'; // Si no está en ningún otro estado
+        return 'En Cocina';
       }
     
 

@@ -11,7 +11,6 @@ const pedidoQueue = new Bull('pedido', {
 pedidoQueue.process(async (job) => {
   const { data } = job;
   console.log(`Procesando pedido: ${JSON.stringify(data)}`);
-  // Aquí procesas el pedido, validas stock, etc.
 });
 
 export default pedidoQueue;
