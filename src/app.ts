@@ -29,7 +29,7 @@ const main = async () => {
   console.log('Redis conectado');
 
   await dbSync();
-  await loadEntidades();
+  //await loadEntidades();
   app.use(express.json());
   app.use("/api", usuarioRoutes);
   app.use("/api", productoRoutes);
