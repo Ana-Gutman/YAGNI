@@ -25,11 +25,11 @@ dotenv.config();
 const app = express();
 
 const main = async () => {
-  await connectRedis(); 
-  console.log('Redis conectado');
+  //await connectRedis(); 
+  //console.log('Redis conectado');
 
   await dbSync();
-  //await loadEntidades();
+  await loadEntidades();
   app.use(express.json());
   app.use("/api", usuarioRoutes);
   app.use("/api", productoRoutes);

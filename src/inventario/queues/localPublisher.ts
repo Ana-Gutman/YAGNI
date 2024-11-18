@@ -1,5 +1,5 @@
 import amqp from 'amqplib';
-import { ActualCocina, siguienteCocina } from '../config';
+import { LocalRepository } from '../repositories/localRepository';
 
 export const publishPedidoNotification = async (productosPedido: {id_producto: number; cantidad: number;}[], id_local: number) => {
   const connection = await amqp.connect('amqp://user:secret@localhost:5672');
@@ -7,12 +7,19 @@ export const publishPedidoNotification = async (productosPedido: {id_producto: n
   const exchange = 'exchange_pedidos';
 
   await channel.assertExchange(exchange, 'direct', { durable: true });
-  const routingKey = `cocina.${ActualCocina}`; 
+
+  const localRepository = new LocalRepository();
+  const cocina = await localRepository.getCocinaDeLocal(id_local);
+  if (!cocina) {
+    throw new Error(`No se encontró la cocina del local ${id_local}`);
+  }
+  const id_cocina = cocina.id_cocina;
+  const routingKey = `cocina.${id_cocina}`; 
+  
   channel.publish(exchange, routingKey, Buffer.from(JSON.stringify({productosPedido, id_local})));
   
   console.log(`Publicado nuevo pedido para el local ${id_local}`);
   
-  await siguienteCocina();
   await channel.close();
   await connection.close();
 };

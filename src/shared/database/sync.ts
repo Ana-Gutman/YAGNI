@@ -17,6 +17,8 @@ import { ProductoEnvasado } from '../models/productoEnvasado';
 import { MedioPagoCliente } from '../models/medioPagoCliente';
 import { MarcaRefrigerador } from '../models/marcaRefrigerador';
 import { ProductoRefrigerador } from '../models/productoRefrigerador';
+import { CocinaLocal } from '../models/cocinaLocal';
+import { CocinaCamioneta } from '../models/cocinaCamioneta';
 
 const syncTables = async () => {
   try {
@@ -38,6 +40,8 @@ const syncTables = async () => {
       await LogError.sync();
       await ProductoEnvasado.sync();
       await ProductoRefrigerador.sync();
+      await CocinaLocal.sync();
+      await CocinaCamioneta.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }
   } catch (error) {
