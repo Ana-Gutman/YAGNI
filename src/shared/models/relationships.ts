@@ -14,8 +14,18 @@ import { ProductoEnvasado } from './productoEnvasado';
 import { MedioPagoCliente } from './medioPagoCliente';
 import { MarcaRefrigerador } from './marcaRefrigerador';
 import { ProductoRefrigerador } from './productoRefrigerador';
+import { CocinaLocal } from './cocinaLocal';
+import { CocinaCamioneta } from './cocinaCamioneta';
 
 export const setRelationships = async () => {
+  Cocina.hasMany(CocinaLocal, { foreignKey: 'id_cocina' });
+  Local.hasOne(CocinaLocal, { foreignKey: 'id_local' });
+  CocinaLocal.belongsTo(Cocina, { foreignKey: 'id_cocina' });
+  CocinaLocal.belongsTo(Local, { foreignKey: 'id_local' });
+
+  Cocina.belongsToMany(Camioneta, { through: CocinaCamioneta, foreignKey: 'id_cocina' });
+  Camioneta.belongsToMany(Cocina, { through: CocinaCamioneta, foreignKey: 'id_camioneta' });
+  
   Local.hasMany(Refrigerador, { foreignKey: 'id_local' });
   Refrigerador.belongsTo(Local, { foreignKey: 'id_local' });
 

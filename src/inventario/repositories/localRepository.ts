@@ -1,3 +1,5 @@
+import { Cocina } from "../../shared/models/cocina";
+import { CocinaLocal } from "../../shared/models/cocinaLocal";
 import { Local } from "../../shared/models/local";
 import { ProductoRefrigerador } from "../../shared/models/productoRefrigerador";
 import { Refrigerador } from "../../shared/models/refrigerador";
@@ -62,6 +64,14 @@ class LocalRepository {
             throw error;
         }
     }
+
+    async getCocinaDeLocal(id_local: number) {
+      return await CocinaLocal.findOne({
+          where: { id_local },
+          include: [{ model: Cocina }],
+      }
+    );
+  }
 }
 
 export { LocalRepository };
