@@ -8,4 +8,5 @@ router.post("/locales", localController.createLocal);
 router.put("/locales/:id", localController.updateLocal);
 router.delete("/locales/:id", localController.deleteLocal);
 
+
 export default router;

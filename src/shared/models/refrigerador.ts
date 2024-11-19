@@ -1,5 +1,6 @@
-import { BelongsToGetAssociationMixin, BelongsToManyAddAssociationMixin, DataTypes, Model } from 'sequelize';
+import { BelongsToManyAddAssociationMixin, DataTypes, Model, BelongsToGetAssociationMixin } from 'sequelize';
 import sequelize from '../database/database';
+import { ProductoRefrigerador } from './productoRefrigerador';
 import { Producto } from './producto';
 import { MarcaRefrigerador } from './marcaRefrigerador';
 
