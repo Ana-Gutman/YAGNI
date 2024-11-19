@@ -4,6 +4,10 @@ import { Refrigerador } from '../../shared/models/refrigerador';
 import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors/customErrors';
 import OTPGenerator from '../../utils/OTPGenerator'; 
 import { ProductoDTO } from '../dto/ProductoDto'; 
+import { Pedido } from '../../shared/models/pedido';
+import { ProductoPedido } from '../../shared/models/productoPedido';
+import { ProductoRefrigerador } from '../../shared/models/productoRefrigerador';
+import { enviarEmail } from '../../shared/services/emailService';
 
 const refrigeradorRepository = new RefrigeradorRepository();
 
@@ -67,8 +71,15 @@ export const generarOTP = async (idRefrigerador: string): Promise<string> => {
     if (!idRefrigerador) {
         throw new MissingParameterError('El ID del refrigerador es requerido');
     }
-    return await OTPGenerator.generateOTP(idRefrigerador);
+
+    const otp = await OTPGenerator.generateOTP(idRefrigerador);
+
+    const email = 'federicacdoglio@gmail.com'; 
+    await enviarEmail(email, 'Tu OTP para Refrigerador', `Tu OTP es: ${otp}`);
+
+    return otp;
 };
+
 
 export const validarIngresoStock = async (idRefrigerador: string, otp: string, productos: any[]): Promise<void> => {
     if (!idRefrigerador || !otp || !productos || productos.length === 0) {
@@ -106,8 +117,62 @@ export const modificarInventarioConOTP = async (
   };
   
 
+  export const getRefrigeradoresPorPedido = async (idLocal: number, idPedido: number) => {
+    const pedido = await Pedido.findOne({
+        where: { id_pedido: idPedido, id_local: idLocal },
+    });
+
+    if (!pedido) {
+        throw new Error(`El pedido ${idPedido} no pertenece al local ${idLocal}`);
+    }
+
+    const productosPedido = await pedido.getProductoPedidos({ attributes: ["id_producto"] });
+    const productosIds = productosPedido.map((pp) => pp.id_producto);
+
+    const refrigeradores = await Refrigerador.findAll({
+        where: { id_local: idLocal },
+        include: [
+            {
+                model: ProductoRefrigerador,
+                where: { id_producto: productosIds },
+                attributes: [],
+            },
+        ],
+        attributes: ["id_refrigerador", "marca_nombre"],
+        group: ["Refrigerador.id_refrigerador"],
+    });
+
+    return refrigeradores;
+};
 
 export const obtenerRefrigeradoresPorLocal = async (idLocal: string) => {
     if (!idLocal) throw new Error('El ID del local es requerido.');
     return await refrigeradorRepository.findByLocalId(idLocal);
+};
+
+
+export const validarOTP = async (idRefrigerador: string, otp: string): Promise<boolean> => {
+    if (!idRefrigerador || !otp) {
+        throw new MissingParameterError('El ID del refrigerador y el OTP son requeridos');
+    }
+
+    const isValid = await OTPGenerator.validateOTP(idRefrigerador, otp);
+    return isValid;
+};
+
+
+export const modificarInventario = async (
+    idRefrigerador: string,
+    productos: ProductoDTO[],
+    operacion: 'agregar' | 'retirar'
+): Promise<void> => {
+    if (!idRefrigerador || !productos || productos.length === 0) {
+        throw new MissingParameterError('El ID del refrigerador y productos son requeridos');
+    }
+
+    if (operacion === 'agregar') {
+        await refrigeradorRepository.actualizarInventario(idRefrigerador, productos);
+    } else {
+        await refrigeradorRepository.retirarInventario(idRefrigerador, productos);
+    }
 };

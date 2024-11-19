@@ -61,6 +61,21 @@ export const validarIngresoStock = async (req: Request, res: Response, next: Nex
     }
 };
 
+export const obtenerRefrigeradoresPorPedido = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const idLocal = parseInt(req.params.idLocal);
+        const idPedido = parseInt(req.params.idPedido);
+
+        if (isNaN(idLocal) || isNaN(idPedido)) {
+            return res.status(400).json({ error: "Los IDs deben ser números válidos" });
+        }
+
+        const refrigeradores = await refrigeradorService.getRefrigeradoresPorPedido(idLocal, idPedido);
+        res.status(200).json(refrigeradores);
+    } catch (error) {
+        next(error);
+    }
+};
 
 export const obtenerRefrigeradoresPorLocal = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -73,16 +88,32 @@ export const obtenerRefrigeradoresPorLocal = async (req: Request, res: Response,
 };
 
 
-export const modificarInventarioConOTP = async (req: Request, res: Response, next: NextFunction) => {
+export const modificarInventario = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const idRefrigerador = req.params.idRefrigerador;
-      const { otp, productos, operacion } = req.body; 
-  
-      await refrigeradorService.modificarInventarioConOTP(idRefrigerador, otp, productos, operacion);
-      res.status(200).json({ message: `Stock ${operacion}do exitosamente` });
+        const idRefrigerador = req.params.idRefrigerador;
+        const { productos, operacion } = req.body; 
+
+        await refrigeradorService.modificarInventario(idRefrigerador, productos, operacion);
+        res.status(200).json({ message: `Stock ${operacion}do exitosamente` });
     } catch (error) {
-      next(error);
+        next(error);
     }
-  };
-  
-  
+};
+
+
+
+  export const validarOTP = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const idRefrigerador = req.params.idRefrigerador;
+        const { otp } = req.body;
+
+        const isValid = await refrigeradorService.validarOTP(idRefrigerador, otp);
+        if (isValid) {
+            res.status(200).json({ message: 'OTP válido' });
+        } else {
+            res.status(400).json({ message: 'OTP inválido o expirado' });
+        }
+    } catch (error) {
+        next(error);
+    }
+};
