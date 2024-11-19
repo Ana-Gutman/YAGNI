@@ -39,7 +39,8 @@ export const checkInputForUsuario = (usuarioDto: UsuarioDTO): void => {
     if (!usuarioDto.nombre || !usuarioDto.rol || !usuarioDto.email || !usuarioDto.contraseña) {
         throw new RequiredFieldError("Los campos 'nombre', 'email', 'contraseña' y 'rol' son obligatorios en UsuarioDTO");
     }
-    if (usuarioDto.rol !== 'Admin' && usuarioDto.rol !== 'Supervisor Cocina' && usuarioDto.rol !== 'Supervisor Local' && usuarioDto.rol !== 'Dispositivo') {
+    if (usuarioDto.rol !== 'Admin' && usuarioDto.rol !== 'Supervisor Cocina' && usuarioDto.rol !== 'Supervisor Local' && usuarioDto.rol !== 'Dispositivo'
+        && usuarioDto.rol !== 'Cliente' && usuarioDto.rol !== 'Repartidor') {
         throw new InvalidValueError("rol", usuarioDto.rol);
     }
     if (!usuarioDto.email.includes('@') || !usuarioDto.email.includes('.com')) {
@@ -56,6 +57,7 @@ export const createUsuario = async (usuarioDto: UsuarioDTO): Promise<Usuario> =>
         const nombre = usuarioDto.nombre;
         const rol = usuarioDto.rol;
         const userRecord = await admin.auth().createUser({ email: dirEmail, emailVerified: true, password: usuarioDto.contraseña});
+        console.log('Usuario creado en Firebase con uid:', userRecord.uid);
         const uid_firebase = userRecord.uid;
         const usuario = await usuarioRepository.create({nombre, rol, uid_firebase});
         if (!usuario)

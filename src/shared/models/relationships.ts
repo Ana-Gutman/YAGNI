@@ -23,6 +23,9 @@ export const setRelationships = async () => {
   CocinaLocal.belongsTo(Cocina, { foreignKey: 'id_cocina' });
   CocinaLocal.belongsTo(Local, { foreignKey: 'id_local' });
 
+  Usuario.hasMany(Cliente, { foreignKey: 'id_usuario' });
+  Cliente.belongsTo(Usuario, { foreignKey: 'id_usuario' });
+
   Cocina.belongsToMany(Camioneta, { through: CocinaCamioneta, foreignKey: 'id_cocina' });
   Camioneta.belongsToMany(Cocina, { through: CocinaCamioneta, foreignKey: 'id_camioneta' });
   
