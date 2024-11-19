@@ -19,7 +19,11 @@ class UsuarioRepository {
     }
 
     async create(data:{nombre: string, rol:string, uid_firebase: string}): Promise<Usuario> {
-        return Usuario.create(data);
+        const usuario = Usuario.create(data);
+        if (data.rol !== 'Cliente') {
+            //TODO: PEDIR DATOS DEL CLIENTE QUE FALTAN Y AGREGALOS A SUS RESPECTIVAS TABLAS
+        }
+        return usuario;
     }
 
     async update(id: number, usuarioDto: UsuarioDTO): Promise<Usuario | null> {

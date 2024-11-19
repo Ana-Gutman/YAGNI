@@ -40,6 +40,16 @@ export const loginUsuario = async (req: Request, res: Response, next: NextFuncti
     }
 }
 
+export const validateInputForUsuario = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const usuarioDto = req.body;
+        await usuarioService.checkInputForUsuario(usuarioDto);
+        res.status(200).json({ message: 'UsuarioDTO validado' });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const updateUsuario = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = parseInt(req.params.id);

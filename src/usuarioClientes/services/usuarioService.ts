@@ -5,6 +5,8 @@ import { MissingParameterError, InvalidValueError, RequiredFieldError, DatabaseE
 import admin from '../../shared/config/firebase';
 import jwt from 'jsonwebtoken';
 
+const SECRET_KEY = "AIzaSyBurpEG9jJ1C3dMLNkN9FFsQgncSAWrDJg"; 
+
 const usuarioRepository = new UsuarioRepository();
 
 export const getAllUsuarios = async (): Promise<Usuario[]> => {
@@ -30,7 +32,7 @@ export const getUsuarioById = async (id: number): Promise<Usuario | null> => {
     }
 };
 
-export const createUsuario = async (usuarioDto: UsuarioDTO): Promise<Usuario> => {
+export const checkInputForUsuario = (usuarioDto: UsuarioDTO): void => {
     if (Object.keys(usuarioDto).length === 0) {
         throw new MissingParameterError("El UsuarioDTO es requerido");
     }
@@ -46,6 +48,9 @@ export const createUsuario = async (usuarioDto: UsuarioDTO): Promise<Usuario> =>
     if (!usuarioDto.contraseña.match(/^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{12,})/)) {
         throw new InvalidValueError("contraseña", usuarioDto.contraseña, "Debe tener 12 o más caracteres, incluyendo una o más mayúsculas, uno o más números y uno o más símbolos especiales");
     }
+};
+
+export const createUsuario = async (usuarioDto: UsuarioDTO): Promise<Usuario> => {
     try {
         const dirEmail = usuarioDto.email;
         const nombre = usuarioDto.nombre;
@@ -105,7 +110,7 @@ export const login = async (idToken: string): Promise<{token:string, usuario: Us
 
     const token = jwt.sign({ id: usuario.id_usuario, 
         rol: usuario.rol }, 
-        "AIzaSyBurpEG9jJ1C3dMLNkN9FFsQgncSAWrDJg", 
+        SECRET_KEY, 
         { expiresIn: '1h' });
     
     return {token, usuario};
