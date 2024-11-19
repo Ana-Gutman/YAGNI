@@ -1,5 +1,6 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, HasManyGetAssociationsMixin } from 'sequelize';
 import sequelize from '../database/database';
+import { ProductoPedido } from './productoPedido';
 
 export class Pedido extends Model {
   public id_pedido!: number;
@@ -9,6 +10,9 @@ export class Pedido extends Model {
   public retirado!: Date | null;
   public estado!: 'Iniciado'| 'Completo' | 'Incompleto';
   public createdAt!: Date;
+
+  public getProductoPedidos!: HasManyGetAssociationsMixin<ProductoPedido>;
+
 }
 
 Pedido.init(

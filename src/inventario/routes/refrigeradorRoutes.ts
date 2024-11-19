@@ -1,6 +1,5 @@
 import { Router } from "express";
 import * as refrigeradorController from "../controllers/refrigeradorController";
-import { modificarInventarioConOTP } from "../services/refrigeradorService";
 
 const router = Router();
 router.get("/refrigeradores", refrigeradorController.getRefrigeradores);
@@ -10,8 +9,9 @@ router.delete("/refrigeradores/:id", refrigeradorController.deleteRefrigerador);
 router.get('/locales/:idLocal/refrigeradores', refrigeradorController.obtenerRefrigeradoresPorLocal);
 router.post('/refrigeradores/:idRefrigerador/otp', refrigeradorController.generarOTP);
 router.post('/refrigeradores/:idRefrigerador/ingreso', refrigeradorController.validarIngresoStock);
-router.post('/refrigeradores/:idRefrigerador/stock', refrigeradorController.modificarInventarioConOTP);
-
+// router.get("/locales/:idLocal/refrigeradores-pedido/:idPedido", refrigeradorController.obtenerRefrigeradoresPorPedido);
+router.post('/refrigeradores/:idRefrigerador/validar-otp', refrigeradorController.validarOTP);
+router.post('/refrigeradores/:idRefrigerador/stock', refrigeradorController.modificarInventario); 
 
 
 
