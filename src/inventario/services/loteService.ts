@@ -1,7 +1,7 @@
 import { LoteRepository } from '../repositories/loteRepository';
 import { LoteDTO, LoteUpdateRetiroDto } from '../dto/LoteDto';
 import { Lote } from '../../shared/models/lote';
-import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors/customErrors';
+import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/utils/customErrors';
 import { ProductoEnvasado } from '../../shared/models/productoEnvasado';
 import { publishLoteNotification } from '../queues/cocinaPublisher';
 

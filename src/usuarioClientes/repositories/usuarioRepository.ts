@@ -14,9 +14,12 @@ class UsuarioRepository {
         return await Usuario.findByPk(id);
     }
 
-    async create(usuarioDto: UsuarioDTO): Promise<Usuario> {
-        const usuario = { ...usuarioDto };
-        return Usuario.create(usuario);
+    async findByFirebaseUid(uid_firebase: string): Promise<Usuario | null> {
+        return await Usuario.findOne({ where: { uid_firebase } });
+    }
+
+    async create(data:{nombre: string, rol:string, uid_firebase: string}): Promise<Usuario> {
+        return Usuario.create(data);
     }
 
     async update(id: number, usuarioDto: UsuarioDTO): Promise<Usuario | null> {

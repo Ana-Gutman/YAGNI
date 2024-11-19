@@ -18,8 +18,13 @@ Usuario.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    uid_firebase: {
+      type: DataTypes.STRING(255),
+      unique: true,
+      allowNull: false,
+    },
     rol: {
-      type: DataTypes.ENUM('Admin', 'Supervisor Cocina', 'Supervisor Local', 'Dispositivo'),
+      type: DataTypes.ENUM('Admin', 'Supervisor Cocina', 'Supervisor Local', 'Dispositivo', 'Cliente', 'Repartidor'),
       allowNull: false,
     },
   },
