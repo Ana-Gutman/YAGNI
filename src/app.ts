@@ -15,15 +15,15 @@ import cocinaRoutes from './inventario/routes/cocinaRoutes';
 import refrigeradorRoutes from './inventario/routes/refrigeradorRoutes';
 import lotesRoutes from './inventario/routes/lotesRoutes';
 import { connectRedis } from './shared/database/redis';
-import { startCamionetaQueues, startCocinaQueues } from './shared/database/initialize';
+import { loadEntidades, startCamionetaQueues, startCocinaQueues } from './shared/database/initialize';
 
 dotenv.config();
 
 const app = express();
 
 const main = async () => {
-  await connectRedis(); 
-  console.log('Redis conectado');
+  //await connectRedis(); 
+  //console.log('Redis conectado');
 
   await dbSync();
   
@@ -33,6 +33,7 @@ const main = async () => {
     credentials: true,
   }));
 
+  await loadEntidades();
   app.use(express.json());
 
   app.use("/api", usuarioRoutes);

@@ -1,4 +1,6 @@
+import { Camioneta } from "../../shared/models/camioneta";
 import { Cocina } from "../../shared/models/cocina";
+import { CocinaCamioneta } from "../../shared/models/cocinaCamioneta";
 import { CocinaDTO } from "../dto/CocinaDto";
 
 // interface CocinaFilter {
@@ -30,6 +32,16 @@ class CocinaRepository {
         return Cocina.destroy({
             where: { id_cocina: id },
         });
+    }
+
+
+    async getCamionetaIdsDeCocina(id_cocina: number): Promise<number[]> {
+        const relaciones = await CocinaCamioneta.findAll({
+            where: { id_cocina },
+            attributes: ['id_camioneta'], 
+        });
+    
+        return relaciones.map((rel) => rel.id_camioneta); 
     }
 }
 

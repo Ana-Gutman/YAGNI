@@ -8,6 +8,8 @@ import { Cliente } from "../models/cliente";
 import { MedioPago } from "../models/medioPago";
 import { startListeningForLotes } from "../../inventario/queues/camionetaSubscriber";
 import { startListeningForPedidos } from "../../inventario/queues/cocinaSubscriber";
+import { CocinaCamioneta } from "../models/cocinaCamioneta";
+import { CocinaLocal } from "../models/cocinaLocal";
 
 export async function loadEntidades() {
     const cocinas = [
@@ -29,7 +31,16 @@ export async function loadEntidades() {
     for (const { id_camioneta, matricula } of camionetas) {
         await Camioneta.create({ id_camioneta, matricula });
     }
-
+    
+    const cocinaCamionetas = [
+        { id_cocina: 1, id_camioneta: 1 },
+        { id_cocina: 1, id_camioneta: 2 },
+        { id_cocina: 2, id_camioneta: 3 }
+      ];
+    
+      for (const { id_cocina, id_camioneta } of cocinaCamionetas) {
+        await CocinaCamioneta.create({ id_cocina, id_camioneta });
+      }
 
     const productos = [
         { id_producto: 1, nombre: 'producto1', precio_lista: 100 },
@@ -56,11 +67,23 @@ export async function loadEntidades() {
     const locales = [
         { id_local: 1, nombre:'local1', direccion: 'dir' },
         { id_local: 2, nombre: 'local2', direccion: 'dir' },
+        { id_local: 3, nombre: 'local3', direccion: 'dir' }
     ];
 
     for (const { id_local, nombre, direccion } of locales) {
         await Local.create({ id_local, nombre, direccion });
     }
+
+    const cocinaLocales = [ //a cada local le corresponde solo una cocina
+        { id_cocina: 1, id_local: 1 },
+        { id_cocina: 2, id_local: 2 },
+        { id_cocina: 2, id_local: 3 }
+    ];
+
+    for (const { id_cocina, id_local } of cocinaLocales) {
+        await CocinaLocal.create({ id_cocina, id_local });
+    }
+
 
     for (const { id_refrigerador, id_local, marca_nombre } of refrigeradores) {
         await Refrigerador.create({ id_refrigerador, id_local, marca_nombre });
