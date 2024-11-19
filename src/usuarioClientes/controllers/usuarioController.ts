@@ -30,6 +30,26 @@ export const createUsuario = async (req: Request, res: Response, next: NextFunct
     }
 };
 
+export const loginUsuario = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { idToken } = req.body;
+        const usuarioLogueado = await usuarioService.login(idToken);
+        res.status(200).json(usuarioLogueado);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const validateInputForUsuario = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const usuarioDto = req.body;
+        await usuarioService.checkInputForUsuario(usuarioDto);
+        res.status(200).json({ message: 'UsuarioDTO validado' });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const updateUsuario = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = parseInt(req.params.id);

@@ -16,6 +16,9 @@ import refrigeradorRoutes from './inventario/routes/refrigeradorRoutes';
 import lotesRoutes from './inventario/routes/lotesRoutes';
 import { connectRedis } from './shared/database/redis';
 import { loadEntidades, startCamionetaQueues, startCocinaQueues } from './shared/database/initialize';
+import { startListeningForLotes } from './inventario/queues/camionetaSubscriber';
+import { startListeningForPedidos } from './inventario/queues/cocinaSubscriber';
+const cors = require('cors');
 
 dotenv.config();
 
@@ -26,14 +29,13 @@ const main = async () => {
   //console.log('Redis conectado');
 
   await dbSync();
+  //await loadEntidades();
   
   app.use(cors({
     origin: 'http://localhost:5173', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   }));
-
-  await loadEntidades();
   app.use(express.json());
 
   app.use("/api", usuarioRoutes);
@@ -50,6 +52,8 @@ const main = async () => {
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     errorMiddleware(err, req, res, next);
   });
+
+  
 
   const PORT = process.env.PORT || 3000;
 
@@ -71,3 +75,5 @@ const main = async () => {
 main().catch((err) => {
   console.error('Error al iniciar la aplicación:', err);
 });
+
+

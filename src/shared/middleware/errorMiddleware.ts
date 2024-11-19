@@ -1,4 +1,4 @@
-import { MissingParameterError, InvalidValueError, RequiredFieldError, DatabaseError, NotFoundError, GeneralError } from '../errors/customErrors';
+import { MissingParameterError, InvalidValueError, RequiredFieldError, DatabaseError, NotFoundError, GeneralError } from '../utils/customErrors';
 import { Request, Response, NextFunction } from 'express';
 
 export const errorMiddleware = (
@@ -7,7 +7,7 @@ export const errorMiddleware = (
     res: Response, 
     next: NextFunction
 ): Response<any> | void => {
-    console.error(err);
+    console.error(err.stack);
 
     if (err instanceof MissingParameterError) {
         return res.status(400).json({

@@ -1,7 +1,11 @@
 import { UsuarioRepository } from '../repositories/usuarioRepository';
 import { UsuarioDTO } from '../dto/UsuarioDto';
 import { Usuario } from '../../shared/models/usuario';
-import { MissingParameterError, InvalidValueError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors/customErrors';
+import { MissingParameterError, InvalidValueError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/utils/customErrors';
+import admin from '../../shared/config/firebase';
+import jwt from 'jsonwebtoken';
+
+const SECRET_KEY = "AIzaSyBurpEG9jJ1C3dMLNkN9FFsQgncSAWrDJg"; 
 
 const usuarioRepository = new UsuarioRepository();
 
@@ -28,18 +32,34 @@ export const getUsuarioById = async (id: number): Promise<Usuario | null> => {
     }
 };
 
-export const createUsuario = async (usuarioDto: UsuarioDTO): Promise<Usuario> => {
+export const checkInputForUsuario = (usuarioDto: UsuarioDTO): void => {
     if (Object.keys(usuarioDto).length === 0) {
         throw new MissingParameterError("El UsuarioDTO es requerido");
     }
-    if (!usuarioDto.nombre || !usuarioDto.rol) {
-        throw new RequiredFieldError("Los campos 'nombre' y 'rol' son obligatorios en UsuarioDTO");
+    if (!usuarioDto.nombre || !usuarioDto.rol || !usuarioDto.email || !usuarioDto.contraseña) {
+        throw new RequiredFieldError("Los campos 'nombre', 'email', 'contraseña' y 'rol' son obligatorios en UsuarioDTO");
     }
-    if (usuarioDto.rol !== 'Admin' && usuarioDto.rol !== 'Supervisor Cocina' && usuarioDto.rol !== 'Supervisor Local' && usuarioDto.rol !== 'Dispositivo') {
+    if (usuarioDto.rol !== 'Admin' && usuarioDto.rol !== 'Supervisor Cocina' && usuarioDto.rol !== 'Supervisor Local' && usuarioDto.rol !== 'Dispositivo'
+        && usuarioDto.rol !== 'Cliente' && usuarioDto.rol !== 'Repartidor') {
         throw new InvalidValueError("rol", usuarioDto.rol);
     }
+    if (!usuarioDto.email.includes('@') || !usuarioDto.email.includes('.com')) {
+        throw new InvalidValueError("email", usuarioDto.email, "Debe ser un email válido");
+    }
+    if (!usuarioDto.contraseña.match(/^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{12,})/)) {
+        throw new InvalidValueError("contraseña", usuarioDto.contraseña, "Debe tener 12 o más caracteres, incluyendo una o más mayúsculas, uno o más números y uno o más símbolos especiales");
+    }
+};
+
+export const createUsuario = async (usuarioDto: UsuarioDTO): Promise<Usuario> => {
     try {
-        const usuario = await usuarioRepository.create(usuarioDto);
+        const dirEmail = usuarioDto.email;
+        const nombre = usuarioDto.nombre;
+        const rol = usuarioDto.rol;
+        const userRecord = await admin.auth().createUser({ email: dirEmail, emailVerified: true, password: usuarioDto.contraseña});
+        console.log('Usuario creado en Firebase con uid:', userRecord.uid);
+        const uid_firebase = userRecord.uid;
+        const usuario = await usuarioRepository.create({nombre, rol, uid_firebase});
         if (!usuario)
             throw new DatabaseError("Error al crear el usuario");
         return usuario;
@@ -83,4 +103,18 @@ export const deleteUsuario = async (id: number): Promise<void> => {
     }
 };
 
+export const login = async (idToken: string): Promise<{token:string, usuario: Usuario}> => {
+    if (!idToken) throw new MissingParameterError('El IDToken es requerido');
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    
+    const usuario = await usuarioRepository.findByFirebaseUid(decodedToken.uid); 
+    if (!usuario) throw new NotFoundError(`El usuario con uid=${decodedToken.uid} no se encuentra en la base de datos`);
+
+    const token = jwt.sign({ id: usuario.id_usuario, 
+        rol: usuario.rol }, 
+        SECRET_KEY, 
+        { expiresIn: '1h' });
+    
+    return {token, usuario};
+}
 

@@ -5,7 +5,7 @@ import { ProductoRefrigerador } from "../../shared/models/productoRefrigerador";
 import { Refrigerador } from "../../shared/models/refrigerador";
 import { RefrigeradorDTO } from "../dto/RefrigeradorDto";
 import { ProductoDTO } from "../dto/ProductoDto"; 
-import { InsufficientStockError, NotFoundError } from "../../shared/errors/customErrors";
+import { InsufficientStockError, NotFoundError } from "../../shared/utils/customErrors";
 
 class RefrigeradorRepository {
     async findAll(): Promise<Refrigerador[]> {

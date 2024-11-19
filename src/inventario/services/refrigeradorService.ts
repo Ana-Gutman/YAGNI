@@ -1,7 +1,7 @@
 import { RefrigeradorRepository } from '../repositories/refrigeradorRepository';
 import { RefrigeradorDTO } from '../dto/RefrigeradorDto';
 import { Refrigerador } from '../../shared/models/refrigerador';
-import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors/customErrors';
+import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/utils/customErrors';
 import OTPGenerator from '../../utils/OTPGenerator'; 
 import { ProductoDTO } from '../dto/ProductoDto'; 
 import { Pedido } from '../../shared/models/pedido';

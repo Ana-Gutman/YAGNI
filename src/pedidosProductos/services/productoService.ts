@@ -1,7 +1,7 @@
 import { ProductoRepository } from '../repositories/productoRepository';
 import { ProductoDTO } from '../dto/ProductoDto';
 import { Producto } from '../../shared/models/producto';
-import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors/customErrors';
+import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/utils/customErrors';
 
 const productoRepository = new ProductoRepository();
 

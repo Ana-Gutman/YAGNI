@@ -1,7 +1,7 @@
 import { PedidoRepository } from '../repositories/pedidoRepository';
 import { PedidoDTO } from '../dto/PedidoDto';
 import { Pedido } from '../../shared/models/pedido';
-import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/errors/customErrors';
+import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/utils/customErrors';
 import { ProductoPedidoDTO } from '../dto/ProductoPedidoDto';
 import { LocalRepository } from '../../inventario/repositories/localRepository';
 import { publishPedidoNotification } from '../../inventario/queues/localPublisher';

@@ -1,7 +1,7 @@
 import { LocalRepository } from '../repositories/localRepository';
 import { LocalDTO } from '../dto/LocalDto';
 import { Local } from '../../shared/models/local';
-import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/errors/customErrors';
+import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/utils/customErrors';
 
 const localRepository = new LocalRepository();
 
