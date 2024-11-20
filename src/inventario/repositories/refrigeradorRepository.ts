@@ -4,10 +4,14 @@ import { Producto } from "../../shared/models/producto";
 import { ProductoRefrigerador } from "../../shared/models/productoRefrigerador";
 import { Refrigerador } from "../../shared/models/refrigerador";
 import { RefrigeradorDTO } from "../dto/RefrigeradorDto";
-import { ProductoDTO } from "../dto/ProductoDto"; 
+import { ProductoDTO } from "../dto/ProductoDto";
 import { InsufficientStockError, NotFoundError } from "../../shared/utils/customErrors";
+import { MovimientoRefrigerador } from "../../shared/models/movimientoRefrigerador";
+import { Op } from "sequelize";
+import { ExistenciasDTO } from "../dto/ExistenciasDto";
 
 class RefrigeradorRepository {
+
     async findAll(): Promise<Refrigerador[]> {
         return Refrigerador.findAll();
     }
@@ -23,7 +27,7 @@ class RefrigeradorRepository {
         if (!marca || !local) {
             return null;
         }
-        return Refrigerador.create(refrigerador);  
+        return Refrigerador.create(refrigerador);
     }
 
     async update(id: number, refrigeradorDto: RefrigeradorDTO): Promise<Refrigerador | null> {
@@ -39,7 +43,7 @@ class RefrigeradorRepository {
         });
     }
 
-    async findByLocalId(idLocal: string): Promise<Refrigerador[]> {
+    async findRefrigeradoresOfLocal(idLocal: number): Promise<Refrigerador[]> {
         return await Refrigerador.findAll({
             where: { id_local: idLocal },
             include: [{ model: Local, attributes: ['id_local', 'nombre'] }],
@@ -49,19 +53,26 @@ class RefrigeradorRepository {
     async actualizarInventario(idRefrigerador: string, productos: ProductoDTO[]): Promise<void> {
         for (const producto of productos) {
             const { id_producto, cantidad } = producto;
-    
+
             let productoEnRefrigerador = await ProductoRefrigerador.findOne({
                 where: { id_refrigerador: idRefrigerador, id_producto },
             });
 
             if (!productoEnRefrigerador) {
                 await ProductoRefrigerador.create({
-                    id_refrigerador: idRefrigerador, 
+                    id_refrigerador: idRefrigerador,
                     id_producto,
                     cantidad,
                 });
             } else {
                 productoEnRefrigerador.cantidad += cantidad;
+
+                await MovimientoRefrigerador.create({
+                    id_producto: id_producto,
+                    id_refrigerador: idRefrigerador,
+                    cantidad
+                });
+
                 await productoEnRefrigerador.save();
             }
         }
@@ -70,26 +81,80 @@ class RefrigeradorRepository {
 
     async retirarInventario(idRefrigerador: string, productos: ProductoDTO[]): Promise<void> {
         for (const producto of productos) {
-          const { id_producto, cantidad } = producto;
-      
-          const productoEnRefrigerador = await ProductoRefrigerador.findOne({
-            where: { id_refrigerador: idRefrigerador, id_producto },
-          });
-      
-          if (!productoEnRefrigerador) {
-            throw new NotFoundError(`El producto con ID ${id_producto} no se encuentra en el refrigerador`);
-          }
-      
-          if (productoEnRefrigerador.cantidad < cantidad) {
-            throw new InsufficientStockError(`Stock insuficiente para el producto con ID ${id_producto}`);
-          }
-      
-          productoEnRefrigerador.cantidad -= cantidad;
-          await productoEnRefrigerador.save();
+            const { id_producto, cantidad } = producto;
+
+            const productoEnRefrigerador = await ProductoRefrigerador.findOne({
+                where: { id_refrigerador: idRefrigerador, id_producto },
+            });
+
+            if (!productoEnRefrigerador) {
+                throw new NotFoundError(`El producto con ID ${id_producto} no se encuentra en el refrigerador`);
+            }
+
+            if (productoEnRefrigerador.cantidad < cantidad) {
+                throw new InsufficientStockError(`Stock insuficiente para el producto con ID ${id_producto}`);
+            }
+
+            productoEnRefrigerador.cantidad -= cantidad;
+
+            await MovimientoRefrigerador.create({
+                id_producto: id_producto,
+                id_refrigerador: idRefrigerador,
+                cantidad: -cantidad
+            });
+
+            await productoEnRefrigerador.save();
         }
-      }
-      
-    
+    }
+
+    async ListarExistenciasPorProducto(idProducto: number, fInicio?: Date, fFin?: Date): Promise<ExistenciasDTO[]> {
+        const existenciasActuales = await ProductoRefrigerador.findAll({
+            where: { id_producto: idProducto },
+            include: [{ model: Refrigerador, attributes: ['id_refrigerador'] }],
+        });
+
+        if (!fInicio && !fFin) {
+            return existenciasActuales.map((estado) => {
+                return new ExistenciasDTO(
+                    estado.id_refrigerador,
+                    [{ fecha: new Date(), existencia: estado.cantidad }]
+                );
+            });
+        }
+
+        const movimientos = await MovimientoRefrigerador.findAll({
+            where: {
+                id_producto: idProducto,
+                fecha: {
+                    [Op.between]: [fInicio, fFin],
+                },
+            },
+            include: [{ model: Refrigerador, attributes: ['id_refrigerador'] }],
+            order: [['fecha', 'ASC']],
+        });
+
+        const existenciasHistorial = existenciasActuales.map((estado) => {
+            const id_refrigerador = estado.id_refrigerador;
+
+            const movimientosRefrigerador = movimientos.filter(
+                (mov) => mov.id_refrigerador === id_refrigerador
+            );
+
+            let existencia = estado.cantidad; // Estado actual
+            const historial = movimientosRefrigerador.map((mov) => {
+                existencia += mov.cantidad_cambiada; // Actualizar existencia
+                return {
+                    fecha: mov.fecha,
+                    existencia,
+                };
+            });
+
+            return new ExistenciasDTO(id_refrigerador, historial);
+        });
+
+        return existenciasHistorial;
+    }
+
 }
 
 export { RefrigeradorRepository };

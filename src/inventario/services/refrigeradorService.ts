@@ -8,8 +8,13 @@ import { Pedido } from '../../shared/models/pedido';
 import { ProductoPedido } from '../../shared/models/productoPedido';
 import { ProductoRefrigerador } from '../../shared/models/productoRefrigerador';
 import { enviarEmail } from '../../shared/services/emailService';
+import { LocalRepository } from '../repositories/localRepository';
+import { Op } from 'sequelize';
+import { MovimientoRefrigerador } from '../../shared/models/movimientoRefrigerador';
+import { ExistenciasDTO } from '../dto/ExistenciasDto';
 
 const refrigeradorRepository = new RefrigeradorRepository();
+const localRepository = new LocalRepository();
 
 export const getAllRefrigeradores = async (): Promise<Refrigerador[]> => {
     try {
@@ -145,9 +150,12 @@ export const modificarInventarioConOTP = async (
     return refrigeradores;
 };
 
-export const obtenerRefrigeradoresPorLocal = async (idLocal: string) => {
+export const obtenerRefrigeradoresPorLocal = async (idLocal: number) => {
     if (!idLocal) throw new Error('El ID del local es requerido.');
-    return await refrigeradorRepository.findByLocalId(idLocal);
+    const local = await localRepository.findById(idLocal);
+    if (!local) throw new NotFoundError(`El local con ID ${idLocal} no se encuentra en la base de datos.`);
+    const refrigeradores = await refrigeradorRepository.findRefrigeradoresOfLocal(idLocal);
+    return refrigeradores
 };
 
 
@@ -176,3 +184,35 @@ export const modificarInventario = async (
         await refrigeradorRepository.retirarInventario(idRefrigerador, productos);
     }
 };
+
+export async function listarExistenciasPorProducto(idProducto: string, fechaInicio?: string, fechaFin?: string) :Promise<ExistenciasDTO[]> {
+    if (!idProducto) {
+        throw new MissingParameterError('El idProducto es requerido.');
+    }
+    let fInicio = null;
+    let fFin = null;
+    const id_producto = parseInt(idProducto);
+    if (isNaN(id_producto)) {
+        throw new InvalidValueError('idProducto', idProducto, 'El idProducto debe ser un número.');
+    }
+    try {
+        if (fechaInicio && fechaFin){
+            fInicio = new Date(fechaInicio);
+            fFin = new Date(fechaFin);
+        }
+        else if (fechaFin || fechaInicio){
+            throw new MissingParameterError('Se debe ingresar ambas fechas para el filtrado o ninguna para obtener la existencia actual del producto en los refrigeradores.');
+        }
+        
+    }catch (err){
+        throw new InvalidValueError('fechas', '', 'El formato de fecha es incorrecto.');
+    }
+
+    if (fInicio && fFin && fInicio > fFin){ 
+        throw new InvalidValueError('rango fechas', '', 'La fecha de inicio debe ser menor a la fecha de fin.');
+    }
+
+    return await refrigeradorRepository.ListarExistenciasPorProducto(id_producto, fInicio ?? undefined, fFin ?? undefined);
+  
+    
+  }
