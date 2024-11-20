@@ -18,7 +18,8 @@ import { connectRedis } from './shared/database/redis';
 import { loadEntidades, startCamionetaQueues, startCocinaQueues } from './shared/database/initialize';
 import { startListeningForLotes } from './inventario/queues/camionetaSubscriber';
 import { startListeningForPedidos } from './inventario/queues/cocinaSubscriber';
-const cors = require('cors');
+import accessLogger from './shared/middleware/accessLogMiddleware';
+import errorLogger from './shared/middleware/errorLogMiddleware';
 
 dotenv.config();
 
@@ -38,22 +39,22 @@ const main = async () => {
   }));
   app.use(express.json());
 
-  app.use("/api", usuarioRoutes);
-  app.use("/api", productoRoutes);
-  app.use("/api", pedidoRoutes);
-  app.use("/api", localRoutes);
-  app.use("/api", clienteRoutes);
-  app.use("/api", camionetaRoutes);
-  app.use("/api", cocinaRoutes);  
-  app.use("/api", refrigeradorRoutes);
-  app.use('/api', lotesRoutes);
-  app.use('/api/inventario', inventarioRoutes);
+  app.use("/api", accessLogger, usuarioRoutes);
+  app.use("/api", accessLogger, productoRoutes);
+  app.use("/api", accessLogger, pedidoRoutes);
+  app.use("/api", accessLogger, localRoutes);
+  app.use("/api", accessLogger, clienteRoutes);
+  app.use("/api", accessLogger, camionetaRoutes);
+  app.use("/api", accessLogger, cocinaRoutes);  
+  app.use("/api", accessLogger, refrigeradorRoutes);
+  app.use('/api', accessLogger, lotesRoutes);
+  app.use('/api/inventario', accessLogger, inventarioRoutes);
 
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     errorMiddleware(err, req, res, next);
   });
 
-  
+  app.use(errorLogger);
 
   const PORT = process.env.PORT || 3000;
 

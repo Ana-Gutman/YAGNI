@@ -18,7 +18,7 @@ export class Cliente extends Model {
         primaryKey: true,
       },
       id_usuario: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER.UNSIGNED,
         references: {
           model: 'Usuarios',
           key: 'id_usuario',
