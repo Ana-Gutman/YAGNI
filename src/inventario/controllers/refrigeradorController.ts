@@ -80,7 +80,7 @@ export const obtenerRefrigeradoresPorPedido = async (req: Request, res: Response
 export const obtenerRefrigeradoresPorLocal = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { idLocal } = req.params;
-        const refrigeradores = await refrigeradorService.obtenerRefrigeradoresPorLocal(idLocal);
+        const refrigeradores = await refrigeradorService.obtenerRefrigeradoresPorLocal(parseInt(idLocal));
         res.status(200).json(refrigeradores);
       } catch (error) {
         next(error);
@@ -117,3 +117,15 @@ export const modificarInventario = async (req: Request, res: Response, next: Nex
         next(error);
     }
 };
+
+export async function listarExistenciasPorProducto(req: Request, res: Response, next: NextFunction) {
+    const { idProducto, fechaInicio, fechaFin } = req.body;
+    try {
+        const existencias = await refrigeradorService.listarExistenciasPorProducto(idProducto, fechaInicio, fechaFin);
+        res.status(200).json(existencias);
+    } catch (error) {
+        next(error);
+   
+    }
+  }
+

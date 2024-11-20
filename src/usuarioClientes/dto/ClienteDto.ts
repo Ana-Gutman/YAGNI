@@ -1,10 +1,12 @@
 export class ClienteDTO {
   public id_cliente!: number;
-  public nombre!: string;
+  public id_usuario!: number;
   public celular!: string;
-    constructor(id_cliente: number, nombre: string, celular: string) {
+  public mediosDePago!: number[];
+    constructor(id_cliente: number, id_usuario: number, celular: string, mediosDePago: number[]) {
         this.id_cliente = id_cliente;
-        this.nombre = nombre;
+        this.id_usuario = id_usuario
         this.celular = celular;
+        this.mediosDePago = mediosDePago;
     }
 }

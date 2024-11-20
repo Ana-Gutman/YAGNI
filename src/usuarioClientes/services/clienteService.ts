@@ -32,13 +32,27 @@ export const createCliente = async (clienteDto: ClienteDTO): Promise<Cliente> =>
     if (Object.keys(clienteDto).length === 0) {
         throw new MissingParameterError("El ClienteDTO es es requerido");
     }
-    if (!clienteDto.nombre) {
-        throw new RequiredFieldError("El campos 'nombre' es obligatorio en ClienteDTO");
+    if (!clienteDto.id_usuario || !clienteDto.celular || !clienteDto.mediosDePago) {
+        throw new RequiredFieldError("El campos 'id_usuario', 'medios de pago' y 'celular' son obligatorios en ClienteDTO");
+    }
+    if (clienteDto.mediosDePago.length === 0) {
+        throw new RequiredFieldError("El campo 'medios de pago' no puede estar vacío");
+    }
+    const mediosPagoCliente = [];
+    for (const medioPagoId of clienteDto.mediosDePago) {
+        const medioPago = await clienteRepository.findMedioPagoById(medioPagoId);
+        if (!medioPago) {
+            throw new NotFoundError(`Medio de pago con ID ${medioPagoId} no encontrado`);
+        }
+        mediosPagoCliente.push(medioPago);
     }
     try {
         const cliente = await clienteRepository.create(clienteDto);
         if (!cliente)
             throw new DatabaseError("Error al crear el cliente");
+        for (const medioPago of mediosPagoCliente) {
+            await clienteRepository.addMedioPagoToCliente(cliente,  medioPago);
+        }
         return cliente;
     } catch (error: any) {
         throw new DatabaseError(`Error al crear cliente: ${error.message}`);
@@ -48,8 +62,11 @@ export const createCliente = async (clienteDto: ClienteDTO): Promise<Cliente> =>
 export const updateCliente = async (id: number, clienteDto: ClienteDTO): Promise<Cliente | null> => {
     if (!id || Object.keys(clienteDto).length === 0)
         throw new MissingParameterError('El ID y ClienteDTO son requeridos');
-    if (!clienteDto.nombre) {
-        throw new RequiredFieldError("El campos 'nombre' es obligatorio en ClienteDTO");
+    if (!clienteDto.id_usuario || !clienteDto.celular || !clienteDto.mediosDePago) {
+        throw new RequiredFieldError("El campos 'id_usuario', 'medios de pago' y 'celular' son obligatorios en ClienteDTO");
+    }
+    if (clienteDto.mediosDePago.length === 0) {
+        throw new RequiredFieldError("El campo 'medios de pago' no puede estar vacío");
     }
     try {
         const cliente = await clienteRepository.update(id, clienteDto);

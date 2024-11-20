@@ -4,14 +4,16 @@ import { Local } from "../models/local";
 import { Producto } from "../models/producto";
 import { Refrigerador } from "../models/refrigerador";
 import { MarcaRefrigerador } from "../models/marcaRefrigerador";
-import { Cliente } from "../models/cliente";
 import { MedioPago } from "../models/medioPago";
 import { startListeningForLotes } from "../../inventario/queues/camionetaSubscriber";
 import { startListeningForPedidos } from "../../inventario/queues/cocinaSubscriber";
 import { CocinaCamioneta } from "../models/cocinaCamioneta";
 import { CocinaLocal } from "../models/cocinaLocal";
+import { createUsuario } from "../../usuarioClientes/services/usuarioService";
+import { createCliente } from "../../usuarioClientes/services/clienteService";
+import { UsuarioDTO } from "../../usuarioClientes/dto/UsuarioDto";
 
-export async function loadEntidades() {
+export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MUCHOS DATOS
     const cocinas = [
         { id_cocina: 1, direccion: "dir" },
         { id_cocina: 2, direccion: "dir" },
@@ -89,24 +91,33 @@ export async function loadEntidades() {
         await Refrigerador.create({ id_refrigerador, id_local, marca_nombre });
     }
 
+    //TODO: INICIALIZAR PRODUCTOS QUE ACEPTA CADA REFRIGERADOR EN PRODUCTOSREFIGERADOR CON CANT=0
+
     const mediosPago = [
-        { id_medio_pago: 1, nombre: 'efectivo' },
-        { id_medio_pago: 2, nombre: 'tarjeta' },
+        { id_medio_pago: 1, nombre: 'paypal' },
+        { id_medio_pago: 2, nombre: 'mercado pago' },
+        { id_medio_pago: 3, nombre: 'transferencia' }
     ];
-
-    const clientes = [
-        { id_cliente: 1, nombre: 'cliente1', direccion: 'dir' },
-        { id_cliente: 2, nombre: 'cliente2', direccion: 'dir' },
-    ];
-
-    for (const { id_cliente, nombre, direccion } of clientes) {
-        await Cliente.create({ id_cliente, nombre, direccion });
-    }
 
     for (const { id_medio_pago, nombre } of mediosPago) {
         await MedioPago.create({ id_medio_pago, nombre });
     }
 
+    const usuarios = [
+        { nombre: 'usuario1', email: 'email1@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Admin' },
+        { nombre: 'cli1', email: 'email2@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Cliente' },
+        { nombre: 'usuario3', email: 'email3@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Repartidor' },
+        { nombre: 'usuario4', email: 'email4@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Supervisor Cocina' },
+        { nombre: 'cli2', email: 'email5@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Cliente' },
+        { nombre: 'usuario6', email: 'email6@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Dispositivo' }
+    ];
+
+    for (const {nombre, email, contraseña, rol} of usuarios) {
+        const usuario = await createUsuario(new UsuarioDTO(0, nombre, rol, email, contraseña));
+        if (rol === 'Cliente') {
+            await createCliente({ id_cliente: 0, id_usuario: usuario.id_usuario, celular: '093443997', mediosDePago: [1, 2] });
+        }
+    }
   
 }
 
