@@ -19,6 +19,10 @@ class ClienteRepository {
     async findMedioPagoById(id:number) : Promise<MedioPago | null>{
         return await MedioPago.findByPk(id);
     }
+    
+    async findAllMediosPago(): Promise<MedioPago[]> {
+        return MedioPago.findAll();
+    }
 
     async addMedioPagoToCliente(cliente: Cliente, medioPago: MedioPago): Promise<void>  {
         await cliente.addMedioPago(medioPago);

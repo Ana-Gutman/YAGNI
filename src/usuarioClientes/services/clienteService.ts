@@ -2,6 +2,7 @@ import { ClienteRepository } from '../repositories/clienteRepository';
 import { ClienteDTO } from '../dto/ClienteDto';
 import { Cliente } from '../../shared/models/cliente';
 import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError } from '../../shared/utils/customErrors';
+import { MedioPago } from '../../shared/models/medioPago';
 
 const clienteRepository = new ClienteRepository();
 
@@ -110,3 +111,12 @@ export const addMedioPagoToCliente = async (clienteId: number, medioPagoId: numb
 
     await clienteRepository.addMedioPagoToCliente(cliente, medioPago); 
 };
+
+
+export const getAllMediosPago = async (): Promise<MedioPago[]> => {
+    try {
+        return await clienteRepository.findAllMediosPago();
+    } catch (error: any) {
+        throw new DatabaseError(`Error al obtener medios de pago: ${error.message}`);
+    }
+}

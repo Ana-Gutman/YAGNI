@@ -49,6 +49,9 @@ export const checkInputForUsuario = (usuarioDto: UsuarioDTO): void => {
     if (!usuarioDto.contraseña.match(/^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{12,})/)) {
         throw new InvalidValueError("contraseña", usuarioDto.contraseña, "Debe tener 12 o más caracteres, incluyendo una o más mayúsculas, uno o más números y uno o más símbolos especiales");
     }
+    if (usuarioDto.rol === 'Cliente' && (!usuarioDto.celular || !usuarioDto.idPrimerMedioPago)) {
+        throw new RequiredFieldError("El campo 'celular' y 'primerMedioDePago' son obligatorios en UsuarioDTO si el rol es 'Cliente'");
+    }
 };
 
 export const createUsuario = async (usuarioDto: UsuarioDTO): Promise<Usuario> => {
@@ -56,12 +59,23 @@ export const createUsuario = async (usuarioDto: UsuarioDTO): Promise<Usuario> =>
         const dirEmail = usuarioDto.email;
         const nombre = usuarioDto.nombre;
         const rol = usuarioDto.rol;
+        const celular = usuarioDto.celular;
+        const idPrimerMedioPago = usuarioDto.idPrimerMedioPago;
         const userRecord = await admin.auth().createUser({ email: dirEmail, emailVerified: true, password: usuarioDto.contraseña});
         console.log('Usuario creado en Firebase con uid:', userRecord.uid);
         const uid_firebase = userRecord.uid;
-        const usuario = await usuarioRepository.create({nombre, rol, uid_firebase});
+        let usuario = null;
+        
+        if (rol === 'Cliente' && celular && idPrimerMedioPago) {
+            usuario = await usuarioRepository.create({nombre, rol, uid_firebase}, {celular, idPrimerMedioPago});
+        }
+        if (rol !== 'Cliente') {
+             usuario = await usuarioRepository.create({nombre, rol, uid_firebase});
+        }
+
         if (!usuario)
             throw new DatabaseError("Error al crear el usuario");
+                
         return usuario;
     } catch (error: any) {
         throw new DatabaseError(`Error al crear usuario: ${error.message}`);

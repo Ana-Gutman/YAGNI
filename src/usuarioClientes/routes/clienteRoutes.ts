@@ -6,6 +6,7 @@ import authorize from "../../shared/middleware/authMiddleware";
 const router = Router();
 router.get("/clientes", clienteController.getClientes);
 router.get("/clientes/:id", clienteController.getClienteById);
+router.get("/mediosPago", clienteController.getMediosPago);
 router.post("/clientes", authorize(["Admin"]), clienteController.createCliente);
 router.put("/clientes/:id", clienteController.updateCliente);    
 router.delete("/clientes/:id", clienteController.deleteCliente);

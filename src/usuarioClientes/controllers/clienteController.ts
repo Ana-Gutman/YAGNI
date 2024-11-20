@@ -60,3 +60,12 @@ export const addMedioPagoToCliente = async (req: Request, res: Response, next: N
         next(error);
     }
 };
+
+export const getMediosPago = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const mediosPago = await clienteService.getAllMediosPago();
+        res.status(200).json(mediosPago);
+    } catch (error) {
+        next(error);
+    }
+};

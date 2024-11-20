@@ -5,7 +5,6 @@ import { MedioPago } from './medioPago';
 export class Cliente extends Model {
     public id_cliente!: number;
     public id_usuario!: number;
-    public nombre!: string;
     public celular!: string;
     public addMedioPago!: BelongsToManyAddAssociationMixin<MedioPago, number>;
   }

@@ -1,3 +1,4 @@
+import { Cliente } from "../../shared/models/cliente";
 import { Usuario } from "../../shared/models/usuario";
 import { UsuarioDTO } from "../dto/UsuarioDto";
 
@@ -18,10 +19,12 @@ class UsuarioRepository {
         return await Usuario.findOne({ where: { uid_firebase } });
     }
 
-    async create(data:{nombre: string, rol:string, uid_firebase: string}): Promise<Usuario> {
-        const usuario = Usuario.create(data);
-        if (data.rol !== 'Cliente') {
-            //TODO: PEDIR DATOS DEL CLIENTE QUE FALTAN Y AGREGALOS A SUS RESPECTIVAS TABLAS
+    async create(dataUsuario:{nombre: string, rol:string, uid_firebase: string}, dataCliente?:{celular:string, idPrimerMedioPago: number}): Promise<Usuario> {
+        const usuario = await Usuario.create(dataUsuario);
+        if (dataUsuario.rol === 'Cliente' && dataCliente) {
+            const id_usuario = usuario.id_usuario;
+            const cliente = await Cliente.create({id_usuario, celular:dataCliente.celular});
+            cliente.addMedioPago(dataCliente.idPrimerMedioPago);
         }
         return usuario;
     }
