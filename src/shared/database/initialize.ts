@@ -105,18 +105,15 @@ export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MU
 
     const usuarios = [
         { nombre: 'usuario1', email: 'email1@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Admin' },
-        { nombre: 'cli1', email: 'email2@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Cliente' },
+        { nombre: 'cli1', email: 'email2@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Cliente', celular: '093443997', idPrimerMedioPago: 1 },
         { nombre: 'usuario3', email: 'email3@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Repartidor' },
-        { nombre: 'usuario4', email: 'email4@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Supervisor Cocina' },
-        { nombre: 'cli2', email: 'email5@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Cliente' },
+        { nombre: 'usuario4', email: 'email4@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Supervisor Cocina', id_cocina: 1 },
+        { nombre: 'cli2', email: 'email5@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Cliente' , celular: '093443997', idPrimerMedioPago: 2},
         { nombre: 'usuario6', email: 'email6@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Dispositivo' }
     ];
 
-    for (const {nombre, email, contraseña, rol} of usuarios) {
-        const usuario = await createUsuario(new UsuarioDTO(0, nombre, rol, email, contraseña));
-        if (rol === 'Cliente') {
-            await createCliente({ id_cliente: 0, id_usuario: usuario.id_usuario, celular: '093443997', mediosDePago: [1, 2] });
-        }
+    for (const {nombre, email, contraseña, rol, celular, idPrimerMedioPago, id_cocina} of usuarios) {
+        const usuario = await createUsuario(new UsuarioDTO(0, nombre, rol, email, contraseña, celular, idPrimerMedioPago, id_cocina));
     }
   
 }

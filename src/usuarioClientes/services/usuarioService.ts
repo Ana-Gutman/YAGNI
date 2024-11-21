@@ -52,6 +52,9 @@ export const checkInputForUsuario = (usuarioDto: UsuarioDTO): void => {
     if (usuarioDto.rol === 'Cliente' && (!usuarioDto.celular || !usuarioDto.idPrimerMedioPago)) {
         throw new RequiredFieldError("El campo 'celular' y 'primerMedioDePago' son obligatorios en UsuarioDTO si el rol es 'Cliente'");
     }
+    if (usuarioDto.rol === 'Supervisor Cocina' && !usuarioDto.id_cocina) {
+        throw new RequiredFieldError("El campo 'id_cocina' es obligatorio en UsuarioDTO si el rol es 'Supervisor Cocina'");
+    }
 };
 
 export const createUsuario = async (usuarioDto: UsuarioDTO): Promise<Usuario> => {
@@ -65,13 +68,15 @@ export const createUsuario = async (usuarioDto: UsuarioDTO): Promise<Usuario> =>
         console.log('Usuario creado en Firebase con uid:', userRecord.uid);
         const uid_firebase = userRecord.uid;
         let usuario = null;
-        
+        const dataUsuario = {nombre, rol, uid_firebase, id_cocina: usuarioDto.id_cocina};
         if (rol === 'Cliente' && celular && idPrimerMedioPago) {
-            usuario = await usuarioRepository.create({nombre, rol, uid_firebase}, {celular, idPrimerMedioPago});
+            const dataCliente = {celular, idPrimerMedioPago}; 
+            usuario = await usuarioRepository.create(dataUsuario, dataCliente);
         }
         if (rol !== 'Cliente') {
-             usuario = await usuarioRepository.create({nombre, rol, uid_firebase});
+            usuario = await usuarioRepository.create(dataUsuario);
         }
+
 
         if (!usuario)
             throw new DatabaseError("Error al crear el usuario");

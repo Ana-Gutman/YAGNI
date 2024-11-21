@@ -1,3 +1,4 @@
+import { Console } from "console";
 import { Cliente } from "../../shared/models/cliente";
 import { Usuario } from "../../shared/models/usuario";
 import { UsuarioDTO } from "../dto/UsuarioDto";
@@ -19,7 +20,7 @@ class UsuarioRepository {
         return await Usuario.findOne({ where: { uid_firebase } });
     }
 
-    async create(dataUsuario:{nombre: string, rol:string, uid_firebase: string}, dataCliente?:{celular:string, idPrimerMedioPago: number}): Promise<Usuario> {
+    async create(dataUsuario:{nombre: string, rol:string, uid_firebase: string, id_cocina: number | undefined}, dataCliente?:{celular:string, idPrimerMedioPago: number}): Promise<Usuario> {
         const usuario = await Usuario.create(dataUsuario);
         if (dataUsuario.rol === 'Cliente' && dataCliente) {
             const id_usuario = usuario.id_usuario;

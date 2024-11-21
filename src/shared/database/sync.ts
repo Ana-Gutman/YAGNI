@@ -23,11 +23,11 @@ import { CocinaCamioneta } from '../models/cocinaCamioneta';
 const syncTables = async () => {
   try {
     if (process.env.DB_SYNC === 'true') {
+      await Cocina.sync();
       await Usuario.sync();
       await Cliente.sync();
       await Producto.sync();
       await Camioneta.sync();
-      await Cocina.sync();
       await Local.sync();
       await MedioPago.sync();
       await MedioPagoCliente.sync();

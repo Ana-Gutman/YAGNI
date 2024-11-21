@@ -30,7 +30,7 @@ const main = async () => {
   //console.log('Redis conectado');
 
   await dbSync();
-  //await loadEntidades();
+  await loadEntidades();
   
   app.use(cors({
     origin: 'http://localhost:5173', 

@@ -5,6 +5,8 @@ export class Usuario extends Model {
   public id_usuario!: number;
   public nombre!: string;
   public rol!: string;
+  public uid_firebase!: string;
+  public id_cocina?: number;
 }
 
 Usuario.init(
@@ -26,6 +28,14 @@ Usuario.init(
     rol: {
       type: DataTypes.ENUM('Admin', 'Supervisor Cocina', 'Supervisor Local', 'Dispositivo', 'Cliente', 'Repartidor'),
       allowNull: false,
+    },
+    id_cocina: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      references: {
+        model: 'Cocinas',
+        key: 'id_cocina',
+      },
+      allowNull: true,
     },
   },
   {
