@@ -64,11 +64,12 @@ export const createUsuario = async (usuarioDto: UsuarioDTO): Promise<Usuario> =>
         const rol = usuarioDto.rol;
         const celular = usuarioDto.celular;
         const idPrimerMedioPago = usuarioDto.idPrimerMedioPago;
+        const id_cocina = usuarioDto.id_cocina;
         const userRecord = await admin.auth().createUser({ email: dirEmail, emailVerified: true, password: usuarioDto.contraseña});
         console.log('Usuario creado en Firebase con uid:', userRecord.uid);
         const uid_firebase = userRecord.uid;
         let usuario = null;
-        const dataUsuario = {nombre, rol, uid_firebase, id_cocina: usuarioDto.id_cocina};
+        const dataUsuario = {nombre, rol, uid_firebase, id_cocina};
         if (rol === 'Cliente' && celular && idPrimerMedioPago) {
             const dataCliente = {celular, idPrimerMedioPago}; 
             usuario = await usuarioRepository.create(dataUsuario, dataCliente);

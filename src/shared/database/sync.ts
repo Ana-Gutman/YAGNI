@@ -11,8 +11,6 @@ import { Cliente } from '../models/cliente';
 import { MedioPago } from '../models/medioPago';
 import { ProductoPedido } from '../models/productoPedido';
 import { Lote } from '../models/lote';
-import { LogAcceso } from '../models/logAcceso';
-import { LogError } from '../models/logError';
 import { ProductoEnvasado } from '../models/productoEnvasado';
 import { MedioPagoCliente } from '../models/medioPagoCliente';
 import { MarcaRefrigerador } from '../models/marcaRefrigerador';
@@ -36,8 +34,6 @@ const syncTables = async () => {
       await MarcaRefrigerador.sync();
       await Refrigerador.sync();
       await Lote.sync();
-      await LogAcceso.sync();
-      await LogError.sync();
       await ProductoEnvasado.sync();
       await ProductoRefrigerador.sync();
       await CocinaLocal.sync();

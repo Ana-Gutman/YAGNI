@@ -12,6 +12,7 @@ import { CocinaLocal } from "../models/cocinaLocal";
 import { createUsuario } from "../../usuarioClientes/services/usuarioService";
 import { createCliente } from "../../usuarioClientes/services/clienteService";
 import { UsuarioDTO } from "../../usuarioClientes/dto/UsuarioDto";
+import { Server as WebSocketServer } from 'socket.io';
 
 export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MUCHOS DATOS
     const cocinas = [
@@ -125,10 +126,17 @@ export async function startCamionetaQueues ()  {
     });
 }
 
-export async function startCocinaQueues() {
-    const cocinas = await Cocina.findAll();
+export const initializeRabbitMQAndWebSocket = async (io: WebSocketServer) => {
+    const cocinas = await Cocina.findAll(); // Obtener cocinas desde la base de datos
+  
     cocinas.forEach(cocina => {
-        startListeningForPedidos(cocina.id_cocina); 
+      startListeningForPedidos(cocina.id_cocina, (pedidoData) => {
+        io.emit('pedido', { id_cocina: cocina.id_cocina, ...pedidoData });
+      });
     });
-}
+  };
+
+
+
+
 
