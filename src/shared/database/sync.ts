@@ -22,10 +22,10 @@ const syncTables = async () => {
   try {
     if (process.env.DB_SYNC === 'true') {
       await Cocina.sync();
+      await Camioneta.sync();
       await Usuario.sync();
       await Cliente.sync();
       await Producto.sync();
-      await Camioneta.sync();
       await Local.sync();
       await MedioPago.sync();
       await MedioPagoCliente.sync();

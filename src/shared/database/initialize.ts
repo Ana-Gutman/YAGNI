@@ -10,7 +10,6 @@ import { startListeningForPedidos } from "../../inventario/queues/cocinaSubscrib
 import { CocinaCamioneta } from "../models/cocinaCamioneta";
 import { CocinaLocal } from "../models/cocinaLocal";
 import { createUsuario } from "../../usuarioClientes/services/usuarioService";
-import { createCliente } from "../../usuarioClientes/services/clienteService";
 import { UsuarioDTO } from "../../usuarioClientes/dto/UsuarioDto";
 import { Server as WebSocketServer } from 'socket.io';
 
@@ -107,7 +106,7 @@ export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MU
     const usuarios = [
         { nombre: 'usuario1', email: 'email1@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Admin' },
         { nombre: 'cli1', email: 'email2@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Cliente', celular: '093443997', idPrimerMedioPago: 1 },
-        { nombre: 'usuario3', email: 'email3@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Repartidor' },
+        { nombre: 'usuario3', email: 'email3@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Repartidor', id_camioneta: 1 },
         { nombre: 'usuario4', email: 'email4@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Supervisor Cocina', id_cocina: 1 },
         { nombre: 'cli2', email: 'email5@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Cliente' , celular: '093443997', idPrimerMedioPago: 2},
         { nombre: 'usuario6', email: 'email6@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Dispositivo' }
@@ -119,22 +118,23 @@ export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MU
   
 }
 
-export async function startCamionetaQueues ()  {
-    const camionetas = await Camioneta.findAll();  
-      camionetas.forEach(camioneta => {
-        startListeningForLotes(camioneta.id_camioneta);
-    });
-}
-
 export const initializeRabbitMQAndWebSocket = async (io: WebSocketServer) => {
-    const cocinas = await Cocina.findAll(); // Obtener cocinas desde la base de datos
-  
+    const cocinas = await Cocina.findAll(); 
+    const camionetas = await Camioneta.findAll();  
+
     cocinas.forEach(cocina => {
       startListeningForPedidos(cocina.id_cocina, (pedidoData) => {
         io.emit('pedido', { id_cocina: cocina.id_cocina, ...pedidoData });
       });
     });
-  };
+
+    camionetas.forEach(camioneta => {
+        startListeningForLotes(camioneta.id_camioneta, (loteData) => {
+          io.emit('lote', { id_camioneta: camioneta.id_camioneta, ...loteData });
+        });
+    });
+}
+
 
 
 

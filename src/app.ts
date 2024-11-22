@@ -15,7 +15,7 @@ import cocinaRoutes from './inventario/routes/cocinaRoutes';
 import refrigeradorRoutes from './inventario/routes/refrigeradorRoutes';
 import lotesRoutes from './inventario/routes/lotesRoutes';
 import { connectRedis } from './shared/database/redis';
-import { initializeRabbitMQAndWebSocket, loadEntidades, startCamionetaQueues } from './shared/database/initialize';
+import { initializeRabbitMQAndWebSocket, loadEntidades } from './shared/database/initialize';
 import { startListeningForLotes } from './inventario/queues/camionetaSubscriber';
 import { startListeningForPedidos } from './inventario/queues/cocinaSubscriber';
 import accessLogger from './shared/middleware/accessLogMiddleware';
@@ -75,7 +75,6 @@ const main = async () => {
       await sequelize.authenticate();
       console.log("Conexión con la base de datos establecida correctamente.");
 
-      await startCamionetaQueues();
       await initializeRabbitMQAndWebSocket(io);
       
     } catch (error) {
