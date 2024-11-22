@@ -65,7 +65,7 @@ export const getPedidoACocina = async (pedido: Pedido, productosPedido: Producto
     }[]> => {
         const stock = await localRepository.getStockDeProducto(pedido.id_local, productosPedido[0].id_producto);
     return productosPedido.map(producto => ({
-        id_producto: producto.id_producto, 
+        id_producto: producto.id_producto,
         cantidad: producto.cantidad - stock
     }));
 }
