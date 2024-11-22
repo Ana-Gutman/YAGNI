@@ -7,7 +7,8 @@ export class UsuarioDTO {
   public celular?: string;
   public idPrimerMedioPago?: number;
   public id_cocina?: number;
-  constructor(id_usuario: number, nombre: string, rol: string, email: string, contraseña: string, celular?: string, idPrimerMedioPago?: number, id_cocna?: number) {
+  public id_camioneta?: number;
+  constructor(id_usuario: number, nombre: string, rol: string, email: string, contraseña: string, celular?: string, idPrimerMedioPago?: number, id_cocna?: number, id_camioneta?: number) {
     this.id_usuario = id_usuario;
     this.nombre = nombre;
     this.email = email;
@@ -16,5 +17,6 @@ export class UsuarioDTO {
     this.celular = celular;
     this.idPrimerMedioPago = idPrimerMedioPago;
     this.id_cocina = id_cocna;
+    this.id_camioneta = id_camioneta;
   }
 }

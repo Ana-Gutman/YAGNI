@@ -7,6 +7,7 @@ export class Usuario extends Model {
   public rol!: string;
   public uid_firebase!: string;
   public id_cocina?: number;
+  public id_vehiculo?: number;
 }
 
 Usuario.init(
@@ -34,6 +35,14 @@ Usuario.init(
       references: {
         model: 'Cocinas',
         key: 'id_cocina',
+      },
+      allowNull: true,
+    },
+    id_camioneta: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      references: {
+        model: 'Camionetas',
+        key: 'id_camioneta',
       },
       allowNull: true,
     },

@@ -20,8 +20,10 @@ class UsuarioRepository {
         return await Usuario.findOne({ where: { uid_firebase } });
     }
 
-    async create(dataUsuario: { nombre: string, rol: string, uid_firebase: string, id_cocina?: number }, dataCliente?: { celular: string, idPrimerMedioPago: number }): Promise<Usuario> {
-        const dataUsuarioCheck = { nombre: dataUsuario.nombre, rol: dataUsuario.rol, uid_firebase: dataUsuario.uid_firebase, id_cocina: dataUsuario.id_cocina === 0 ? null : dataUsuario.id_cocina };
+    async create(dataUsuario: { nombre: string, rol: string, uid_firebase: string, id_cocina?: number , id_camioneta?: number}, dataCliente?: { celular: string, idPrimerMedioPago: number }): Promise<Usuario> {
+        const dataUsuarioCheck = { nombre: dataUsuario.nombre, rol: dataUsuario.rol, uid_firebase: dataUsuario.uid_firebase
+            , id_cocina: dataUsuario.id_cocina === 0 ? null : dataUsuario.id_cocina ,
+            id_camioneta: dataUsuario.id_camioneta === 0 ? null : dataUsuario.id_camioneta };
         const usuario = await Usuario.create(dataUsuarioCheck);
         if (dataUsuario.rol === 'Cliente' && dataCliente) {
             const id_usuario = usuario.id_usuario;
