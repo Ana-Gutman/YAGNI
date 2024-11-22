@@ -34,10 +34,9 @@ export const createLote = async (req: Request, res: Response, next: NextFunction
 
 export const updateRetiroLote = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
-    const loteUpdateRetiroDto: LoteUpdateRetiroDto = req.body;
 
     try {
-        const updatedLote = await loteService.updateRetiroLote(parseInt(id), loteUpdateRetiroDto);
+        const updatedLote = await loteService.updateRetiroLote(parseInt(id));
         res.status(200).json(updatedLote);
     } catch (error) {
         next(error);

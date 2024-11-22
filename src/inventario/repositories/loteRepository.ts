@@ -19,13 +19,14 @@ class LoteRepository {
         return lote;
     }
 
-    async updateRetiro(id: number, loteUpdateRetiroDto: LoteUpdateRetiroDto): Promise<Lote | null> {
+    async updateRetiro(id: number): Promise<Lote | null> {
         const lote = await Lote.findByPk(id);
-        const fecha_retiro = loteUpdateRetiroDto.fecha_retirado.toString();
+        //la fecha de retiro es la fecha actual al llamar a esta funcion
+        const fecha_retiro = new Date();
         if (!lote) return null;
         if (lote.cantidad < X) 
-            throw new InvalidValueError("fecha_retirado", fecha_retiro, "el lote debe estar lleno para poder ser retirado");
-        lote.fecha_retirado = loteUpdateRetiroDto.fecha_retirado;
+            throw new InvalidValueError("fecha_retirado", fecha_retiro.toString(), "el lote debe estar lleno para poder ser retirado");
+        lote.fecha_retirado = fecha_retiro;
         await lote.save();
         return lote;
     }
