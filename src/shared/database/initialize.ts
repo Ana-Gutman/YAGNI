@@ -12,6 +12,7 @@ import { CocinaLocal } from "../models/cocinaLocal";
 import { createUsuario } from "../../usuarioClientes/services/usuarioService";
 import { UsuarioDTO } from "../../usuarioClientes/dto/UsuarioDto";
 import { Server as WebSocketServer } from 'socket.io';
+import { ProductoRefrigerador } from "../models/productoRefrigerador";
 
 export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MUCHOS DATOS
     const cocinas = [
@@ -64,6 +65,10 @@ export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MU
     const refrigeradores = [
         { id_refrigerador: 1, id_local: 1, marca_nombre: 'sony' },
         { id_refrigerador: 2, id_local: 1, marca_nombre: 'sony' },
+        { id_refrigerador: 3, id_local: 2, marca_nombre: 'sony' },
+        { id_refrigerador: 4, id_local: 2, marca_nombre: 'sony' },
+        { id_refrigerador: 5, id_local: 3, marca_nombre: 'sony' },
+        { id_refrigerador: 6, id_local: 3, marca_nombre: 'sony' }
     ];
 
     const locales = [
@@ -91,7 +96,19 @@ export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MU
         await Refrigerador.create({ id_refrigerador, id_local, marca_nombre });
     }
 
-    //TODO: INICIALIZAR PRODUCTOS QUE ACEPTA CADA REFRIGERADOR EN PRODUCTOSREFIGERADOR CON CANT=0
+    const productosRefrigeradores = [ //divide productos 1 y 2 en refrigeradores de cada local
+        { id_refrigerador: 1, id_producto: 1, cantidad: 0 },
+        { id_refrigerador: 2, id_producto: 2, cantidad: 0 },
+        { id_refrigerador: 3, id_producto: 1, cantidad: 0 },
+        { id_refrigerador: 4, id_producto: 2, cantidad: 0 },
+        { id_refrigerador: 5, id_producto: 1, cantidad: 0 },
+        { id_refrigerador: 6, id_producto: 2, cantidad: 0 }
+    ];
+
+    for (const { id_refrigerador, id_producto, cantidad } of productosRefrigeradores) {
+        await ProductoRefrigerador.create({id_refrigerador, id_producto, cantidad});
+    }
+
 
     const mediosPago = [
         { id_medio_pago: 1, nombre: 'paypal' },

@@ -50,6 +50,22 @@ class RefrigeradorRepository {
         });
     }
 
+    async findRefirgeradorWithProductoInLocal(idLocal: number, id_producto: number): Promise<Refrigerador[]> {
+        const refrigeradores = await this.findRefrigeradoresOfLocal(idLocal);
+    
+        const refrigeradoresConProducto = await Promise.all(
+            refrigeradores.map(async (refrigerador) => {
+                const producto = await ProductoRefrigerador.findOne({
+                    where: { id_refrigerador: refrigerador.id_refrigerador, id_producto },
+                });
+                return producto ? refrigerador : null;
+            })
+        );
+        const refriConProducto = refrigeradoresConProducto.filter(Boolean) as Refrigerador[];
+        return refriConProducto;
+    }
+    
+
     async actualizarInventario(idRefrigerador: string, productos: ProductoDTO[]): Promise<void> {
         for (const producto of productos) {
             const { id_producto, cantidad } = producto;
