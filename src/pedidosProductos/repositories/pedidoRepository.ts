@@ -9,6 +9,7 @@ import { PedidoDTO } from "../dto/PedidoDto";
 import { ProductoPedido } from "../../shared/models/productoPedido";
 import { ProductoPedidoDTO } from "../dto/ProductoPedidoDto";
 import { ListaPedidoDTO } from "../dto/ListaPedidoDto";
+import { NotFoundError } from "../../shared/utils/customErrors";
 
 // interface PedidoFilter {
 // }
@@ -23,6 +24,41 @@ class PedidoRepository {
         return await Pedido.findByPk(id);
     }
 
+
+    async verificarPedidoIncompleto(idPedido: number, productos: ProductoPedidoDTO[]): Promise<boolean> {
+        const pedido = await Pedido.findByPk(idPedido);
+        
+        if (!pedido) {
+            throw new NotFoundError(`El pedido con ID ${idPedido} no se encuentra en la base de datos.`);
+        }
+    
+        // Obtén los productos del pedido usando `getProductoPedidos`
+        const productosEnPedido = await pedido.getProductoPedidos();
+    
+        // Verifica si los productos del pedido están incompletos
+        for (const producto of productos) {
+            const productoEnPedido = productosEnPedido.find(
+                (p) => p.id_producto === producto.id_producto
+            );
+            if (!productoEnPedido || producto.cantidad < productoEnPedido.cantidad) {
+                return true; // Hay productos faltantes
+            }
+        }
+        return false; // Todos los productos están disponibles
+    }
+    
+    
+    async marcarPedidoIncompleto(idPedido: number): Promise<void> {
+        const pedido = await Pedido.findByPk(idPedido);
+        if (!pedido) {
+            throw new NotFoundError(`El pedido con ID ${idPedido} no se encuentra en la base de datos.`);
+        }
+    
+        pedido.estado = 'Incompleto';
+        await pedido.save();
+    }
+    
+    
     async create(pedidoDto: PedidoDTO): Promise<{ pedido: Pedido, productosPedido: ProductoPedidoDTO[] } | null> {
         const transaction = await sequelize.transaction();
         try {

@@ -12,6 +12,7 @@ import { LocalRepository } from '../repositories/localRepository';
 import { Op } from 'sequelize';
 import { MovimientoRefrigerador } from '../../shared/models/movimientoRefrigerador';
 import { ExistenciasDTO } from '../dto/ExistenciasDto';
+import { Producto } from '../../shared/models/producto';
 
 const refrigeradorRepository = new RefrigeradorRepository();
 const localRepository = new LocalRepository();
@@ -120,7 +121,42 @@ export const modificarInventarioConOTP = async (
       await refrigeradorRepository.retirarInventario(idRefrigerador, productos);
     }
   };
+
+  export const getProductosEnRefrigerador = async (idRefrigerador: string) => {
+    if (!idRefrigerador) {
+        throw new MissingParameterError('El ID del refrigerador es requerido.');
+    }
+
+    const productosRefrigerador = await refrigeradorRepository.findProductosByRefrigerador(idRefrigerador);
+    if (!productosRefrigerador || productosRefrigerador.length === 0) {
+        throw new NotFoundError(`No se encontraron productos en el refrigerador con ID ${idRefrigerador}`);
+    }
+
+    return productosRefrigerador.map((productoRefrigerador) => {
+        const producto = productoRefrigerador.get('Producto') as Producto | null;
+        if (!producto) {
+            throw new NotFoundError(`El producto relacionado no se encontró para el refrigerador ${idRefrigerador}`);
+        }
+        return {
+            id_producto: producto.id_producto,
+            nombre: producto.nombre,
+            cantidad: productoRefrigerador.cantidad,
+        };
+    });
+};
+
   
+export const emitirAlarma = async (idRefrigerador: string, idProducto: string, cantidad: number): Promise<string> => {
+    const producto = await refrigeradorRepository.findProductoEnRefrigerador(idRefrigerador, idProducto);
+    if (!producto || producto.cantidad < cantidad) {
+        // Registrar la alarma en la base de datos
+        await refrigeradorRepository.registrarAlarma(idRefrigerador, idProducto, cantidad);
+        return "Alarma emitida: cantidad excede el límite.";
+    }
+    return "No se emitió alarma: cantidad dentro del límite.";
+};
+
+
 
   export const getRefrigeradoresPorPedido = async (idLocal: number, idPedido: number) => {
     const pedido = await Pedido.findOne({
