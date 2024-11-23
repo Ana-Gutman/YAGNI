@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import * as cocinaService from "../services/cocinaService";
 import { startListeningForPedidos } from "../queues/cocinaSubscriber";
+import { X } from "../config";
 
 export const getCocinas = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -10,6 +11,15 @@ export const getCocinas = async (req: Request, res: Response, next: NextFunction
         next(error);
     }
 };
+
+export const getX = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const x = X;
+        res.status(200).json(x);
+    } catch (error) {
+        next(error);
+    }
+}
 
 export const getCocinaById = async (req: Request, res: Response, next: NextFunction) => {
     try {

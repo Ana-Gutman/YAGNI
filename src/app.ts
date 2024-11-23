@@ -28,7 +28,7 @@ dotenv.config();
 const app = express();
 
 const main = async () => {
-  await connectRedis(); 
+  //await connectRedis(); 
   console.log('Redis conectado');
 
   const httpServer = createServer(app); // Crear servidor HTTP
