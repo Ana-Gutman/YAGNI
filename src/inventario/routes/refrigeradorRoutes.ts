@@ -12,7 +12,12 @@ router.post('/refrigeradores/:idRefrigerador/ingreso', refrigeradorController.va
 // router.get("/locales/:idLocal/refrigeradores-pedido/:idPedido", refrigeradorController.obtenerRefrigeradoresPorPedido);
 router.post('/refrigeradores/:idRefrigerador/validar-otp', refrigeradorController.validarOTP);
 router.post('/refrigeradores/:idRefrigerador/stock', refrigeradorController.modificarInventario); 
-
+router.post('/refrigeradores/:idRefrigerador/alarma', refrigeradorController.emitirAlarma);
+router.get('/refrigeradores/:idRefrigerador/productos', refrigeradorController.getProductosEnRefrigerador);
+router.post(
+    "/refrigeradores/:idRefrigerador/verificar-cantidad",
+    refrigeradorController.verificarCantidadRetirada as any
+);
 
 
 export default router;

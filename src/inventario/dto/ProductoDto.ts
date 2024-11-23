@@ -1,9 +1,9 @@
 export class ProductoDTO {
     public id_producto!: number;
-    public cantidad!: number;
+    public cantidad_cambiada!: number;
 
     constructor(id_producto: number, cantidad: number) {
         this.id_producto = id_producto;
-        this.cantidad = cantidad;
+        this.cantidad_cambiada = cantidad;
     }
 }

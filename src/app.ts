@@ -28,8 +28,8 @@ dotenv.config();
 const app = express();
 
 const main = async () => {
-  //await connectRedis(); 
-  //console.log('Redis conectado');
+  await connectRedis(); 
+  console.log('Redis conectado');
 
   const httpServer = createServer(app); // Crear servidor HTTP
   const io = new WebSocketServer(httpServer, {
@@ -41,7 +41,7 @@ const main = async () => {
 
 
   await dbSync();
-  //await loadEntidades();
+  // await loadEntidades();
   
   app.use(cors({
     origin: 'http://localhost:5173', 

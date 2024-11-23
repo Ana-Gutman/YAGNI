@@ -17,6 +17,7 @@ import { MarcaRefrigerador } from '../models/marcaRefrigerador';
 import { ProductoRefrigerador } from '../models/productoRefrigerador';
 import { CocinaLocal } from '../models/cocinaLocal';
 import { CocinaCamioneta } from '../models/cocinaCamioneta';
+import { MovimientoRefrigerador } from '../models/movimientoRefrigerador';
 
 const syncTables = async () => {
   try {
@@ -38,6 +39,7 @@ const syncTables = async () => {
       await ProductoRefrigerador.sync();
       await CocinaLocal.sync();
       await CocinaCamioneta.sync();
+      await MovimientoRefrigerador.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }
   } catch (error) {

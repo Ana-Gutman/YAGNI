@@ -43,6 +43,39 @@ class RefrigeradorRepository {
         });
     }
 
+    async registrarAlarma(idRefrigerador: string, idProducto: string, cantidad: number): Promise<void> {
+        await MovimientoRefrigerador.create({
+            id_refrigerador: idRefrigerador,
+            id_producto: idProducto,
+            cantidad_cambiada: -cantidad, // Se intenta retirar más de lo permitido
+            accion: 'ALARMA_EMITIDA',
+            fecha: new Date(),
+        });
+    }
+
+    async findProductosByRefrigerador(idRefrigerador: string): Promise<ProductoRefrigerador[]> {
+        return await ProductoRefrigerador.findAll({
+            where: { id_refrigerador: idRefrigerador },
+            include: [
+                {
+                    model: Producto,
+                    as: 'Producto', // Debe coincidir con el alias en `setRelationships`
+                    attributes: ['id_producto', 'nombre'], // Solo los campos necesarios
+                },
+            ],
+        });
+    }
+    
+    async findProductoEnRefrigerador(idRefrigerador: string, idProducto: string): Promise<ProductoRefrigerador | null> {
+        return await ProductoRefrigerador.findOne({
+            where: {
+                id_refrigerador: idRefrigerador,
+                id_producto: idProducto,
+            },
+        });
+    }
+    
+    
     async findRefrigeradoresOfLocal(idLocal: number): Promise<Refrigerador[]> {
         return await Refrigerador.findAll({
             where: { id_local: idLocal },
@@ -68,7 +101,7 @@ class RefrigeradorRepository {
 
     async actualizarInventario(idRefrigerador: string, productos: ProductoDTO[]): Promise<void> {
         for (const producto of productos) {
-            const { id_producto, cantidad } = producto;
+            const { id_producto, cantidad_cambiada } = producto;
 
             let productoEnRefrigerador = await ProductoRefrigerador.findOne({
                 where: { id_refrigerador: idRefrigerador, id_producto },
@@ -78,15 +111,17 @@ class RefrigeradorRepository {
                 await ProductoRefrigerador.create({
                     id_refrigerador: idRefrigerador,
                     id_producto,
-                    cantidad,
+                    cantidad: cantidad_cambiada,
+
                 });
             } else {
-                productoEnRefrigerador.cantidad += cantidad;
+                productoEnRefrigerador.cantidad += cantidad_cambiada;
 
                 await MovimientoRefrigerador.create({
                     id_producto: id_producto,
                     id_refrigerador: idRefrigerador,
-                    cantidad
+                    cantidad_cambiada,
+                    fecha: new Date() 
                 });
 
                 await productoEnRefrigerador.save();
@@ -97,7 +132,7 @@ class RefrigeradorRepository {
 
     async retirarInventario(idRefrigerador: string, productos: ProductoDTO[]): Promise<void> {
         for (const producto of productos) {
-            const { id_producto, cantidad } = producto;
+            const { id_producto, cantidad_cambiada } = producto;
 
             const productoEnRefrigerador = await ProductoRefrigerador.findOne({
                 where: { id_refrigerador: idRefrigerador, id_producto },
@@ -107,16 +142,19 @@ class RefrigeradorRepository {
                 throw new NotFoundError(`El producto con ID ${id_producto} no se encuentra en el refrigerador`);
             }
 
-            if (productoEnRefrigerador.cantidad < cantidad) {
+            if (productoEnRefrigerador.cantidad < cantidad_cambiada) {
                 throw new InsufficientStockError(`Stock insuficiente para el producto con ID ${id_producto}`);
             }
 
-            productoEnRefrigerador.cantidad -= cantidad;
+            productoEnRefrigerador.cantidad -= cantidad_cambiada;
 
+            console.log("cantidad_cambiada", cantidad_cambiada)
             await MovimientoRefrigerador.create({
                 id_producto: id_producto,
                 id_refrigerador: idRefrigerador,
-                cantidad: -cantidad
+                cantidad_cambiada,
+                fecha: new Date(),
+
             });
 
             await productoEnRefrigerador.save();

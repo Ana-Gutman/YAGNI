@@ -8,6 +8,10 @@ import { publishPedidoNotification } from '../../inventario/queues/localPublishe
 import { ListaPedidoDTO, ListaPedidosDeClienteDto } from '../dto/ListaPedidoDto';
 import { Op } from 'sequelize';
 import { Cliente } from '../../shared/models/cliente';
+import { ProductoPedido } from '../../shared/models/productoPedido';
+import { ProductoRefrigerador } from '../../shared/models/productoRefrigerador';
+import { Refrigerador } from '../../shared/models/refrigerador';
+import { Producto } from '../../shared/models/producto';
 
 const pedidoRepository = new PedidoRepository();
 const localRepository = new LocalRepository();
@@ -58,6 +62,83 @@ export const createPedido = async (pedidoDto: PedidoDTO): Promise<{ pedido: Pedi
         throw new DatabaseError(`Error al crear pedido: ${error.message}`);
     }
 };
+
+export const marcarPedidoIncompleto = async (idPedido: number, productos: ProductoPedidoDTO[]): Promise<string> => {
+    const pedido = await Pedido.findByPk(idPedido);
+
+    if (!pedido) {
+        throw new NotFoundError("Pedido no encontrado.");
+    }
+
+    // Obtener los productos del pedido utilizando `getProductoPedidos`
+    const productosPedido = await pedido.getProductoPedidos();
+
+    for (const producto of productos) {
+        const productoPedido = productosPedido.find(
+            (p: any) => p.id_producto === producto.id_producto
+        );
+
+        if (!productoPedido || productoPedido.cantidad > producto.cantidad) {
+            // Actualiza el estado del pedido como incompleto
+            pedido.estado = "Incompleto";
+            await pedido.save();
+            return "Pedido marcado como incompleto: Stock insuficiente.";
+        }
+    }
+
+    return "No se pudo marcar como incompleto. Stock suficiente.";
+};
+
+
+export const completarPedido = async (idPedido: number): Promise<void> => {
+    const pedido = await pedidoRepository.findById(idPedido);
+    if (!pedido) {
+        throw new NotFoundError('Pedido no encontrado.');
+    }
+
+    pedido.estado = 'Completo';
+    await pedido.save();
+};
+
+export const getPedidosConRefrigeradores = async (idCliente: number) => {
+    const pedidos = await Pedido.findAll({
+        where: { id_cliente: idCliente },
+        include: [
+            {
+                model: ProductoPedido,
+                attributes: ["id_producto", "cantidad"],
+                include: [
+                    {
+                        model: Producto,
+                        attributes: ["id_producto", "nombre"],
+                        include: [
+                            {
+                                model: ProductoRefrigerador,
+                                attributes: ["id_refrigerador", "cantidad"],
+                                include: [
+                                    {
+                                        model: Refrigerador,
+                                        attributes: ["id_refrigerador", "marca_nombre"],
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+        ],
+    });
+
+    return pedidos.map((pedido: any) => ({
+        id_pedido: pedido.id_pedido,
+        productos: pedido.ProductoPedidos.map((producto: any) => ({
+            id_producto: producto.id_producto,
+            cantidad: producto.cantidad,
+            refrigerador: producto.Producto.ProductoRefrigeradors?.map((pr: any) => pr.Refrigerador) || null,
+        })),
+    }));
+};
+
 
 export const getPedidoACocina = async (pedido: Pedido, productosPedido: ProductoPedidoDTO[]): Promise<{
     id_producto: number;
