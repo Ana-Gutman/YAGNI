@@ -34,8 +34,8 @@ export const createLote = async (loteDto: LoteDTO): Promise<{ lote: Lote, produc
     if (Object.keys(loteDto).length === 0) {
         throw new MissingParameterError("El LoteDTO es requerido");
     }
-    if (!loteDto.id_cocina || !loteDto.id_local_destino || !loteDto.id_producto || !loteDto.id_refrigerador) {
-        throw new RequiredFieldError("Los campos 'id_cocina', 'id_local_destino', 'id_producto' y 'id_refrigerador' son obligatorios en LoteDTO");
+    if (!loteDto.id_cocina || !loteDto.id_local_destino || !loteDto.id_producto) {
+        throw new RequiredFieldError("Los campos 'id_cocina', 'id_local_destino' y 'id_producto' son obligatorios en LoteDTO");
     }
     try {
         const lote = await loteRepository.create(loteDto);
@@ -52,12 +52,11 @@ export const createLote = async (loteDto: LoteDTO): Promise<{ lote: Lote, produc
 
 
 
-export const updateRetiroLote = async (id: number, loteUpdateRetiroDto: LoteUpdateRetiroDto): Promise<Lote | null> => {
-    if (!id || Object.keys(loteUpdateRetiroDto).length === 0)
-        throw new MissingParameterError('El ID y LoteUpdateRetiroDto son requeridos');
-    if (!loteUpdateRetiroDto.fecha_retirado) throw new RequiredFieldError("El campo 'fecha_retirado' es obligatorio en LoteUpdateRetiroDto");
+export const updateRetiroLote = async (id: number): Promise<Lote | null> => {
+    if (!id)
+        throw new MissingParameterError('El ID del lote es requerido');
     try {
-        const lote = await loteRepository.updateRetiro(id, loteUpdateRetiroDto);
+        const lote = await loteRepository.updateRetiro(id);
         if (!lote) 
             throw new NotFoundError(`El lote a marcar como retirado con ID ${id} no se encuentra en la base de datos`);
         return lote;

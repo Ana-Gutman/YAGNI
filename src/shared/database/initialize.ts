@@ -10,8 +10,9 @@ import { startListeningForPedidos } from "../../inventario/queues/cocinaSubscrib
 import { CocinaCamioneta } from "../models/cocinaCamioneta";
 import { CocinaLocal } from "../models/cocinaLocal";
 import { createUsuario } from "../../usuarioClientes/services/usuarioService";
-import { createCliente } from "../../usuarioClientes/services/clienteService";
 import { UsuarioDTO } from "../../usuarioClientes/dto/UsuarioDto";
+import { Server as WebSocketServer } from 'socket.io';
+import { ProductoRefrigerador } from "../models/productoRefrigerador";
 
 export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MUCHOS DATOS
     const cocinas = [
@@ -64,6 +65,10 @@ export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MU
     const refrigeradores = [
         { id_refrigerador: 1, id_local: 1, marca_nombre: 'sony' },
         { id_refrigerador: 2, id_local: 1, marca_nombre: 'sony' },
+        { id_refrigerador: 3, id_local: 2, marca_nombre: 'sony' },
+        { id_refrigerador: 4, id_local: 2, marca_nombre: 'sony' },
+        { id_refrigerador: 5, id_local: 3, marca_nombre: 'sony' },
+        { id_refrigerador: 6, id_local: 3, marca_nombre: 'sony' }
     ];
 
     const locales = [
@@ -91,7 +96,19 @@ export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MU
         await Refrigerador.create({ id_refrigerador, id_local, marca_nombre });
     }
 
-    //TODO: INICIALIZAR PRODUCTOS QUE ACEPTA CADA REFRIGERADOR EN PRODUCTOSREFIGERADOR CON CANT=0
+    const productosRefrigeradores = [ //divide productos 1 y 2 en refrigeradores de cada local
+        { id_refrigerador: 1, id_producto: 1, cantidad: 0 },
+        { id_refrigerador: 2, id_producto: 2, cantidad: 0 },
+        { id_refrigerador: 3, id_producto: 1, cantidad: 0 },
+        { id_refrigerador: 4, id_producto: 2, cantidad: 0 },
+        { id_refrigerador: 5, id_producto: 1, cantidad: 0 },
+        { id_refrigerador: 6, id_producto: 2, cantidad: 0 }
+    ];
+
+    for (const { id_refrigerador, id_producto, cantidad } of productosRefrigeradores) {
+        await ProductoRefrigerador.create({id_refrigerador, id_producto, cantidad});
+    }
+
 
     const mediosPago = [
         { id_medio_pago: 1, nombre: 'paypal' },
@@ -106,7 +123,7 @@ export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MU
     const usuarios = [
         { nombre: 'usuario1', email: 'email1@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Admin' },
         { nombre: 'cli1', email: 'email2@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Cliente', celular: '093443997', idPrimerMedioPago: 1 },
-        { nombre: 'usuario3', email: 'email3@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Repartidor' },
+        { nombre: 'usuario3', email: 'email3@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Repartidor', id_camioneta: 1 },
         { nombre: 'usuario4', email: 'email4@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Supervisor Cocina', id_cocina: 1 },
         { nombre: 'cli2', email: 'email5@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Cliente' , celular: '093443997', idPrimerMedioPago: 2},
         { nombre: 'usuario6', email: 'email6@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Dispositivo' }
@@ -118,17 +135,25 @@ export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MU
   
 }
 
-export async function startCamionetaQueues ()  {
+export const initializeRabbitMQAndWebSocket = async (io: WebSocketServer) => {
+    const cocinas = await Cocina.findAll(); 
     const camionetas = await Camioneta.findAll();  
-      camionetas.forEach(camioneta => {
-        startListeningForLotes(camioneta.id_camioneta);
+
+    cocinas.forEach(cocina => {
+      startListeningForPedidos(cocina.id_cocina, (pedidoData) => {
+        io.emit('pedido', { id_cocina: cocina.id_cocina, ...pedidoData });
+      });
+    });
+
+    camionetas.forEach(camioneta => {
+        startListeningForLotes(camioneta.id_camioneta, (loteData) => {
+          io.emit('lote', { id_camioneta: camioneta.id_camioneta, ...loteData });
+        });
     });
 }
 
-export async function startCocinaQueues() {
-    const cocinas = await Cocina.findAll();
-    cocinas.forEach(cocina => {
-        startListeningForPedidos(cocina.id_cocina); 
-    });
-}
+
+
+
+
 

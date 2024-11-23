@@ -7,6 +7,9 @@ import { ProductoEnvasado } from "../../shared/models/productoEnvasado";
 import { Refrigerador } from "../../shared/models/refrigerador";
 import { LoteDTO,LoteUpdateRetiroDto } from "../dto/LoteDto";
 import { X } from "../config";
+import { RefrigeradorRepository } from "./refrigeradorRepository";
+
+const refrigeradorRepository = new RefrigeradorRepository();
 
 class LoteRepository {
     async updateEntrega(id: number): Promise<Lote | null> {
@@ -19,13 +22,14 @@ class LoteRepository {
         return lote;
     }
 
-    async updateRetiro(id: number, loteUpdateRetiroDto: LoteUpdateRetiroDto): Promise<Lote | null> {
+    async updateRetiro(id: number): Promise<Lote | null> {
         const lote = await Lote.findByPk(id);
-        const fecha_retiro = loteUpdateRetiroDto.fecha_retirado.toString();
+        //la fecha de retiro es la fecha actual al llamar a esta funcion
+        const fecha_retiro = new Date();
         if (!lote) return null;
         if (lote.cantidad < X) 
-            throw new InvalidValueError("fecha_retirado", fecha_retiro, "el lote debe estar lleno para poder ser retirado");
-        lote.fecha_retirado = loteUpdateRetiroDto.fecha_retirado;
+            throw new InvalidValueError("fecha_retirado", fecha_retiro.toString(), "el lote debe estar lleno para poder ser retirado");
+        lote.fecha_retirado = fecha_retiro;
         await lote.save();
         return lote;
     }
@@ -47,11 +51,13 @@ class LoteRepository {
         const cocina = await Cocina.findByPk(loteDto.id_cocina);
         const local = await Local.findByPk(loteDto.id_local_destino);
         const producto = await Producto.findByPk(loteDto.id_producto);
-        const refrigerador = await Refrigerador.findByPk(loteDto.id_refrigerador);
+
+        const getRefrigeradorByLocal = await refrigeradorRepository.findRefirgeradorWithProductoInLocal(loteDto.id_local_destino, loteDto.id_producto);
+        const refrigerador = getRefrigeradorByLocal[0];
         if (!cocina || !local || !producto || !refrigerador) {
             return null;
         }
-
+        lote.id_refrigerador = refrigerador.id_refrigerador;
         const loteCreado = await Lote.create(lote);
         let productosEnvasados: ProductoEnvasado[] = [];
 

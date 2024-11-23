@@ -15,11 +15,13 @@ import cocinaRoutes from './inventario/routes/cocinaRoutes';
 import refrigeradorRoutes from './inventario/routes/refrigeradorRoutes';
 import lotesRoutes from './inventario/routes/lotesRoutes';
 import { connectRedis } from './shared/database/redis';
-import { loadEntidades, startCamionetaQueues, startCocinaQueues } from './shared/database/initialize';
+import { initializeRabbitMQAndWebSocket, loadEntidades } from './shared/database/initialize';
 import { startListeningForLotes } from './inventario/queues/camionetaSubscriber';
 import { startListeningForPedidos } from './inventario/queues/cocinaSubscriber';
 import accessLogger from './shared/middleware/accessLogMiddleware';
 import errorLogger from './shared/middleware/errorLogMiddleware';
+import { createServer } from 'http';
+import { Server as WebSocketServer } from 'socket.io';
 
 dotenv.config();
 
@@ -29,8 +31,17 @@ const main = async () => {
   //await connectRedis(); 
   //console.log('Redis conectado');
 
+  const httpServer = createServer(app); // Crear servidor HTTP
+  const io = new WebSocketServer(httpServer, {
+    cors: {
+      origin: 'http://localhost:5173',
+      methods: ['GET', 'POST'],
+    },
+  });
+
+
   await dbSync();
-  await loadEntidades();
+  //await loadEntidades();
   
   app.use(cors({
     origin: 'http://localhost:5173', 
@@ -58,15 +69,14 @@ const main = async () => {
 
   const PORT = process.env.PORT || 3000;
 
-  app.listen(PORT, async () => {
+  httpServer.listen(PORT, async () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
     try {
       await sequelize.authenticate();
       console.log("Conexión con la base de datos establecida correctamente.");
 
-      await startCamionetaQueues();
-      await startCocinaQueues();
-
+      await initializeRabbitMQAndWebSocket(io);
+      
     } catch (error) {
       console.error("No se pudo conectar a la base de datos:", error);
     }
@@ -76,5 +86,7 @@ const main = async () => {
 main().catch((err) => {
   console.error('Error al iniciar la aplicación:', err);
 });
+
+
 
 
