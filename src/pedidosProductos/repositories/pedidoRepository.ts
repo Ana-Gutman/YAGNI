@@ -10,6 +10,7 @@ import { ProductoPedido } from "../../shared/models/productoPedido";
 import { ProductoPedidoDTO } from "../dto/ProductoPedidoDto";
 import { ListaPedidoDTO } from "../dto/ListaPedidoDto";
 import { NotFoundError } from "../../shared/utils/customErrors";
+import { Usuario } from "../../shared/models/usuario";
 
 // interface PedidoFilter {
 // }
@@ -110,54 +111,66 @@ class PedidoRepository {
 
         return (productosExistentes.length === productoIds.length);
     }
-
-    async listarPedidosPorClienteYPeriodo(id_cliente: number, fechaInicio: Date, fechaFin: Date, estado?: string): Promise<ListaPedidoDTO[]> {
+    async listarPedidosPorClienteYPeriodo(
+        id_cliente: number,
+        fechaInicio: Date,
+        fechaFin: Date,
+        estado?: string
+    ): Promise<Pedido[]> {
         const whereCondition: any = {
             id_cliente,
             createdAt: {
-                [Op.between]: [fechaInicio, fechaFin],
+                [Op.gte]: fechaInicio, // Mayor o igual
+                [Op.lte]: fechaFin,    // Menor o igual
             },
         };
-
+    
         if (estado) {
             whereCondition.estado = estado;
         }
-
-        const pedidos = await Pedido.findAll({
+    
+        return Pedido.findAll({
             where: whereCondition,
             include: [
                 {
                     model: Cliente,
-                    attributes: ['nombre'],
+                    include: [
+                        {
+                            model: Usuario, // Relación con Usuario
+                            attributes: ['nombre'], // Selecciona solo el nombre del usuario
+                        },
+                    ],
+                    attributes: ['id_cliente'], // Evitar columnas innecesarias de Cliente
                 },
-
             ],
-        });
-
-        return this.mapPedidos(pedidos);
-    }
-
-    async mapPedidos(pedidos: Pedido[]): Promise<ListaPedidoDTO[]> {
-        return pedidos.map((pedido) => {
-            const fechaPedido = pedido.createdAt;
-            const horaRealizado = fechaPedido.toISOString().split('T')[1].substring(0, 5);
-            const horaRetirado = pedido.retirado ? pedido.retirado.toISOString().split('T')[1].substring(0, 5) : null;
-
-            const tiempoTranscurrido = pedido.retirado
-                ? `${Math.floor((pedido.retirado.getTime() - fechaPedido.getTime()) / (1000 * 60))} minutos`
-                : null;
-
-            return {
-                id_cliente: pedido.id_cliente,
-                nombreCliente: (pedido as any).Cliente.nombre, 
-                fechaPedido,
-                horaRealizado,
-                horaRetirado,
-                tiempoTranscurrido,
-                estado: pedido.estado,
-            };
+            attributes: ['id_pedido', 'id_cliente', 'estado', 'createdAt', 'retirado'], // Campos necesarios
+            order: [['createdAt', 'ASC']],
         });
     }
+    
+    
+    
+    // async mapPedidos(pedidos: Pedido[]): Promise<ListaPedidoDTO[]> {
+    //     return pedidos.map((pedido) => {
+    //         const fechaPedido = pedido.createdAt;
+    //         const horaRealizado = fechaPedido.toISOString().split('T')[1].substring(0, 5);
+    //         const horaRetirado = pedido.retirado ? pedido.retirado.toISOString().split('T')[1].substring(0, 5) : null;
+
+    //         const tiempoTranscurrido = pedido.retirado
+    //             ? `${Math.floor((pedido.retirado.getTime() - fechaPedido.getTime()) / (1000 * 60))} minutos`
+    //             : null;
+
+    //         return {
+    //             id_cliente: pedido.id_cliente,
+    //             nombreCliente: (pedido as any).Cliente.nombre, 
+    //             fechaPedido,
+    //             horaRealizado,
+    //             horaRetirado,
+    //             tiempoTranscurrido,
+    //             estado: pedido.estado,
+    //         };
+    //     });
+    // }
 
     async updateRetirado(id: number, estado: 'Completo' | 'Incompleto'): Promise<Pedido | null> {
         const pedido = await Pedido.findByPk(id);

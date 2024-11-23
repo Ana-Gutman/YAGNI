@@ -13,6 +13,7 @@ import { Op } from 'sequelize';
 import { MovimientoRefrigerador } from '../../shared/models/movimientoRefrigerador';
 import { ExistenciasDTO } from '../dto/ExistenciasDto';
 import { Producto } from '../../shared/models/producto';
+import InventarioService from './InventarioService';
 
 const refrigeradorRepository = new RefrigeradorRepository();
 const localRepository = new LocalRepository();
@@ -214,6 +215,16 @@ export const modificarInventario = async (
         throw new MissingParameterError('El ID del refrigerador y productos son requeridos');
     }
 
+    for (const producto of productos) {
+        const { id_producto, cantidad_cambiada } = producto;
+
+        if (operacion === 'retirar') {
+            await InventarioService.updateProductState(id_producto.toString(), 'En Tránsito');
+        } else if (operacion === 'agregar') {
+            await InventarioService.updateProductState(id_producto.toString(), 'En Refrigerador');
+        }
+    }
+    
     if (operacion === 'agregar') {
         await refrigeradorRepository.actualizarInventario(idRefrigerador, productos);
     } else {

@@ -12,6 +12,7 @@ import { ProductoPedido } from '../../shared/models/productoPedido';
 import { ProductoRefrigerador } from '../../shared/models/productoRefrigerador';
 import { Refrigerador } from '../../shared/models/refrigerador';
 import { Producto } from '../../shared/models/producto';
+import { Usuario } from '../../shared/models/usuario';
 
 const pedidoRepository = new PedidoRepository();
 const localRepository = new LocalRepository();
@@ -150,28 +151,45 @@ export const getPedidoACocina = async (pedido: Pedido, productosPedido: Producto
         cantidad: producto.cantidad - stock
     }));
 }
+export const listarPedidosPorClienteYPeriodo = async (
+    listaPedidoCli: ListaPedidosDeClienteDto
+): Promise<ListaPedidoDTO[]> => {
+    const { id_cliente, fechaInicio, fechaFin, estado } = listaPedidoCli;
 
-export const listarPedidosPorClienteYPeriodo = async (listaPedidoCli: ListaPedidosDeClienteDto): Promise<ListaPedidoDTO[]> => {
-    try{
-        const { id_cliente, fechaInicio, fechaFin, estado } = listaPedidoCli;
-        if (!id_cliente || !fechaInicio || !fechaFin) {
-            console.log(id_cliente, fechaInicio, fechaFin);
-            throw new MissingParameterError('Los parámetros id_cliente, fechaInicio y fechaFin son requeridos');
-        }
-        if (estado && estado !== 'Completo' && estado !== 'Incompleto') {
-            throw new InvalidValueError("estado", estado ,'El estado debe ser Completo o Incompleto');
-        }
-        const pedidos = await pedidoRepository.listarPedidosPorClienteYPeriodo(id_cliente, fechaInicio, fechaFin, estado);
-        return pedidos;
+    if (!id_cliente || !fechaInicio || !fechaFin) {
+        throw new Error("Los parámetros id_cliente, fechaInicio y fechaFin son requeridos");
     }
-    catch (error: any) {
-        if (error instanceof MissingParameterError || error instanceof InvalidValueError) {
-            throw error;
-        }
-        throw new DatabaseError(`Error al listar pedidos: ${error.message}`);
-    }
-    
-  }
+
+    const pedidos = await pedidoRepository.listarPedidosPorClienteYPeriodo(
+        id_cliente,
+        fechaInicio,
+        fechaFin,
+        estado
+    );
+
+    return pedidos.map((pedido: any) => {
+        const fechaPedido = pedido.createdAt;
+        const horaRealizado = fechaPedido.toISOString().split("T")[1].substring(0, 5);
+        const horaRetirado = pedido.retirado ? pedido.retirado.toISOString().split("T")[1].substring(0, 5) : null;
+
+        const tiempoTranscurrido = pedido.retirado
+            ? `${Math.floor((pedido.retirado.getTime() - fechaPedido.getTime()) / (1000 * 60))} minutos`
+            : null;
+
+        return {
+            id_cliente: pedido.id_cliente,
+            nombreCliente: pedido.Cliente?.Usuario?.nombre || "N/A", // Asegurarse de navegar correctamente
+            id_pedido: pedido.id_pedido,
+            estado: pedido.estado,
+            fechaPedido,
+            horaRealizado,
+            horaRetirado,
+            tiempoTranscurrido,
+        };
+    });
+};
+
+
 
 export const updatePedidoRetirado = async (id: number, estado: string): Promise<Pedido | null> => {
     if (!id)
