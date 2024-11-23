@@ -73,7 +73,7 @@ class PedidoRepository {
                 return null;
             }
 
-            const pedido = await Pedido.create({ id_cliente, id_medio_pago, id_local, estado: pedidoDto.estado }, { transaction });
+            const pedido = await Pedido.create({ id_cliente, id_medio_pago, id_local, estado: pedidoDto.estado, fecha_retiro: pedidoDto.fecha_retiro }, { transaction });
             const productosEnPedido = productos.map((producto) => ({
                 id_pedido: pedido.id_pedido,
                 id_producto: producto.id_producto,

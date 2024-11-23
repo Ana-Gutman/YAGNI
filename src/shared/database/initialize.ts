@@ -96,7 +96,7 @@ export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MU
         await Refrigerador.create({ id_refrigerador, id_local, marca_nombre });
     }
 
-    const productosRefrigeradores = [ //divide productos 1 y 2 en refrigeradores de cada local
+    const productosRefrigeradores = [ //Cada producto debe estar en un unico refrigerador por local
         { id_refrigerador: 1, id_producto: 1, cantidad: 0 },
         { id_refrigerador: 2, id_producto: 2, cantidad: 0 },
         { id_refrigerador: 3, id_producto: 1, cantidad: 0 },

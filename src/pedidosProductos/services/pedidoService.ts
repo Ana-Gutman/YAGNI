@@ -12,6 +12,7 @@ import { ProductoPedido } from '../../shared/models/productoPedido';
 import { ProductoRefrigerador } from '../../shared/models/productoRefrigerador';
 import { Refrigerador } from '../../shared/models/refrigerador';
 import { Producto } from '../../shared/models/producto';
+import { H } from '../../inventario/config';
 
 const pedidoRepository = new PedidoRepository();
 const localRepository = new LocalRepository();
@@ -45,8 +46,14 @@ export const createPedido = async (pedidoDto: PedidoDTO): Promise<{ pedido: Pedi
     if (Object.keys(pedidoDto).length === 0) {
         throw new MissingParameterError("El PedidoDTO es requerido");
     }
-    if (!pedidoDto.id_cliente || !pedidoDto.id_medio_pago || !pedidoDto.id_local || !pedidoDto.productos) {
-        throw new RequiredFieldError("Los campos 'id_cliente', 'id_medio_pago', 'id_local', y 'productos' son obligatorios en PedidoDTO");
+    if (!pedidoDto.id_cliente || !pedidoDto.id_medio_pago || !pedidoDto.id_local || !pedidoDto.productos || !pedidoDto.fecha_retiro) {
+        throw new RequiredFieldError("Los campos 'id_cliente', 'id_medio_pago', 'id_local', 'fecha_retiro' y 'productos' son obligatorios en PedidoDTO");
+    }
+    if (pedidoDto.productos.length === 0) {
+        throw new InvalidValueError('productos', '{ } ',"La lista de productos no puede estar vacía");
+    }
+    if (new Date(pedidoDto.fecha_retiro).getTime() - new Date().getTime() < H * 60 * 60 * 1000) {
+        throw new InvalidValueError('fecha_retiro', pedidoDto.fecha_retiro.toISOString(), `La fecha de retiro debe ser al menos ${H} horas después de la fecha actual`);
     }
     try {
         const pedido = await pedidoRepository.create(pedidoDto);
