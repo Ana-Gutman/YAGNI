@@ -4,6 +4,7 @@ import { Lote } from '../../shared/models/lote';
 import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/utils/customErrors';
 import { ProductoEnvasado } from '../../shared/models/productoEnvasado';
 import { publishLoteNotification } from '../queues/cocinaPublisher';
+import InventarioService from './InventarioService';
 
 const loteRepository = new LoteRepository();
 
@@ -30,39 +31,52 @@ export const getLoteById = async (id: number): Promise<Lote | null> => {
     }
 };
 
-export const createLote = async (loteDto: LoteDTO): Promise<{ lote: Lote, productosEnvasados: ProductoEnvasado[] }> => {
+export const createLote = async (
+    loteDto: LoteDTO
+): Promise<{ lote: Lote; productosEnvasados: ProductoEnvasado[] }> => {
     if (Object.keys(loteDto).length === 0) {
         throw new MissingParameterError("El LoteDTO es requerido");
     }
     if (!loteDto.id_cocina || !loteDto.id_local_destino || !loteDto.id_producto) {
-        throw new RequiredFieldError("Los campos 'id_cocina', 'id_local_destino' y 'id_producto' son obligatorios en LoteDTO");
+        throw new RequiredFieldError(
+            "Los campos 'id_cocina', 'id_local_destino' y 'id_producto' son obligatorios en LoteDTO"
+        );
     }
     try {
         const lote = await loteRepository.create(loteDto);
-        if (!lote) 
+        if (!lote) {
             throw new NotFoundError("No existe la cocina, local, producto o refrigerador en la base de datos");
+        }
+
+        // **Actualización del estado del producto en Redis**
+        await InventarioService.updateProductState(lote.lote.id_producto.toString(), "En Tránsito");
+
+        // Notificación del lote creado
         await publishLoteNotification(lote.lote);
+
         return lote;
     } catch (error: any) {
-        if (error instanceof NotFoundError) 
-            throw error;
+        if (error instanceof NotFoundError) throw error;
         throw new DatabaseError(`Error al crear lote: ${error.message}`);
     }
 };
 
 
-
 export const updateRetiroLote = async (id: number): Promise<Lote | null> => {
-    if (!id)
-        throw new MissingParameterError('El ID del lote es requerido');
+    if (!id) throw new MissingParameterError("El ID del lote es requerido");
     try {
         const lote = await loteRepository.updateRetiro(id);
-        if (!lote) 
+        if (!lote) {
             throw new NotFoundError(`El lote a marcar como retirado con ID ${id} no se encuentra en la base de datos`);
+        }
+
+        // **Actualización del estado del producto en Redis**
+        await InventarioService.updateProductState(lote.id_producto.toString(), "En Refrigerador");
+
         return lote;
     } catch (error: any) {
         if (error instanceof NotFoundError || error instanceof InvalidValueError) {
-            throw error;  
+            throw error;
         }
         throw new DatabaseError(`Error al obtener lote con ID ${id}: ${error.message}`);
     }

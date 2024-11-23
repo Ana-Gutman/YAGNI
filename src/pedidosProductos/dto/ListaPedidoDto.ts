@@ -1,12 +1,14 @@
 export interface ListaPedidoDTO {
     id_cliente: number;
     nombreCliente: string;
+    id_pedido: number; // Añadir id_pedido
+    estado: string; // Añadir estado
     fechaPedido: Date;
     horaRealizado: string;
     horaRetirado: string | null;
     tiempoTranscurrido: string | null;
-  }
-  
+}
+
 export class ListaPedidosDeClienteDto{
     public id_cliente!: number;
     public fechaInicio!: Date;

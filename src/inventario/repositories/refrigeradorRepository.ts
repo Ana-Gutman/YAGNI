@@ -166,16 +166,18 @@ class RefrigeradorRepository {
             where: { id_producto: idProducto },
             include: [{ model: Refrigerador, attributes: ['id_refrigerador'] }],
         });
-
+    
         if (!fInicio && !fFin) {
             return existenciasActuales.map((estado) => {
                 return new ExistenciasDTO(
                     estado.id_refrigerador,
-                    [{ fecha: new Date(), existencia: estado.cantidad }]
+                    estado.cantidad > 0
+                        ? [{ fecha: new Date(), existencia: estado.cantidad }]
+                        : [] // Si la cantidad es 0, dejamos el historial vacío
                 );
             });
         }
-
+    
         const movimientos = await MovimientoRefrigerador.findAll({
             where: {
                 id_producto: idProducto,
@@ -186,14 +188,19 @@ class RefrigeradorRepository {
             include: [{ model: Refrigerador, attributes: ['id_refrigerador'] }],
             order: [['fecha', 'ASC']],
         });
-
+    
+        if (existenciasActuales.length === 0 && movimientos.length === 0) {
+            // Si no hay existencias actuales ni movimientos, devolvemos una respuesta vacía
+            return [];
+        }
+    
         const existenciasHistorial = existenciasActuales.map((estado) => {
             const id_refrigerador = estado.id_refrigerador;
-
+    
             const movimientosRefrigerador = movimientos.filter(
                 (mov) => mov.id_refrigerador === id_refrigerador
             );
-
+    
             let existencia = estado.cantidad; // Estado actual
             const historial = movimientosRefrigerador.map((mov) => {
                 existencia += mov.cantidad_cambiada; // Actualizar existencia
@@ -202,12 +209,13 @@ class RefrigeradorRepository {
                     existencia,
                 };
             });
-
+    
             return new ExistenciasDTO(id_refrigerador, historial);
         });
-
+    
         return existenciasHistorial;
     }
+    
 
 }
 

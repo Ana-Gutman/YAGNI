@@ -5,135 +5,130 @@ import { Producto } from "../models/producto";
 import { Refrigerador } from "../models/refrigerador";
 import { MarcaRefrigerador } from "../models/marcaRefrigerador";
 import { MedioPago } from "../models/medioPago";
-import { startListeningForLotes } from "../../inventario/queues/camionetaSubscriber";
-import { startListeningForPedidos } from "../../inventario/queues/cocinaSubscriber";
+import { ProductoRefrigerador } from "../models/productoRefrigerador";
 import { CocinaCamioneta } from "../models/cocinaCamioneta";
 import { CocinaLocal } from "../models/cocinaLocal";
 import { createUsuario } from "../../usuarioClientes/services/usuarioService";
 import { UsuarioDTO } from "../../usuarioClientes/dto/UsuarioDto";
-import { Server as WebSocketServer } from 'socket.io';
-import { ProductoRefrigerador } from "../models/productoRefrigerador";
+import { Server as WebSocketServer } from "socket.io";
+import { startListeningForLotes } from "../../inventario/queues/camionetaSubscriber";
+import { startListeningForPedidos } from "../../inventario/queues/cocinaSubscriber";
 
-export async function loadEntidades() { //TODO: CAMBIAR A FAKERS QUE AGREGUEN MUCHOS DATOS
-    const cocinas = [
-        { id_cocina: 1, direccion: "dir" },
-        { id_cocina: 2, direccion: "dir" },
-        { id_cocina: 3, direccion: "dir" }
-    ];
-
-    for (const { id_cocina, direccion } of cocinas) {
-        await Cocina.create({ id_cocina, direccion });
-    }
-    
-    const camionetas = [
-        { id_camioneta: 1, matricula: 'ABC-123' },
-        { id_camioneta: 2, matricula: 'DEF-456' },
-        { id_camioneta: 3, matricula: 'GHI-789' }
-    ];  
-
-    for (const { id_camioneta, matricula } of camionetas) {
-        await Camioneta.create({ id_camioneta, matricula });
-    }
-    
-    const cocinaCamionetas = [
-        { id_cocina: 1, id_camioneta: 1 },
-        { id_cocina: 1, id_camioneta: 2 },
-        { id_cocina: 2, id_camioneta: 3 }
-      ];
-    
-      for (const { id_cocina, id_camioneta } of cocinaCamionetas) {
-        await CocinaCamioneta.create({ id_cocina, id_camioneta });
-      }
-
-    const productos = [
-        { id_producto: 1, nombre: 'producto1', precio_lista: 100 },
-        { id_producto: 2, nombre: 'producto2', precio_lista: 200 },
-    ];
-
-    for (const { id_producto, nombre, precio_lista } of productos) {
-        await Producto.create({ id_producto, nombre, precio_lista });
-    }
-
-    const MarcaRefrigeradores = [
-        { nombre: 'sony', tipo_codigo: 'QR' },
-    ];
-
-    for (const { nombre, tipo_codigo } of MarcaRefrigeradores) {
-        await MarcaRefrigerador.create({ nombre, tipo_codigo });
-    }
-
-    const refrigeradores = [
-        { id_refrigerador: 1, id_local: 1, marca_nombre: 'sony' },
-        { id_refrigerador: 2, id_local: 1, marca_nombre: 'sony' },
-        { id_refrigerador: 3, id_local: 2, marca_nombre: 'sony' },
-        { id_refrigerador: 4, id_local: 2, marca_nombre: 'sony' },
-        { id_refrigerador: 5, id_local: 3, marca_nombre: 'sony' },
-        { id_refrigerador: 6, id_local: 3, marca_nombre: 'sony' }
-    ];
-
-    const locales = [
-        { id_local: 1, nombre:'local1', direccion: 'dir' },
-        { id_local: 2, nombre: 'local2', direccion: 'dir' },
-        { id_local: 3, nombre: 'local3', direccion: 'dir' }
-    ];
-
+export async function loadEntidades() {
+    // Locales
+    const locales = Array.from({ length: 5 }, (_, i) => ({
+        id_local: i + 1,
+        nombre: `Local ${i + 1}`,
+        direccion: `Avenida Principal ${i + 1}`,
+    }));
     for (const { id_local, nombre, direccion } of locales) {
         await Local.create({ id_local, nombre, direccion });
     }
 
-    const cocinaLocales = [ //a cada local le corresponde solo una cocina
-        { id_cocina: 1, id_local: 1 },
-        { id_cocina: 2, id_local: 2 },
-        { id_cocina: 2, id_local: 3 }
+    // Marca Refrigeradores
+    const marcas = [
+        { nombre: "Samsung", tipo_codigo: "QR" },
+        { nombre: "LG", tipo_codigo: "NFC" },
+        { nombre: "Whirlpool", tipo_codigo: "QR" },
+        { nombre: "Bosch", tipo_codigo: "NFC" },
+        { nombre: "Sony", tipo_codigo: "QR" },
     ];
-
-    for (const { id_cocina, id_local } of cocinaLocales) {
-        await CocinaLocal.create({ id_cocina, id_local });
+    for (const { nombre, tipo_codigo } of marcas) {
+        await MarcaRefrigerador.create({ nombre, tipo_codigo });
     }
 
-
+    // Refrigeradores
+    const refrigeradores = Array.from({ length: 10 }, (_, i) => ({
+        id_refrigerador: i + 1,
+        id_local: locales[i % locales.length].id_local, // Asegura que id_local exista
+        marca_nombre: marcas[i % marcas.length].nombre, // Relación válida con MarcaRefrigerador
+    }));
     for (const { id_refrigerador, id_local, marca_nombre } of refrigeradores) {
         await Refrigerador.create({ id_refrigerador, id_local, marca_nombre });
     }
 
-    const productosRefrigeradores = [ //Cada producto debe estar en un unico refrigerador por local
-        { id_refrigerador: 1, id_producto: 1, cantidad: 0 },
-        { id_refrigerador: 2, id_producto: 2, cantidad: 0 },
-        { id_refrigerador: 3, id_producto: 1, cantidad: 0 },
-        { id_refrigerador: 4, id_producto: 2, cantidad: 0 },
-        { id_refrigerador: 5, id_producto: 1, cantidad: 0 },
-        { id_refrigerador: 6, id_producto: 2, cantidad: 0 }
-    ];
-
-    for (const { id_refrigerador, id_producto, cantidad } of productosRefrigeradores) {
-        await ProductoRefrigerador.create({id_refrigerador, id_producto, cantidad});
+    // Producto-Refrigeradores con Cantidad 0
+    const productos = Array.from({ length: 10 }, (_, i) => ({
+        id_producto: i + 1,
+        nombre: `Producto ${i + 1}`,
+        precio_lista: 50 * (i + 1),
+    }));
+    for (const { id_producto, nombre, precio_lista } of productos) {
+        await Producto.create({ id_producto, nombre, precio_lista });
     }
 
+    const productosRefrigeradores = productos.flatMap((producto, i) => [
+        {
+            id_refrigerador: refrigeradores[i % refrigeradores.length].id_refrigerador, // Relación válida
+            id_producto: producto.id_producto,
+            cantidad: Math.random() > 0.5 ? 0 : Math.floor(Math.random() * 20 + 1), // Algunos con cantidad 0
+        },
+    ]);
+    for (const { id_refrigerador, id_producto, cantidad } of productosRefrigeradores) {
+        await ProductoRefrigerador.create({ id_refrigerador, id_producto, cantidad });
+    }
 
-    const mediosPago = [
-        { id_medio_pago: 1, nombre: 'paypal' },
-        { id_medio_pago: 2, nombre: 'mercado pago' },
-        { id_medio_pago: 3, nombre: 'transferencia' }
-    ];
+    // Cocinas
+    const cocinas = Array.from({ length: 5 }, (_, i) => ({
+        id_cocina: i + 1,
+        direccion: `Calle ${i + 1}, Ciudad ${i + 1}`,
+    }));
+    for (const { id_cocina, direccion } of cocinas) {
+        await Cocina.create({ id_cocina, direccion });
+    }
 
+    // Cocina-Locales Relaciones
+    const cocinaLocales = locales.map((local, i) => ({
+        id_cocina: (i % cocinas.length) + 1,
+        id_local: local.id_local,
+    }));
+    for (const { id_cocina, id_local } of cocinaLocales) {
+        await CocinaLocal.create({ id_cocina, id_local });
+    }
+
+    // Camionetas
+    const camionetas = Array.from({ length: 5 }, (_, i) => ({
+        id_camioneta: i + 1,
+        matricula: `MAT-${1000 + i}`,
+    }));
+    for (const { id_camioneta, matricula } of camionetas) {
+        await Camioneta.create({ id_camioneta, matricula });
+    }
+
+    // Cocina-Camioneta Relaciones
+    const cocinaCamionetas = Array.from({ length: 5 }, (_, i) => ({
+        id_cocina: i + 1,
+        id_camioneta: i + 1,
+    }));
+    for (const { id_cocina, id_camioneta } of cocinaCamionetas) {
+        await CocinaCamioneta.create({ id_cocina, id_camioneta });
+    }
+
+    // Medios de Pago
+    const mediosPago = ["PayPal", "Mercado Pago", "Transferencia", "Tarjeta"].map((medio, i) => ({
+        id_medio_pago: i + 1,
+        nombre: medio,
+    }));
     for (const { id_medio_pago, nombre } of mediosPago) {
         await MedioPago.create({ id_medio_pago, nombre });
     }
 
+    // Usuarios
     const usuarios = [
-        { nombre: 'usuario1', email: 'email1@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Admin' },
-        { nombre: 'cli1', email: 'email2@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Cliente', celular: '093443997', idPrimerMedioPago: 1 },
-        { nombre: 'usuario3', email: 'email3@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Repartidor', id_camioneta: 1 },
-        { nombre: 'usuario4', email: 'email4@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Supervisor Cocina', id_cocina: 1 },
-        { nombre: 'cli2', email: 'email5@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Cliente' , celular: '093443997', idPrimerMedioPago: 2},
-        { nombre: 'usuario6', email: 'email6@gmail.com', contraseña: 'Aqwertyu2!!!', rol: 'Dispositivo' }
+        { nombre: "Admin User", email: "admin@example.com", contraseña: "Admin1234!", rol: "Admin" },
+        { nombre: "Cliente 1", email: "cliente1@example.com", contraseña: "Cliente1234!", rol: "Cliente", celular: "099999001", idPrimerMedioPago: 1 },
+        { nombre: "Cliente 2", email: "cliente2@example.com", contraseña: "Cliente1234!", rol: "Cliente", celular: "099999002", idPrimerMedioPago: 2 },
+        { nombre: "Supervisor Cocina", email: "supervisor@example.com", contraseña: "Supervisor1234!", rol: "Supervisor Cocina", id_cocina: 1 },
+        { nombre: "Repartidor", email: "repartidor@example.com", contraseña: "Repartidor1234!", rol: "Repartidor", id_camioneta: 1 },
+        { nombre: "Dispositivo", email: "dispositivo@example.com", contraseña: "Dispositivo1234!", rol: "Dispositivo" },
     ];
-
-    for (const {nombre, email, contraseña, rol, celular, idPrimerMedioPago, id_cocina} of usuarios) {
-        const usuario = await createUsuario(new UsuarioDTO(0, nombre, rol, email, contraseña, celular, idPrimerMedioPago, id_cocina));
+    for (const usuario of usuarios) {
+        await createUsuario(new UsuarioDTO(0, usuario.nombre, usuario.rol, usuario.email, usuario.contraseña, usuario.celular, usuario.idPrimerMedioPago, usuario.id_cocina));
     }
-  
+
+    
 }
+
 
 export const initializeRabbitMQAndWebSocket = async (io: WebSocketServer) => {
     const cocinas = await Cocina.findAll(); 
@@ -151,9 +146,3 @@ export const initializeRabbitMQAndWebSocket = async (io: WebSocketServer) => {
         });
     });
 }
-
-
-
-
-
-

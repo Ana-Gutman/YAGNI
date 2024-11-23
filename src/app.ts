@@ -59,7 +59,7 @@ const main = async () => {
   app.use("/api", accessLogger, cocinaRoutes);  
   app.use("/api", accessLogger, refrigeradorRoutes);
   app.use('/api', accessLogger, lotesRoutes);
-  app.use('/api/inventario', accessLogger, inventarioRoutes);
+  app.use('/api', accessLogger, inventarioRoutes);
 
   app.use(errorLogger);
 
