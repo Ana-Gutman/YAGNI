@@ -61,11 +61,11 @@ const main = async () => {
   app.use('/api', accessLogger, lotesRoutes);
   app.use('/api/inventario', accessLogger, inventarioRoutes);
 
+  app.use(errorLogger);
+
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     errorMiddleware(err, req, res, next);
   });
-
-  app.use(errorLogger);
 
   const PORT = process.env.PORT || 3000;
 

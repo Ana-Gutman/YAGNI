@@ -3,15 +3,17 @@ import client from '../utils/elasticsearchClient';
 
 const accessLogger = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const actor = req.body.user || { id: 'unknown', permissions: [] }; // Asegúrate de usar tu sistema de autenticación
+    const user = req.body.user || { };
+    const actor = user.id_usuario ||  "anonymous";
+    const permissions = user.rol || "unknown";
     const action = `${req.method} ${req.path}`;
     const timestamp = new Date();
 
     await client.index({
       index: 'access_logs',
       document: {
-        actor: actor.id,
-        permissions: actor.permissions,
+        actor,
+        permissions,
         action,
         timestamp,
       },

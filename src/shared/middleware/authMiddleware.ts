@@ -1,21 +1,30 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { AuthenticationError, AuthorizationError } from "../utils/customErrors";
 
 const authorize =
   (allowedRoles: string[]) =>
   (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(" ")[1];
-    if (!token) throw res.status(401).send("No autorizado");
+    if (!token) {
+      return next(new AuthenticationError("No autorizado: falta token"));
+    }
 
     try {
       const decoded: any = jwt.verify(token, "AIzaSyBurpEG9jJ1C3dMLNkN9FFsQgncSAWrDJg");
+
       if (!allowedRoles.includes(decoded.rol)) {
-        throw res.status(403).send("Permisos insuficientes");
+        return next(new AuthorizationError("Permisos insuficientes para esta acción"));
       }
-      req.body.user = decoded;
-      next();
+
+      req.body.user = {
+        id_usuario: decoded.id,
+        rol: decoded.rol,
+      };
+
+      next(); 
     } catch (err) {
-      throw res.status(403).send("Token inválido");
+      return next(new AuthenticationError("Token inválido o expirado"));
     }
   };
 

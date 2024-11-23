@@ -1,4 +1,4 @@
-import { MissingParameterError, InvalidValueError, RequiredFieldError, DatabaseError, NotFoundError, GeneralError } from '../utils/customErrors';
+import { MissingParameterError, InvalidValueError, RequiredFieldError, DatabaseError, NotFoundError, GeneralError, AuthenticationError, AuthorizationError } from '../utils/customErrors';
 import { Request, Response, NextFunction } from 'express';
 
 export const errorMiddleware = (
@@ -69,6 +69,26 @@ export const errorMiddleware = (
         });
     }
 
+    if (err instanceof AuthenticationError) {
+        return res.status(401).json({
+          error: {
+            name: err.name,
+            message: err.message,
+            code: "AUTHENTICATION_ERROR",
+          },
+        });
+      }
+    
+      if (err instanceof AuthorizationError) {
+        return res.status(403).json({
+          error: {
+            name: err.name,
+            message: err.message,
+            code: "AUTHORIZATION_ERROR",
+          },
+        });
+      }
+
     return res.status(500).json({
         error: {
             name: "UnknownError",
@@ -76,4 +96,6 @@ export const errorMiddleware = (
             code: 'UNKNOWN_ERROR',
         }
     });
+
+
 };
