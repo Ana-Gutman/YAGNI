@@ -59,36 +59,37 @@ class PedidoRepository {
         await pedido.save();
     }
     
+    async create(
+        pedidoDto: PedidoDTO,
+    ): Promise<{ pedido: Pedido; productosPedido: ProductoPedidoDTO[] }> {
+        const { id_cliente, id_medio_pago, id_local, productos } = pedidoDto;
     
-    async create(pedidoDto: PedidoDTO): Promise<{ pedido: Pedido, productosPedido: ProductoPedidoDTO[] } | null> {
-        const transaction = await sequelize.transaction();
-        try {
-            pedidoDto.estado = "Iniciado";
-
-            const { id_cliente, id_medio_pago, id_local, productos } = pedidoDto;
-
-            const exsistence = await this.checkExistence(id_cliente, id_local, id_medio_pago);
-            const productsExistence = exsistence && await this.checkProductExistence(productos, transaction);
-            if (!exsistence || !productsExistence) {
-                await transaction.rollback();
-                return null;
-            }
-
-            const pedido = await Pedido.create({ id_cliente, id_medio_pago, id_local, estado: pedidoDto.estado }, { transaction });
-            const productosEnPedido = productos.map((producto) => ({
-                id_pedido: pedido.id_pedido,
-                id_producto: producto.id_producto,
-                cantidad: producto.cantidad,
-            }));
-            await ProductoPedido.bulkCreate(productosEnPedido, { transaction });
-            await transaction.commit();
-
-            return { pedido: pedido, productosPedido: pedidoDto.productos };
-        } catch (error: any) {
-            await transaction.rollback();
-            throw new Error(`Error al crear el pedido: ${error.message}`);
+        // Validar existencia de referencias (cliente, local, medio de pago)
+        const clienteExiste = await Cliente.findByPk(id_cliente);
+        const localExiste = await Local.findByPk(id_local);
+        const medioPagoExiste = await MedioPago.findByPk(id_medio_pago);
+    
+        if (!clienteExiste || !localExiste || !medioPagoExiste) {
+            throw new NotFoundError("Cliente, local o medio de pago no encontrados.");
         }
+    
+        // Crear el pedido principal
+        const pedido = await Pedido.create(
+            { id_cliente, id_medio_pago, id_local, estado: "Iniciado" },
+        );
+    
+        // Insertar productos asociados al pedido
+        const productosEnPedido = productos.map((producto) => ({
+            id_pedido: pedido.id_pedido,
+            id_producto: producto.id_producto,
+            cantidad: producto.cantidad,
+        }));
+    
+        await ProductoPedido.bulkCreate(productosEnPedido);
+    
+        return { pedido, productosPedido: productos };
     }
+    
 
     async checkExistence(id_cliente: number, id_local: number, id_medio_pago: number): Promise<boolean> {
         const cliente = await Cliente.findByPk(id_cliente);

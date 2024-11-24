@@ -11,6 +11,7 @@ import { errorMiddleware } from './shared/middleware/errorMiddleware';
 import inventarioRoutes from './inventario/routes/InventarioRoutes';
 import clienteRoutes from './usuarioClientes/routes/clienteRoutes';
 import camionetaRoutes from './inventario/routes/camionetaRoutes';
+import paymentRoutes from './pedidosProductos/routes/paymentRoutes';
 import cocinaRoutes from './inventario/routes/cocinaRoutes';
 import refrigeradorRoutes from './inventario/routes/refrigeradorRoutes';
 import lotesRoutes from './inventario/routes/lotesRoutes';
@@ -60,6 +61,18 @@ const main = async () => {
   app.use("/api", accessLogger, refrigeradorRoutes);
   app.use('/api', accessLogger, lotesRoutes);
   app.use('/api', accessLogger, inventarioRoutes);
+  app.use('/payments', accessLogger, paymentRoutes);
+
+  app.use((req, res, next) => {
+    const start = process.hrtime();
+    res.on('finish', () => {
+        const [seconds, nanoseconds] = process.hrtime(start);
+        const durationMs = seconds * 1000 + nanoseconds / 1e6;
+        console.log(`Tiempo de respuesta: ${durationMs} ms`);
+    });
+    next();
+});
+
 
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     errorMiddleware(err, req, res, next);

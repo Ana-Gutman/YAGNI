@@ -13,9 +13,11 @@ import { ProductoRefrigerador } from '../../shared/models/productoRefrigerador';
 import { Refrigerador } from '../../shared/models/refrigerador';
 import { Producto } from '../../shared/models/producto';
 import { Usuario } from '../../shared/models/usuario';
+import { MockPaymentGateway } from './MockPaymentGateway';
 
 const pedidoRepository = new PedidoRepository();
 const localRepository = new LocalRepository();
+const paymentGateway = new MockPaymentGateway();
 
 export const getAllPedidos = async (): Promise<Pedido[]> => {
     try {
@@ -41,28 +43,42 @@ export const getPedidoById = async (id: number): Promise<Pedido | null> => {
 };
 
 
+export const createPedido = async (pedidoDto: PedidoDTO): Promise<{ pedido: Pedido; productosPedido: ProductoPedidoDTO[] }> => {
+    const { id_cliente, id_medio_pago, id_local, productos, paymentData } = pedidoDto;
 
-export const createPedido = async (pedidoDto: PedidoDTO): Promise<{ pedido: Pedido, productosPedido: ProductoPedidoDTO[] }> => {
-    if (Object.keys(pedidoDto).length === 0) {
-        throw new MissingParameterError("El PedidoDTO es requerido");
+    // Validar campos obligatorios
+    if (!id_cliente || !id_medio_pago || !id_local || !productos || productos.length === 0) {
+        throw new RequiredFieldError("Los campos 'id_cliente', 'id_medio_pago', 'id_local' y 'productos' son obligatorios.");
     }
-    if (!pedidoDto.id_cliente || !pedidoDto.id_medio_pago || !pedidoDto.id_local || !pedidoDto.productos) {
-        throw new RequiredFieldError("Los campos 'id_cliente', 'id_medio_pago', 'id_local', y 'productos' son obligatorios en PedidoDTO");
+
+    if (!paymentData || !paymentData.amount || !paymentData.method || !paymentData.currency) {
+        throw new RequiredFieldError("Los datos de pago (amount, paymentMethod, currency) son obligatorios.");
     }
+
     try {
-        const pedido = await pedidoRepository.create(pedidoDto);
-        if (!pedido) 
-            throw new NotFoundError("El cliente, medio de pago, local o productos no existen en la base de datos");
-        const pedidoALocal = await getPedidoACocina(pedido.pedido, pedido.productosPedido);
-        await publishPedidoNotification( pedidoALocal,  pedidoDto.id_local);
-        return pedido;
-    } catch (error: any) {
-        if (error instanceof NotFoundError) {
-            throw error;  
+        // Procesar el pago con la pasarela
+        const paymentResult = await paymentGateway.processPayment(paymentData);
+        if (!paymentResult.success) {
+            throw new Error(`Pago fallido: ${paymentResult.errorMessage}`);
         }
-        throw new DatabaseError(`Error al crear pedido: ${error.message}`);
+
+        // Crear el pedido
+        const pedidoCreado = await pedidoRepository.create(pedidoDto);
+
+        // Publicar notificación del pedido
+        const pedidoALocal = await getPedidoACocina(pedidoCreado.pedido, pedidoCreado.productosPedido);
+        await publishPedidoNotification(pedidoALocal, id_local);
+
+        return pedidoCreado;
+    } catch (error: any) {
+        if (error instanceof NotFoundError || error instanceof RequiredFieldError) {
+            throw error;
+        }
+        throw new DatabaseError(`Error al crear el pedido: ${error.message}`);
     }
 };
+
+
 
 export const marcarPedidoIncompleto = async (idPedido: number, productos: ProductoPedidoDTO[]): Promise<string> => {
     const pedido = await Pedido.findByPk(idPedido);

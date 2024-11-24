@@ -55,11 +55,19 @@ export const listarPedidosPorEstado = async (req: Request, res: Response, next: 
 
 export const createPedido = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const PedidoDTO = req.body;
-        const pedidoCreado = await pedidoService.createPedido(PedidoDTO);
+        const pedidoDto = req.body;
+
+        // Validar la estructura del DTO en el controller antes de pasar al servicio
+        if (!pedidoDto || !pedidoDto.paymentData || !pedidoDto.productos) {
+            return res.status(400).json({
+                error: "Datos incompletos. Verifique el cliente, productos, datos de pago y local.",
+            });
+        }
+
+        const pedidoCreado = await pedidoService.createPedido(pedidoDto);
         res.status(201).json(pedidoCreado);
     } catch (error) {
-        next(error);
+        next(error); // Delegar el manejo del error al middleware de errores
     }
 };
 
