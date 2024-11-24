@@ -15,13 +15,14 @@ import cocinaRoutes from './inventario/routes/cocinaRoutes';
 import refrigeradorRoutes from './inventario/routes/refrigeradorRoutes';
 import lotesRoutes from './inventario/routes/lotesRoutes';
 import { connectRedis } from './shared/database/redis';
-import { initializeRabbitMQAndWebSocket, loadEntidades } from './shared/database/initialize';
+import { initializeRabbitMQAndWebSocket, loadEntidades, loadFakeData } from './shared/database/initialize';
 import { startListeningForLotes } from './inventario/queues/camionetaSubscriber';
 import { startListeningForPedidos } from './inventario/queues/cocinaSubscriber';
 import accessLogger from './shared/middleware/accessLogMiddleware';
 import errorLogger from './shared/middleware/errorLogMiddleware';
 import { createServer } from 'http';
 import { Server as WebSocketServer } from 'socket.io';
+import authorize from './shared/middleware/authMiddleware';
 
 dotenv.config();
 
@@ -41,7 +42,8 @@ const main = async () => {
 
 
   await dbSync();
-  // await loadEntidades();
+  //await loadFakeData();
+   
   
   app.use(cors({
     origin: 'http://localhost:5173', 
@@ -50,16 +52,16 @@ const main = async () => {
   }));
   app.use(express.json());
 
-  app.use("/api", accessLogger, usuarioRoutes);
-  app.use("/api", accessLogger, productoRoutes);
-  app.use("/api", accessLogger, pedidoRoutes);
-  app.use("/api", accessLogger, localRoutes);
-  app.use("/api", accessLogger, clienteRoutes);
-  app.use("/api", accessLogger, camionetaRoutes);
-  app.use("/api", accessLogger, cocinaRoutes);  
-  app.use("/api", accessLogger, refrigeradorRoutes);
-  app.use('/api', accessLogger, lotesRoutes);
-  app.use('/api', accessLogger, inventarioRoutes);
+  app.use("/api", usuarioRoutes);
+  app.use("/api", productoRoutes);
+  app.use("/api", pedidoRoutes);
+  app.use("/api", localRoutes);
+  app.use("/api", clienteRoutes);
+  app.use("/api", camionetaRoutes);
+  app.use("/api", cocinaRoutes);  
+  app.use("/api", refrigeradorRoutes);
+  app.use('/api', lotesRoutes);
+  app.use('/api',accessLogger, inventarioRoutes);
 
   app.use(errorLogger);
 

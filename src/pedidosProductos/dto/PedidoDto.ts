@@ -5,16 +5,16 @@ export class PedidoDTO{
     public id_cliente!: number;
     public id_medio_pago!: number
     public id_local!: number
-    public fecha_retiro!: Date;
+    public hora_de_retiro!: Date;
     public retirado!: Date;
     public productos!: ProductoPedidoDTO[];
     public estado!: string;
-    constructor(id_pedido: number, id_cliente: number, id_medio_pago: number, id_local: number, retirado: Date, fecha_retiro:Date, productos: ProductoPedidoDTO[]){
+    constructor(id_pedido: number, id_cliente: number, id_medio_pago: number, id_local: number, retirado: Date, hora_de_retiro:Date, productos: ProductoPedidoDTO[]){
         this.id_pedido = id_pedido;
         this.id_cliente = id_cliente;
         this.id_medio_pago = id_medio_pago;
         this.id_local = id_local;
-        this.fecha_retiro = fecha_retiro;
+        this.hora_de_retiro = hora_de_retiro;
         this.retirado = retirado;
         this.productos = productos;
         this.estado = "Iniciado";

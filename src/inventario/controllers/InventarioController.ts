@@ -3,8 +3,6 @@ import InventarioService from '../services/InventarioService';
 
 export const getProductState = async (req: Request, res: Response) => {
   const { productId } = req.params;
-  console.log("HOLA PRO DIDHOLA PRO DIDHOLA PRO DID?")
-
   if (!productId) {
      res.status(400).json({ message: 'Product ID is required' });
   }

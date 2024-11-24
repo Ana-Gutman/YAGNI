@@ -18,7 +18,7 @@ router.post(
     "/refrigeradores/:idRefrigerador/verificar-cantidad",
     refrigeradorController.verificarCantidadRetirada as any
 );
-router.post("/refrigeradores/existencias", refrigeradorController.listarExistenciasPorProducto);
+router.post("/refrigeradores/existencias", refrigeradorController.listarExistenciasPorProducto); //TODO: Cambiar a GET
 
 
 export default router;

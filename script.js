@@ -20,18 +20,20 @@ export const options = {
 const BASE_URL = 'http://localhost:3000/api';
 
 export default function () {
-  // Solicitud GET a usuarios
-  let resGetUsuarios = http.get(`${BASE_URL}/usuarios`);
+  const url = `${BASE_URL}refrigeradores/existencias`;
+  const payload = JSON.stringify({
+    idProducto: '1',
+    fechaInicio: '2024-01-01',
+    fechaFin: '2024-01-31',
+  });
+  const params = { headers: { 'Content-Type': 'application/json' } };
 
-  // Validar respuesta y registrar errores si el estado no es 200
-  let success = check(resGetUsuarios, {
-    'Obtener usuarios: status is 200': (r) => r.status === 200,
+  const res = http.post(url, payload, params);
+
+  check(res, {
+    'status is 200': (r) => r.status === 200,
+    'response time < 500ms': (r) => r.timings.duration < 500,
   });
 
-  // Añadir un error si la validación falla
-  if (!success) {
-    errorRate.add(1);
-  }
-
-  sleep(1); // Pausa entre iteraciones
+  sleep(1); // Simula espera entre solicitudes
 }

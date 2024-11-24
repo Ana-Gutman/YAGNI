@@ -1,13 +1,16 @@
 import { Router } from "express";
 import * as usuarioController from "../controllers/usuarioController";
+import authorize from "../../shared/middleware/authMiddleware";
+import accessLogger from "../../shared/middleware/accessLogMiddleware";
 
 const router = Router();
-router.get("/usuarios", usuarioController.getUsuarios);
-router.get("/usuarios/:id", usuarioController.getUsuarioById);
-router.post("/usuarios", usuarioController.createUsuario);
-router.put("/usuarios/:id", usuarioController.updateUsuario);
-router.delete("/usuarios/:id", usuarioController.deleteUsuario);
-router.post("/login", usuarioController.loginUsuario);
-router.post("/validateUsuario", usuarioController.validateInputForUsuario);
+router.get("/usuarios", authorize(["Admin"]), accessLogger, usuarioController.getUsuarios);
+router.get("/usuarios/:id", authorize(["Admin"]), accessLogger, usuarioController.getUsuarioById);
+router.post("/usuarios",accessLogger,usuarioController.createUsuario);
+router.put("/usuarios/:id", accessLogger,usuarioController.updateUsuario);
+router.delete("/usuarios/:id",accessLogger, usuarioController.deleteUsuario);
+router.post("/login",accessLogger, usuarioController.loginUsuario);
+router.post("/validateUsuario",accessLogger, usuarioController.validateInputForUsuario);
 
 export default router;
+
