@@ -1,8 +1,7 @@
-import redisClient from "../shared/database/redis";
+import redisClient from "../config/redis";
 
 class OTPGenerator {
   static async generateOTP(refrigeratorId: string): Promise<string> {
-    console.log("HOLA?")
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     await redisClient.setEx(`otp:${refrigeratorId}`, 300, otp); 
     return otp;

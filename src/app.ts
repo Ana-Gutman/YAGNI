@@ -14,8 +14,8 @@ import camionetaRoutes from './inventario/routes/camionetaRoutes';
 import cocinaRoutes from './inventario/routes/cocinaRoutes';
 import refrigeradorRoutes from './inventario/routes/refrigeradorRoutes';
 import lotesRoutes from './inventario/routes/lotesRoutes';
-import { connectRedis } from './shared/database/redis';
-import { initializeRabbitMQAndWebSocket, loadEntidades, loadFakeData } from './shared/database/initialize';
+import { connectRedis } from './shared/config/redis';
+import { cargarUsuario, initializeRabbitMQAndWebSocket, loadEntidades, loadFakeData } from './shared/database/initialize';
 import { startListeningForLotes } from './inventario/queues/camionetaSubscriber';
 import { startListeningForPedidos } from './inventario/queues/cocinaSubscriber';
 import accessLogger from './shared/middleware/accessLogMiddleware';
@@ -43,6 +43,8 @@ const main = async () => {
 
   await dbSync();
   //await loadFakeData();
+  //await cargarUsuario();
+  
    
   
   app.use(cors({

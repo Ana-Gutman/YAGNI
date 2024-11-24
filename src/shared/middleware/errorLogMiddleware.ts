@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import client from '../utils/elasticsearchClient';
+import client from '../config/elasticsearchClient';
 
 const errorLogger = async (err: Error, req: Request, res: Response, next: NextFunction) => {
   try {

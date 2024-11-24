@@ -257,3 +257,25 @@ export const initializeRabbitMQAndWebSocket = async (io: WebSocketServer) => {
         });
     });
 }
+
+
+export async function cargarUsuario () {
+
+    const cocinas = await Cocina.findAll();
+    for (let i = 1; i <= 10001; i++) {
+        const usuario = new UsuarioDTO(
+            0,
+            faker.person.firstName(),
+            faker.helpers.arrayElement(['Admin', 'Cliente', 'Repartidor', 'Supervisor Cocina', 'Supervisor Local', 'Dispositivo']),
+            faker.internet.email(),
+            faker.internet.password({ length: 13, memorable: true }),
+            faker.phone.number(),
+            faker.helpers.arrayElement([1, 2, 3]),
+            faker.helpers.arrayElement(cocinas).id_cocina
+        );
+        await createUsuario(usuario);
+    }
+
+}
+
+
