@@ -60,7 +60,6 @@ class PedidoRepository {
     ): Promise<{ pedido: Pedido; productosPedido: ProductoPedidoDTO[] }> {
         const { id_cliente, id_medio_pago, id_local, productos } = pedidoDto;
     
-        // Validar existencia de referencias (cliente, local, medio de pago)
         const clienteExiste = await Cliente.findByPk(id_cliente);
         const localExiste = await Local.findByPk(id_local);
         const medioPagoExiste = await MedioPago.findByPk(id_medio_pago);
@@ -69,12 +68,10 @@ class PedidoRepository {
             throw new NotFoundError("Cliente, local o medio de pago no encontrados.");
         }
     
-        // Crear el pedido principal
         const pedido = await Pedido.create(
             { id_cliente, id_medio_pago, id_local, estado: "Iniciado" , hora_de_retiro: pedidoDto.hora_de_retiro},
         );
     
-        // Insertar productos asociados al pedido
         const productosEnPedido = productos.map((producto) => ({
             id_pedido: pedido.id_pedido,
             id_producto: producto.id_producto,

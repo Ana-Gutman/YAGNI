@@ -4,7 +4,7 @@ export class MockPaymentGateway implements PaymentGateway {
     async processPayment(paymentData: {
         amount: number;
         currency: string;
-        method: string; // Usar 'method'
+        method: string; 
         details: any;
     }): Promise<{ success: boolean; transactionId?: string; errorMessage?: string }> {
         const isSuccess = Math.random() > 0.3; // 70% de éxito

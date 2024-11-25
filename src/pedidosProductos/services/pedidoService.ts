@@ -47,7 +47,6 @@ export const getPedidoById = async (id: number): Promise<Pedido | null> => {
 export const createPedido = async (pedidoDto: PedidoDTO): Promise<{ pedido: Pedido; productosPedido: ProductoPedidoDTO[] }> => {
     const { id_cliente, id_medio_pago, id_local, productos, paymentData } = pedidoDto;
 
-    // Validar campos obligatorios
     if (!id_cliente || !id_medio_pago || !id_local || !productos || productos.length === 0) {
         throw new RequiredFieldError("Los campos 'id_cliente', 'id_medio_pago', 'id_local' y 'productos' son obligatorios.");
     }
@@ -68,16 +67,13 @@ export const createPedido = async (pedidoDto: PedidoDTO): Promise<{ pedido: Pedi
     }
     
     try {
-        // Procesar el pago con la pasarela
         const paymentResult = await paymentGateway.processPayment(paymentData);
         if (!paymentResult.success) {
             throw new Error(`Pago fallido: ${paymentResult.errorMessage}`);
         }
 
-        // Crear el pedido
         const pedidoCreado = await pedidoRepository.create(pedidoDto);
 
-        // Publicar notificación del pedido
         const pedidoALocal = await getPedidoACocina(pedidoCreado.pedido, pedidoCreado.productosPedido);
         await publishPedidoNotification(pedidoALocal, id_local);
 
@@ -124,7 +120,7 @@ export const completarPedido = async (idPedido: number): Promise<void> => {
     }
 
     pedido.estado = 'Completo';
-    pedido.retirado = new Date(); // Marca la fecha de completado
+    pedido.retirado = new Date(); 
     await pedido.save();
 };
 

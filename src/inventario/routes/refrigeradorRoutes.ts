@@ -11,13 +11,13 @@ router.get('/locales/:idLocal/refrigeradores', authorize(["Admin", "Supervisor l
 router.post('/refrigeradores/:idRefrigerador/otp', authorize(["Admin", "Supervisor local", "Cliente", "Repartidor", "Dispositivo"]), refrigeradorController.generarOTP);
 router.post('/refrigeradores/:idRefrigerador/validar-otp', authorize(["Admin", "Supervisor local", "Cliente", "Repartidor", "Dispositivo"]), refrigeradorController.validarOTP);
 router.post('/refrigeradores/:idRefrigerador/stock', authorize(["Admin", "Supervisor local", "Cliente", "Repartidor", "Dispositivo"]), refrigeradorController.modificarInventario); 
-router.post('/refrigeradores/:idRefrigerador/alarma', authorize(["Admin", "Supervisor local", "Cliente", "Repartidor", "Dispositivo"]), refrigeradorController.emitirAlarma); //TODO: arreglar
-router.get('/refrigeradores/:idRefrigerador/productos', authorize(["Admin", "Supervisor local", "Cliente", "Repartidor", "Dispositivo"]), refrigeradorController.getProductosEnRefrigerador);  //TODO: arreglar
+router.post('/refrigeradores/:idRefrigerador/alarma', authorize(["Admin", "Supervisor local", "Cliente", "Repartidor", "Dispositivo"]), refrigeradorController.emitirAlarma);
+router.get('/refrigeradores/:idRefrigerador/productos', authorize(["Admin", "Supervisor local", "Cliente", "Repartidor", "Dispositivo"]), refrigeradorController.getProductosEnRefrigerador);
 router.post(
     "/refrigeradores/:idRefrigerador/verificar-cantidad", authorize(["Admin", "Supervisor local", "Cliente", "Repartidor", "Dispositivo"]),
     refrigeradorController.verificarCantidadRetirada as any
 );
-router.post("/refrigeradores/existencias", authorize(["Admin", "Supervisor local", "Cliente", "Repartidor", "Dispositivo"]), refrigeradorController.listarExistenciasPorProducto); //TODO: Cambiar a GET
+router.post("/refrigeradores/existencias", authorize(["Admin", "Supervisor local", "Cliente", "Repartidor", "Dispositivo"]), refrigeradorController.listarExistenciasPorProducto);
 
 
 export default router;

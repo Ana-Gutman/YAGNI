@@ -35,7 +35,6 @@ export const createCocina = async (req: Request, res: Response, next: NextFuncti
     try {
         const cocina = req.body;
         const cocinaCreada = await cocinaService.createCocina(cocina);
-        // await startListeningForPedidos(cocinaCreada.id_cocina); //TODO: se saca?
         res.status(201).json(cocinaCreada);
     } catch (error) {
         next(error);

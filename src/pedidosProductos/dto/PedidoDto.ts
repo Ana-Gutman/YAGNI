@@ -3,12 +3,12 @@ import { ProductoPedidoDTO } from "./ProductoPedidoDto";
 export interface PaymentData {
     amount: number;
     currency: string;
-    paymentMethod: string; // Renombrado de "method" para alinear con el body
+    paymentMethod: string;
     details: {
         cardNumber?: string;
         expiryDate?: string;
         cvv?: string;
-        [key: string]: any; // Permitir campos adicionales si es necesario
+        [key: string]: any; 
     };
 }
 export class PedidoDTO {
@@ -23,7 +23,7 @@ export class PedidoDTO {
     public paymentData!: {
         amount: number;
         currency: string;
-        method: string; // Cambiado de 'paymentMethod' a 'method'
+        method: string; 
         details: any;
     };
     constructor(
@@ -36,7 +36,7 @@ export class PedidoDTO {
         paymentData: {
             amount: number;
             currency: string;
-            method: string; // Aquí también debe estar 'method'
+            method: string;
             details: any;
         },
         retirado: Date | null = null,

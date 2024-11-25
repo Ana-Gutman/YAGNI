@@ -22,7 +22,7 @@ export const startListeningForPedidos = async (cocinaId: number, onPedido: (pedi
     if (message) {
       const pedidoData = JSON.parse(message.content.toString());
       console.log(`Pedido recibido por la cocina ${cocinaId}:`, pedidoData);
-      onPedido(pedidoData); // Notificar al WebSocket
+      onPedido(pedidoData);
       channel.ack(message);
     }
   });

@@ -10,7 +10,7 @@ router.post('/process', async (req, res) => {
         } else {
             res.status(400).json({ success: false, errorMessage: "Transacción rechazada" });
         }
-    }, Math.random() * 3000); // Entre 0 y 3 segundos
+    }, Math.random() * 3000); 
 });
 
 
