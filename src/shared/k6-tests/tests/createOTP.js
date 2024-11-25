@@ -34,6 +34,7 @@ export default function () {
 
   const res = http.post(url, null, {
     headers: { 'Content-Type': 'application/json' },
+    Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoiQWRtaW4iLCJpYXQiOjE3MzI0MTc1NzQsImV4cCI6MTczMjQyMTE3NH0.Y1N8Lq3483lCVdVi3v2otM_QKZBk05wqnd0kX0GCuVQ"
   });
 
   check(res, {

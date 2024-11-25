@@ -37,21 +37,29 @@ export default function () {
       { id_producto: "1", cantidad: 100 },
       { id_producto: "2", cantidad: 10 },
     ],
+    paymentData: {
+      amount: 10,
+      currency: "USD",
+      method: "credit_card",  
+      details:{
+        card_number: "4111111111111111",
+        expiryDate: "12/23",
+        cvv: "123"
+      }
+    }
   });
 
 
   const params = {
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoiQWRtaW4iLCJpYXQiOjE3MzI0MTc1NzQsImV4cCI6MTczMjQyMTE3NH0.Y1N8Lq3483lCVdVi3v2otM_QKZBk05wqnd0kX0GCuVQ", // Reemplazar con un token válido
+      Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTc5LCJyb2wiOiJBZG1pbiIsImlhdCI6MTczMjUxNDM3MywiZXhwIjoxNzMyNTE3OTczfQ.kMAYvPdnoUKI_0BcbnukmiBsjsfOMg6SLbBTseTj_PQ", // Reemplazar con un token válido
     },
   };
 
   const res = http.post(url, payload, params);
-  //agrega idemtifcador que funcion esta probando
 
   check(res, {
-    
     "status is 200": (r) => r.status === 200,
     "response time < 600ms": (r) => r.timings.duration < 600,
   })|| errorRate.add(1);
