@@ -3,7 +3,7 @@ import redisClient from "../config/redis";
 class OTPGenerator {
   static async generateOTP(refrigeratorId: string): Promise<string> {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    await redisClient.setEx(`otp:${refrigeratorId}`, 300, otp); 
+    await redisClient.setEx(`otp:${refrigeratorId}`, 30, otp); 
     return otp;
   }
 

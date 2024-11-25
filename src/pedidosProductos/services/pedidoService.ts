@@ -15,6 +15,7 @@ import { Producto } from '../../shared/models/producto';
 import { H } from '../../inventario/config';
 import { Usuario } from '../../shared/models/usuario';
 import { MockPaymentGateway } from './MockPaymentGateway';
+import redisClient from '../../shared/config/redis';
 
 const pedidoRepository = new PedidoRepository();
 const localRepository = new LocalRepository();
@@ -76,6 +77,8 @@ export const createPedido = async (pedidoDto: PedidoDTO): Promise<{ pedido: Pedi
 
         const pedidoALocal = await getPedidoACocina(pedidoCreado.pedido, pedidoCreado.productosPedido);
         await publishPedidoNotification(pedidoALocal, id_local);
+
+        await redisClient.publish("pedidos_channel", JSON.stringify(pedidoCreado));
 
         return pedidoCreado;
     } catch (error: any) {
@@ -178,41 +181,42 @@ export const getPedidoACocina = async (pedido: Pedido, productosPedido: Producto
 export const listarPedidosPorClienteYPeriodo = async (
     listaPedidoCli: ListaPedidosDeClienteDto
 ): Promise<ListaPedidoDTO[]> => {
-    const { id_cliente, fechaInicio, fechaFin, estado } = listaPedidoCli;
+    const { id_cliente, fechaInicio, fechaFin } = listaPedidoCli;
 
-    if (!id_cliente || !fechaInicio || !fechaFin) {
-        throw new Error("Los parámetros id_cliente, fechaInicio y fechaFin son requeridos");
+    const cacheKey = `pedidos:${id_cliente}:${fechaInicio}:${fechaFin}`;
+    const cachedData = await redisClient.get(cacheKey);
+
+    if (cachedData) {
+        return JSON.parse(cachedData);
     }
 
     const pedidos = await pedidoRepository.listarPedidosPorClienteYPeriodo(
         id_cliente,
         fechaInicio,
-        fechaFin,
-        estado
+        fechaFin
     );
 
-    return pedidos.map((pedido: any) => {
-        const fechaPedido = pedido.createdAt;
-        const horaRealizado = fechaPedido.toISOString().split("T")[1].substring(0, 5);
-        const horaRetirado = pedido.retirado ? pedido.retirado.toISOString().split("T")[1].substring(0, 5) : null;
+    const pedidosDTO = pedidos.map((pedido) => ({
+        id_cliente: pedido.id_cliente,
+        nombreCliente: "N/A",
+        id_pedido: pedido.id_pedido,
+        estado: pedido.estado,
+        fechaPedido: pedido.createdAt,
+        horaRealizado: pedido.createdAt.toISOString().split("T")[1].substring(0, 5),
+        horaRetirado: pedido.retirado
+            ? pedido.retirado.toISOString().split("T")[1].substring(0, 5)
+            : null,
+        tiempoTranscurrido: pedido.retirado
+            ? `${Math.floor((pedido.retirado.getTime() - pedido.createdAt.getTime()) / (1000 * 60))} minutos`
+            : null,
+    }));
 
-        const tiempoTranscurrido = pedido.retirado
-            ? `${Math.floor((pedido.retirado.getTime() - fechaPedido.getTime()) / (1000 * 60))} minutos`
-            : null;
-
-        return {
-            id_cliente: pedido.id_cliente,
-            nombreCliente: pedido.Cliente?.Usuario?.nombre || "N/A", 
-            id_pedido: pedido.id_pedido,
-            estado: pedido.estado,
-            fechaPedido,
-            horaRealizado,
-            horaRetirado,
-            tiempoTranscurrido,
-        };
+    await redisClient.set(cacheKey, JSON.stringify(pedidosDTO), {
+        EX: 60 * 5, 
     });
-};
 
+    return pedidosDTO;
+};
 
 
 export const updatePedidoRetirado = async (id: number, estado: string): Promise<Pedido | null> => {
