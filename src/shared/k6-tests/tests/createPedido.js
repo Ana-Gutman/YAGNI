@@ -53,14 +53,14 @@ export default function () {
   const params = {
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTc5LCJyb2wiOiJBZG1pbiIsImlhdCI6MTczMjUxNDM3MywiZXhwIjoxNzMyNTE3OTczfQ.kMAYvPdnoUKI_0BcbnukmiBsjsfOMg6SLbBTseTj_PQ", // Reemplazar con un token válido
+      Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTc5LCJyb2wiOiJBZG1pbiIsImlhdCI6MTczMjU0MTc4MSwiZXhwIjoxNzMyNTQ1MzgxfQ.WKdhkUQXkHCsiHEkem1oxOeKuwwFnrZXAAV9KAkgpvU", // Reemplazar con un token válido
     },
   };
 
   const res = http.post(url, payload, params);
 
   check(res, {
-    "status is 200": (r) => r.status === 200,
+    "status is 201": (r) => r.status === 201,
     "response time < 600ms": (r) => r.timings.duration < 600,
   })|| errorRate.add(1);
 }

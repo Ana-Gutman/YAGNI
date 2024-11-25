@@ -32,10 +32,14 @@ export default function () {
   const idRefrigerador = '1';
   const url = `http://localhost:3000/api/refrigeradores/${idRefrigerador}/otp`;  //TODO: AGREGARLE AUTH
 
-  const res = http.post(url, null, {
-    headers: { 'Content-Type': 'application/json' },
-    Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoiQWRtaW4iLCJpYXQiOjE3MzI0MTc1NzQsImV4cCI6MTczMjQyMTE3NH0.Y1N8Lq3483lCVdVi3v2otM_QKZBk05wqnd0kX0GCuVQ"
-  });
+  const params = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTc5LCJyb2wiOiJBZG1pbiIsImlhdCI6MTczMjU0MTc4MSwiZXhwIjoxNzMyNTQ1MzgxfQ.WKdhkUQXkHCsiHEkem1oxOeKuwwFnrZXAAV9KAkgpvU" // Reemplazar con un token válido
+    },
+  };
+
+  const res = http.post(url, null, params);
 
   check(res, {
     'response status was 200': (r) => r.status === 200,
