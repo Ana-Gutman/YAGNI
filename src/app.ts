@@ -33,7 +33,7 @@ const main = async () => {
   await connectRedis(); 
   console.log('Redis conectado');
 
-  const httpServer = createServer(app); // Crear servidor HTTP
+  const httpServer = createServer(app); 
   const io = new WebSocketServer(httpServer, {
     cors: {
       origin: 'http://localhost:5173',
@@ -43,6 +43,8 @@ const main = async () => {
 
 
   await dbSync();
+  //Descomentar segun preferencia y estado de la DB
+  
   //await loadFakeData();
   //await cargarUsuario();
   // await loadEntidades()
