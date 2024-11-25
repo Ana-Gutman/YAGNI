@@ -116,16 +116,18 @@ export const marcarPedidoIncompleto = async (idPedido: number, productos: Produc
     return "No se pudo marcar como incompleto. Stock suficiente.";
 };
 
-
 export const completarPedido = async (idPedido: number): Promise<void> => {
     const pedido = await pedidoRepository.findById(idPedido);
+
     if (!pedido) {
         throw new NotFoundError('Pedido no encontrado.');
     }
 
     pedido.estado = 'Completo';
+    pedido.retirado = new Date(); // Marca la fecha de completado
     await pedido.save();
 };
+
 
 export const getPedidosConRefrigeradores = async (idCliente: number) => {
     const pedidos = await Pedido.findAll({

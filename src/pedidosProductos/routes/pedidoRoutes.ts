@@ -13,6 +13,7 @@ router.get('/clientes/:idCliente/pedidos-refrigeradores', authorize(["Admin", "C
 router.post("/pedidos/marcar-incompleto", authorize(["Admin", "Cliente"]),accessLogger,pedidoController.marcarPedidoIncompleto);
 router.post("/pedidos/listar", authorize(["Admin", "Cliente"]), accessLogger,pedidoController.listPedidosCliente as any);
 router.post("/pedidos/estado", authorize(["Admin", "Cliente"]), accessLogger,pedidoController.listarPedidosPorEstado as any);
+router.post("/pedidos/:id/completar", authorize(["Admin", "Cliente"]), accessLogger, pedidoController.completarPedido as any);
 
 
 export default router;

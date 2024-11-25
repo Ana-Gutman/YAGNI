@@ -81,21 +81,21 @@ export const marcarPedidoIncompleto = async (req: Request, res: Response, next: 
     }
 };
 
-
 export const completarPedido = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const idPedido = parseInt(req.params.idPedido, 10); 
+        const idPedido = parseInt(req.params.id, 10); // Cambié el parámetro a `id` para que coincida con la ruta
 
         if (isNaN(idPedido)) {
             return res.status(400).json({ message: 'El ID del pedido debe ser un número válido.' });
         }
 
-        await pedidoService.completarPedido(idPedido);
+        await pedidoService.completarPedido(idPedido); // Llama al servicio
         res.status(200).json({ message: 'Pedido completado exitosamente.' });
     } catch (error) {
-        next(error);
+        next(error); // Maneja errores
     }
 };
+
 export const listPedidosCliente = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id_cliente, fechaInicio, fechaFin } = req.body;
