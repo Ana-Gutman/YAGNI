@@ -10,11 +10,12 @@ export class PedidoDTO{
     public productos!: ProductoPedidoDTO[];
     public estado!: string;
     constructor(id_pedido: number, id_cliente: number, id_medio_pago: number, id_local: number, retirado: Date, hora_de_retiro:Date, productos: ProductoPedidoDTO[]){
+        console.log("hora_de_retiro", hora_de_retiro)
         this.id_pedido = id_pedido;
         this.id_cliente = id_cliente;
         this.id_medio_pago = id_medio_pago;
         this.id_local = id_local;
-        this.hora_de_retiro = hora_de_retiro;
+        this.hora_de_retiro = typeof hora_de_retiro === 'string' ? new Date(hora_de_retiro) : hora_de_retiro;
         this.retirado = retirado;
         this.productos = productos;
         this.estado = "Iniciado";

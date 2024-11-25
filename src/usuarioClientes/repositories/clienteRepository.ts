@@ -2,9 +2,6 @@ import { Cliente } from "../../shared/models/cliente";
 import { MedioPago } from "../../shared/models/medioPago";
 import { ClienteDTO } from "../dto/ClienteDto";
 
-// interface ClienteFilter {
-
-// }
 
 class ClienteRepository {
     

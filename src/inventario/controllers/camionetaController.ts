@@ -25,7 +25,7 @@ export const createCamioneta = async (req: Request, res: Response, next: NextFun
     try {
         const camioneta = req.body;
         const camionetaCreada = await camionetaService.createCamioneta(camioneta);
-        //await startListeningForLotes(camionetaCreada.id_camioneta);
+        //await startListeningForLotes(camionetaCreada.id_camioneta); //TODO: se saca?
         res.status(201).json(camionetaCreada);
     } catch (error) {
         next(error);

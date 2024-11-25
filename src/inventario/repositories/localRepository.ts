@@ -5,10 +5,6 @@ import { ProductoRefrigerador } from "../../shared/models/productoRefrigerador";
 import { Refrigerador } from "../../shared/models/refrigerador";
 import { LocalDTO } from "../dto/LocalDto";
 
-// interface LocalFilter {
-
-// }
-
 class LocalRepository {
     async findAll(): Promise<Local[]> {
         return Local.findAll();

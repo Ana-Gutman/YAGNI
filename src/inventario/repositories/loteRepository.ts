@@ -24,7 +24,6 @@ class LoteRepository {
 
     async updateRetiro(id: number): Promise<Lote | null> {
         const lote = await Lote.findByPk(id);
-        //la fecha de retiro es la fecha actual al llamar a esta funcion
         const fecha_retiro = new Date();
         if (!lote) return null;
         if (lote.cantidad < X) 

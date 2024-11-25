@@ -51,15 +51,3 @@ export const deleteProducto = async (req: Request, res: Response, next: NextFunc
     }
 };
 
-// export const getExistenciasPorProducto = async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const { id_producto } = req.params;
-//       const { fechaInicio, fechaFin } = req.query;
-//       await productoService.getExistenciasPorProducto(id_producto, fechaInicio, fechaFin, res);
-//       res.status(200).json({ message: `Existencias del producto con ID ${id_producto}` });
-//     } catch (error) {
-//         next(error);
-//     }
-// };
-      
-

@@ -2,7 +2,6 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Rate } from 'k6/metrics';
 
-// Registrar la métrica personalizada
 let errorRate = new Rate('errors');
 
 export const options = {

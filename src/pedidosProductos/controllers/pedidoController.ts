@@ -42,8 +42,8 @@ export const listarPedidosPorEstado = async (req: Request, res: Response, next: 
         });
 
         const pedidosSimplificados = pedidos.map((pedido) => ({
-            idPedido: pedido.id_pedido, // Ahora disponible
-            estado: pedido.estado, // Ahora disponible
+            idPedido: pedido.id_pedido,
+            estado: pedido.estado,
         }));
 
         res.status(200).json(pedidosSimplificados);
@@ -55,6 +55,7 @@ export const listarPedidosPorEstado = async (req: Request, res: Response, next: 
 
 export const createPedido = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        console.log("req.body", req.body)
         const PedidoDTO = req.body;
         const pedidoCreado = await pedidoService.createPedido(PedidoDTO);
         res.status(201).json(pedidoCreado);
@@ -66,7 +67,7 @@ export const createPedido = async (req: Request, res: Response, next: NextFuncti
 
 export const marcarPedidoIncompleto = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { idPedido, productos } = req.body; // ID del pedido y lista de productos
+        const { idPedido, productos } = req.body; 
         const resultado = await pedidoService.marcarPedidoIncompleto(idPedido, productos);
         res.status(200).json({ message: resultado });
     } catch (error) {
@@ -77,7 +78,7 @@ export const marcarPedidoIncompleto = async (req: Request, res: Response, next: 
 
 export const completarPedido = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const idPedido = parseInt(req.params.idPedido, 10); // Convertir a número
+        const idPedido = parseInt(req.params.idPedido, 10); 
 
         if (isNaN(idPedido)) {
             return res.status(400).json({ message: 'El ID del pedido debe ser un número válido.' });

@@ -22,7 +22,7 @@ export const startListeningForLotes = async (camionetaId: number, onCreatedLote:
     if (message) {
       const loteData = JSON.parse(message.content.toString());
       console.log(`Lote recibido por la camioneta ${camionetaId}:`, loteData);
-      onCreatedLote(loteData); // Notificar al WebSocket
+      onCreatedLote(loteData);
       channel.ack(message); 
     }
   });

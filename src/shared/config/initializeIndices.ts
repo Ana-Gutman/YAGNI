@@ -43,5 +43,4 @@ const initIndices = async () => {
 
 initIndices();
 
-//Ejecutar una vez: ts-node initializeIndices.ts
 

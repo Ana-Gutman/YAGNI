@@ -44,6 +44,7 @@ const main = async () => {
   await dbSync();
   //await loadFakeData();
   //await cargarUsuario();
+  // await loadEntidades()
   
    
   
