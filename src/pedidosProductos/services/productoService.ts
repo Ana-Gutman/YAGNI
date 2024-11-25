@@ -76,14 +76,3 @@ export const deleteProducto = async (id: number): Promise<void> => {
         throw new DatabaseError(`Error al eliminar producto con ID ${id}: ${error.message}`);
     }
 };
-
-// export const getExistenciasPorProducto = async (id_producto: number, fechaInicio: string, fechaFin: string, res: any): Promise<void> => {
-//     if (!id_producto || (!fechaInicio && !fechaFin)) {
-//         throw new MissingParameterError('Los parámetros id_producto, fechaInicio y fechaFin son requeridos');
-//     }
-//     try {
-//         return await productoRepository.getExistenciasPorProducto(id_producto, fechaInicio, fechaFin);
-//     } catch (error:any) {
-//         throw new DatabaseError(`Error al obtener existencias del producto con ID ${id_producto}: ${error.message}`);
-//     }
-// }

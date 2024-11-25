@@ -47,7 +47,7 @@ class RefrigeradorRepository {
         await MovimientoRefrigerador.create({
             id_refrigerador: idRefrigerador,
             id_producto: idProducto,
-            cantidad_cambiada: -cantidad, // Se intenta retirar más de lo permitido
+            cantidad_cambiada: -cantidad, 
             accion: 'ALARMA_EMITIDA',
             fecha: new Date(),
         });
@@ -59,8 +59,8 @@ class RefrigeradorRepository {
             include: [
                 {
                     model: Producto,
-                    as: 'Producto', // Debe coincidir con el alias en `setRelationships`
-                    attributes: ['id_producto', 'nombre'], // Solo los campos necesarios
+                    as: 'Producto', 
+                    attributes: ['id_producto', 'nombre'], 
                 },
             ],
         });
@@ -173,7 +173,7 @@ class RefrigeradorRepository {
                     estado.id_refrigerador,
                     estado.cantidad > 0
                         ? [{ fecha: new Date(), existencia: estado.cantidad }]
-                        : [] // Si la cantidad es 0, dejamos el historial vacío
+                        : [] 
                 );
             });
         }
@@ -190,7 +190,6 @@ class RefrigeradorRepository {
         });
     
         if (existenciasActuales.length === 0 && movimientos.length === 0) {
-            // Si no hay existencias actuales ni movimientos, devolvemos una respuesta vacía
             return [];
         }
     
@@ -201,9 +200,9 @@ class RefrigeradorRepository {
                 (mov) => mov.id_refrigerador === id_refrigerador
             );
     
-            let existencia = estado.cantidad; // Estado actual
+            let existencia = estado.cantidad; 
             const historial = movimientosRefrigerador.map((mov) => {
-                existencia += mov.cantidad_cambiada; // Actualizar existencia
+                existencia += mov.cantidad_cambiada; 
                 return {
                     fecha: mov.fecha,
                     existencia,

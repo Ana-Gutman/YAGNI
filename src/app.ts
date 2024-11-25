@@ -15,14 +15,15 @@ import paymentRoutes from './pedidosProductos/routes/paymentRoutes';
 import cocinaRoutes from './inventario/routes/cocinaRoutes';
 import refrigeradorRoutes from './inventario/routes/refrigeradorRoutes';
 import lotesRoutes from './inventario/routes/lotesRoutes';
-import { connectRedis } from './shared/database/redis';
-import { initializeRabbitMQAndWebSocket, loadEntidades } from './shared/database/initialize';
+import { connectRedis } from './shared/config/redis';
+import { cargarUsuario, initializeRabbitMQAndWebSocket, loadEntidades, loadFakeData } from './shared/database/initialize';
 import { startListeningForLotes } from './inventario/queues/camionetaSubscriber';
 import { startListeningForPedidos } from './inventario/queues/cocinaSubscriber';
 import accessLogger from './shared/middleware/accessLogMiddleware';
 import errorLogger from './shared/middleware/errorLogMiddleware';
 import { createServer } from 'http';
 import { Server as WebSocketServer } from 'socket.io';
+import authorize from './shared/middleware/authMiddleware';
 
 dotenv.config();
 
@@ -42,7 +43,11 @@ const main = async () => {
 
 
   await dbSync();
-  // await loadEntidades();
+  //await loadFakeData();
+  //await cargarUsuario();
+  // await loadEntidades()
+  
+   
   
   app.use(cors({
     origin: 'http://localhost:5173', 
@@ -77,8 +82,6 @@ const main = async () => {
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     errorMiddleware(err, req, res, next);
   });
-
-  app.use(errorLogger);
 
   const PORT = process.env.PORT || 3000;
 

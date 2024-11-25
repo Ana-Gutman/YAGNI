@@ -12,6 +12,7 @@ import { ProductoPedido } from '../../shared/models/productoPedido';
 import { ProductoRefrigerador } from '../../shared/models/productoRefrigerador';
 import { Refrigerador } from '../../shared/models/refrigerador';
 import { Producto } from '../../shared/models/producto';
+import { H } from '../../inventario/config';
 import { Usuario } from '../../shared/models/usuario';
 import { MockPaymentGateway } from './MockPaymentGateway';
 
@@ -55,6 +56,17 @@ export const createPedido = async (pedidoDto: PedidoDTO): Promise<{ pedido: Pedi
         throw new RequiredFieldError("Los datos de pago (amount, paymentMethod, currency) son obligatorios.");
     }
 
+    if (!pedidoDto.id_cliente || !pedidoDto.id_medio_pago || !pedidoDto.id_local || !pedidoDto.productos || !pedidoDto.hora_de_retiro) {
+        throw new RequiredFieldError("Los campos 'id_cliente', 'id_medio_pago', 'id_local', 'hora_de_retiro' y 'productos' son obligatorios en PedidoDTO");
+    }
+    if (pedidoDto.productos.length === 0) {
+        throw new InvalidValueError('productos', '{ } ',"La lista de productos no puede estar vacía");
+    }
+    if (new Date(pedidoDto.hora_de_retiro).getTime() - new Date().getTime() < H * 60 * 60 * 1000) {
+        const fechaRetiroISO = new Date(pedidoDto.hora_de_retiro).toISOString();
+        throw new InvalidValueError('fecha_retiro', fechaRetiroISO, `La fecha de retiro debe ser al menos ${H} horas después de la fecha actual`);
+    }
+    
     try {
         // Procesar el pago con la pasarela
         const paymentResult = await paymentGateway.processPayment(paymentData);
@@ -87,7 +99,6 @@ export const marcarPedidoIncompleto = async (idPedido: number, productos: Produc
         throw new NotFoundError("Pedido no encontrado.");
     }
 
-    // Obtener los productos del pedido utilizando `getProductoPedidos`
     const productosPedido = await pedido.getProductoPedidos();
 
     for (const producto of productos) {
@@ -96,7 +107,6 @@ export const marcarPedidoIncompleto = async (idPedido: number, productos: Produc
         );
 
         if (!productoPedido || productoPedido.cantidad > producto.cantidad) {
-            // Actualiza el estado del pedido como incompleto
             pedido.estado = "Incompleto";
             await pedido.save();
             return "Pedido marcado como incompleto: Stock insuficiente.";
@@ -194,7 +204,7 @@ export const listarPedidosPorClienteYPeriodo = async (
 
         return {
             id_cliente: pedido.id_cliente,
-            nombreCliente: pedido.Cliente?.Usuario?.nombre || "N/A", // Asegurarse de navegar correctamente
+            nombreCliente: pedido.Cliente?.Usuario?.nombre || "N/A", 
             id_pedido: pedido.id_pedido,
             estado: pedido.estado,
             fechaPedido,

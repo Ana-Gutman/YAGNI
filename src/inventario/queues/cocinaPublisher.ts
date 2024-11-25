@@ -1,6 +1,5 @@
 import amqp from 'amqplib';
 import { Lote } from '../../shared/models/lote';
-import { ActualCamioneta, siguienteCamioneta } from '../config';
 import { CocinaRepository } from '../repositories/cocinaRepository';
 
 const cocinaCamionetaIndex: Record<number, number> = {};

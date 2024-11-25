@@ -7,6 +7,7 @@ export class Pedido extends Model {
   public id_cliente!: number;
   public id_medio_pago!: number;
   public id_local!: number;
+  public hora_de_retiro!: Date;
   public retirado!: Date | null;
   public estado!: 'Iniciado'| 'Completo' | 'Incompleto';
   public createdAt!: Date;
@@ -35,6 +36,10 @@ Pedido.init(
     id_local: {
       type: DataTypes.INTEGER.UNSIGNED,
       references: { model: 'Locales', key: 'id_local' },
+      allowNull: false,
+    }, 
+    hora_de_retiro: {
+      type: DataTypes.DATE,
       allowNull: false,
     },
     retirado: {

@@ -17,6 +17,7 @@ export class PedidoDTO {
     public id_medio_pago!: number;
     public id_local!: number;
     public retirado!: Date | null;
+    public hora_de_retiro!: Date | string | null;
     public productos!: ProductoPedidoDTO[];
     public estado!: string;
     public paymentData!: {
@@ -25,7 +26,6 @@ export class PedidoDTO {
         method: string; // Cambiado de 'paymentMethod' a 'method'
         details: any;
     };
-
     constructor(
         id_pedido: number,
         id_cliente: number,
@@ -45,6 +45,7 @@ export class PedidoDTO {
         this.id_cliente = id_cliente;
         this.id_medio_pago = id_medio_pago;
         this.id_local = id_local;
+        this.hora_de_retiro = typeof this.hora_de_retiro === 'string' ? new Date(this.hora_de_retiro) : this.hora_de_retiro;
         this.retirado = retirado;
         this.productos = productos;
         this.estado = estado;

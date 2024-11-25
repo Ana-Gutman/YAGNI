@@ -3,9 +3,6 @@ import { Cliente } from "../../shared/models/cliente";
 import { Usuario } from "../../shared/models/usuario";
 import { UsuarioDTO } from "../dto/UsuarioDto";
 
-// interface UsuarioFilter {
-
-// }
 
 class UsuarioRepository {
     async findAll(): Promise<Usuario[]> {

@@ -13,6 +13,7 @@ import { UsuarioDTO } from "../../usuarioClientes/dto/UsuarioDto";
 import { Server as WebSocketServer } from "socket.io";
 import { startListeningForLotes } from "../../inventario/queues/camionetaSubscriber";
 import { startListeningForPedidos } from "../../inventario/queues/cocinaSubscriber";
+import { faker } from '@faker-js/faker';
 
 export async function loadEntidades() {
     // Locales
@@ -126,23 +127,155 @@ export async function loadEntidades() {
         await createUsuario(new UsuarioDTO(0, usuario.nombre, usuario.rol, usuario.email, usuario.contraseña, usuario.celular, usuario.idPrimerMedioPago, usuario.id_cocina));
     }
 
-    
+
+}
+
+export async function loadFakeData() {
+    // Generar cocinas
+    const cocinas = [];
+    for (let i = 1; i <= 50; i++) {
+        cocinas.push({ id_cocina: i, direccion: faker.location.streetAddress() });
+    }
+    await Cocina.bulkCreate(cocinas);
+
+    // Generar camionetas
+    const camionetas = [];
+    for (let i = 1; i <= 10; i++) {
+        camionetas.push({ id_camioneta: i, matricula: faker.vehicle.vrm() });
+    }
+    await Camioneta.bulkCreate(camionetas);
+
+    // Relacionar cocinas y camionetas
+    const cocinaCamionetas = [];
+    for (const cocina of cocinas.slice(0, 10)) {
+        const camioneta = faker.helpers.arrayElement(camionetas);
+        cocinaCamionetas.push({ id_cocina: cocina.id_cocina, id_camioneta: camioneta.id_camioneta });
+    }
+    await CocinaCamioneta.bulkCreate(cocinaCamionetas);
+
+
+    // Generar locales
+    const locales = [];
+    for (let i = 1; i <= 200; i++) {
+        locales.push({ id_local: i, nombre: `Local-${i}`, direccion: faker.location.streetAddress() });
+    }
+    await Local.bulkCreate(locales);
+
+    // Relacionar cocinas y locales
+    const cocinaLocales = [];
+    const usados = new Set(); // Conjunto para rastrear los locales ya asignados
+
+    for (const cocina of cocinas) {
+        let local;
+        do {
+            // Escoge un local aleatorio
+            local = faker.helpers.arrayElement(locales);
+        } while (usados.has(local.id_local)); // Asegúrate de que no se repita el id_local
+
+        // Añade el id_local al conjunto para evitar repeticiones
+        usados.add(local.id_local);
+
+        // Añadir la relación cocina-local
+        cocinaLocales.push({ id_cocina: cocina.id_cocina, id_local: local.id_local });
+    }
+
+    // Insertar las relaciones de cocina-local
+    await CocinaLocal.bulkCreate(cocinaLocales);
+
+    // Generar marca de refrigeradores
+    const marcasRefrigeradores = [
+        { nombre: 'Sony', tipo_codigo: 'QR' },
+        { nombre: 'LG', tipo_codigo: 'NFC' }
+    ];
+    await MarcaRefrigerador.bulkCreate(marcasRefrigeradores);
+
+    // Generar refrigeradores
+    const refrigeradores = [];
+    for (let i = 1; i <= locales.length * 8; i++) {
+        const local = faker.helpers.arrayElement(locales);
+        const marca = faker.helpers.arrayElement(marcasRefrigeradores);
+        refrigeradores.push({ id_refrigerador: i, id_local: local.id_local, marca_nombre: marca.nombre });
+    }
+    await Refrigerador.bulkCreate(refrigeradores);
+
+    // Generar productos
+    const productos = [];
+    for (let i = 1; i <= 10; i++) {
+        productos.push({ id_producto: i, nombre: faker.commerce.productName(), precio_lista: parseFloat(faker.commerce.price()) });
+    }
+    await Producto.bulkCreate(productos);
+
+    // Relacionar productos y refrigeradores
+    const productosRefrigeradores = [];
+    for (const producto of productos) {
+        const refrigeradoresDelLocal = refrigeradores.slice(0, 4); // Simula solo 4 refrigeradores
+        for (const refrigerador of refrigeradoresDelLocal) {
+            productosRefrigeradores.push({ id_refrigerador: refrigerador.id_refrigerador, id_producto: producto.id_producto, cantidad: faker.number.int({ min: 0, max: 100 }) });
+        }
+    }
+    await ProductoRefrigerador.bulkCreate(productosRefrigeradores);
+
+    // Generar medios de pago
+    const mediosPago = [
+        { id_medio_pago: 1, nombre: 'PayPal' },
+        { id_medio_pago: 2, nombre: 'Mercado Pago' },
+        { id_medio_pago: 3, nombre: 'Transferencia' }
+    ];
+    await MedioPago.bulkCreate(mediosPago);
+
+
+    // Generar usuarios
+    for (let i = 1; i <= 10001; i++) {
+        const usuario = new UsuarioDTO(
+            0,
+            faker.person.firstName(),
+            faker.helpers.arrayElement(['Admin', 'Cliente', 'Repartidor', 'Supervisor Cocina', 'Supervisor Local', 'Dispositivo']),
+            faker.internet.email(),
+            faker.internet.password({ length: 13, memorable: true }),
+            faker.phone.number(),
+            faker.helpers.arrayElement([1, 2, 3]),
+            faker.helpers.arrayElement(cocinas).id_cocina
+        );
+        await createUsuario(usuario);
+    }
 }
 
 
 export const initializeRabbitMQAndWebSocket = async (io: WebSocketServer) => {
-    const cocinas = await Cocina.findAll(); 
-    const camionetas = await Camioneta.findAll();  
+    const cocinas = await Cocina.findAll();
+    const camionetas = await Camioneta.findAll();
 
     cocinas.forEach(cocina => {
-      startListeningForPedidos(cocina.id_cocina, (pedidoData) => {
-        io.emit('pedido', { id_cocina: cocina.id_cocina, ...pedidoData });
-      });
+        startListeningForPedidos(cocina.id_cocina, (pedidoData) => {
+            io.emit('pedido', { id_cocina: cocina.id_cocina, ...pedidoData });
+        });
     });
 
     camionetas.forEach(camioneta => {
         startListeningForLotes(camioneta.id_camioneta, (loteData) => {
-          io.emit('lote', { id_camioneta: camioneta.id_camioneta, ...loteData });
+            io.emit('lote', { id_camioneta: camioneta.id_camioneta, ...loteData });
         });
     });
 }
+
+
+export async function cargarUsuario () {
+
+    const cocinas = await Cocina.findAll();
+    for (let i = 1; i <= 10001; i++) {
+        const usuario = new UsuarioDTO(
+            0,
+            faker.person.firstName(),
+            faker.helpers.arrayElement(['Admin', 'Cliente', 'Repartidor', 'Supervisor Cocina', 'Supervisor Local', 'Dispositivo']),
+            faker.internet.email(),
+            faker.internet.password({ length: 13, memorable: true }),
+            faker.phone.number(),
+            faker.helpers.arrayElement([1, 2, 3]),
+            faker.helpers.arrayElement(cocinas).id_cocina
+        );
+        await createUsuario(usuario);
+    }
+
+}
+
+

@@ -1,4 +1,4 @@
-import redisClient from "../../shared/database/redis";
+import redisClient from "../../shared/config/redis";
 
 class InventarioService {
     static async getProductState(productId: string): Promise<string> {

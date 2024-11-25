@@ -48,10 +48,8 @@ export const createLote = async (
             throw new NotFoundError("No existe la cocina, local, producto o refrigerador en la base de datos");
         }
 
-        // **Actualización del estado del producto en Redis**
         await InventarioService.updateProductState(lote.lote.id_producto.toString(), "En Tránsito");
 
-        // Notificación del lote creado
         await publishLoteNotification(lote.lote);
 
         return lote;
@@ -70,7 +68,6 @@ export const updateRetiroLote = async (id: number): Promise<Lote | null> => {
             throw new NotFoundError(`El lote a marcar como retirado con ID ${id} no se encuentra en la base de datos`);
         }
 
-        // **Actualización del estado del producto en Redis**
         await InventarioService.updateProductState(lote.id_producto.toString(), "En Refrigerador");
 
         return lote;

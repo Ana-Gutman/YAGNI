@@ -20,6 +20,8 @@
   "homepage": "https://github.com/IngSoft-AR/255163_260956#readme",
   "dependencies": {
     "@elastic/elasticsearch": "^8.16.1",
+    "@faker-js/faker": "^9.2.0",
+    "@types/socket.io": "^3.0.1",
     "amqplib": "^0.10.4",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
@@ -37,6 +39,7 @@
     "redis": "^4.7.0",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2",
+    "socket.io": "^4.8.1",
     "winston": "^3.17.0"
   },
   "devDependencies": {

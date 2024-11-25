@@ -1,17 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
-import client from '../utils/elasticsearchClient';
+import client from '../config/elasticsearchClient';
 
 const errorLogger = async (err: Error, req: Request, res: Response, next: NextFunction) => {
   try {
-    const timestamp = new Date();
+    const message = err.message || 'Error desconocido';
+    const stack = err.stack || 'Sin stack';
+    const path = req.path;
+    const method = req.method;
+    const timestamp = new Date().toISOString();
 
     await client.index({
       index: 'error_logs',
-      document: {
-        message: err.message,
-        stack: err.stack,
-        path: req.path,
-        method: req.method,
+      body: {
+        message,
+        stack,
+        path,
+        method,
         timestamp,
       },
     });

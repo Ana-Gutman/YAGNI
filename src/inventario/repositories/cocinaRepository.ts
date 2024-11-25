@@ -3,9 +3,6 @@ import { Cocina } from "../../shared/models/cocina";
 import { CocinaCamioneta } from "../../shared/models/cocinaCamioneta";
 import { CocinaDTO } from "../dto/CocinaDto";
 
-// interface CocinaFilter {
-
-// }
 
 class CocinaRepository {
     async findAll(): Promise<Cocina[]> {

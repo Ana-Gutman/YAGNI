@@ -42,8 +42,8 @@ export const listarPedidosPorEstado = async (req: Request, res: Response, next: 
         });
 
         const pedidosSimplificados = pedidos.map((pedido) => ({
-            idPedido: pedido.id_pedido, // Ahora disponible
-            estado: pedido.estado, // Ahora disponible
+            idPedido: pedido.id_pedido,
+            estado: pedido.estado,
         }));
 
         res.status(200).json(pedidosSimplificados);
@@ -57,7 +57,6 @@ export const createPedido = async (req: Request, res: Response, next: NextFuncti
     try {
         const pedidoDto = req.body;
 
-        // Validar la estructura del DTO en el controller antes de pasar al servicio
         if (!pedidoDto || !pedidoDto.paymentData || !pedidoDto.productos) {
             return res.status(400).json({
                 error: "Datos incompletos. Verifique el cliente, productos, datos de pago y local.",
@@ -67,14 +66,14 @@ export const createPedido = async (req: Request, res: Response, next: NextFuncti
         const pedidoCreado = await pedidoService.createPedido(pedidoDto);
         res.status(201).json(pedidoCreado);
     } catch (error) {
-        next(error); // Delegar el manejo del error al middleware de errores
+        next(error); 
     }
 };
 
 
 export const marcarPedidoIncompleto = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { idPedido, productos } = req.body; // ID del pedido y lista de productos
+        const { idPedido, productos } = req.body; 
         const resultado = await pedidoService.marcarPedidoIncompleto(idPedido, productos);
         res.status(200).json({ message: resultado });
     } catch (error) {
@@ -85,7 +84,7 @@ export const marcarPedidoIncompleto = async (req: Request, res: Response, next: 
 
 export const completarPedido = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const idPedido = parseInt(req.params.idPedido, 10); // Convertir a número
+        const idPedido = parseInt(req.params.idPedido, 10); 
 
         if (isNaN(idPedido)) {
             return res.status(400).json({ message: 'El ID del pedido debe ser un número válido.' });

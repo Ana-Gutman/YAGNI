@@ -12,8 +12,6 @@ import { ListaPedidoDTO } from "../dto/ListaPedidoDto";
 import { NotFoundError } from "../../shared/utils/customErrors";
 import { Usuario } from "../../shared/models/usuario";
 
-// interface PedidoFilter {
-// }
 
 class PedidoRepository {
 
@@ -33,19 +31,17 @@ class PedidoRepository {
             throw new NotFoundError(`El pedido con ID ${idPedido} no se encuentra en la base de datos.`);
         }
     
-        // Obtén los productos del pedido usando `getProductoPedidos`
         const productosEnPedido = await pedido.getProductoPedidos();
     
-        // Verifica si los productos del pedido están incompletos
         for (const producto of productos) {
             const productoEnPedido = productosEnPedido.find(
                 (p) => p.id_producto === producto.id_producto
             );
             if (!productoEnPedido || producto.cantidad < productoEnPedido.cantidad) {
-                return true; // Hay productos faltantes
+                return true; 
             }
         }
-        return false; // Todos los productos están disponibles
+        return false; 
     }
     
     
@@ -121,8 +117,8 @@ class PedidoRepository {
         const whereCondition: any = {
             id_cliente,
             createdAt: {
-                [Op.gte]: fechaInicio, // Mayor o igual
-                [Op.lte]: fechaFin,    // Menor o igual
+                [Op.gte]: fechaInicio, 
+                [Op.lte]: fechaFin,    
             },
         };
     
@@ -137,42 +133,18 @@ class PedidoRepository {
                     model: Cliente,
                     include: [
                         {
-                            model: Usuario, // Relación con Usuario
-                            attributes: ['nombre'], // Selecciona solo el nombre del usuario
+                            model: Usuario, 
+                            attributes: ['nombre'], 
                         },
                     ],
-                    attributes: ['id_cliente'], // Evitar columnas innecesarias de Cliente
+                    attributes: ['id_cliente'], 
                 },
             ],
-            attributes: ['id_pedido', 'id_cliente', 'estado', 'createdAt', 'retirado'], // Campos necesarios
+            attributes: ['id_pedido', 'id_cliente', 'estado', 'createdAt', 'retirado'], 
             order: [['createdAt', 'ASC']],
         });
     }
     
-    
-    
-    // async mapPedidos(pedidos: Pedido[]): Promise<ListaPedidoDTO[]> {
-    //     return pedidos.map((pedido) => {
-    //         const fechaPedido = pedido.createdAt;
-    //         const horaRealizado = fechaPedido.toISOString().split('T')[1].substring(0, 5);
-    //         const horaRetirado = pedido.retirado ? pedido.retirado.toISOString().split('T')[1].substring(0, 5) : null;
-
-    //         const tiempoTranscurrido = pedido.retirado
-    //             ? `${Math.floor((pedido.retirado.getTime() - fechaPedido.getTime()) / (1000 * 60))} minutos`
-    //             : null;
-
-    //         return {
-    //             id_cliente: pedido.id_cliente,
-    //             nombreCliente: (pedido as any).Cliente.nombre, 
-    //             fechaPedido,
-    //             horaRealizado,
-    //             horaRetirado,
-    //             tiempoTranscurrido,
-    //             estado: pedido.estado,
-    //         };
-    //     });
-    // }
-
     async updateRetirado(id: number, estado: 'Completo' | 'Incompleto'): Promise<Pedido | null> {
         const pedido = await Pedido.findByPk(id);
         if (!pedido) {

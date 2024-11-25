@@ -2,7 +2,7 @@ import { RefrigeradorRepository } from '../repositories/refrigeradorRepository';
 import { RefrigeradorDTO } from '../dto/RefrigeradorDto';
 import { Refrigerador } from '../../shared/models/refrigerador';
 import { MissingParameterError, RequiredFieldError, DatabaseError, NotFoundError, InvalidValueError } from '../../shared/utils/customErrors';
-import OTPGenerator from '../../utils/OTPGenerator'; 
+import OTPGenerator from '../../shared/utils/OTPGenerator'; 
 import { ProductoDTO } from '../dto/ProductoDto'; 
 import { Pedido } from '../../shared/models/pedido';
 import { ProductoPedido } from '../../shared/models/productoPedido';
@@ -82,7 +82,15 @@ export const generarOTP = async (idRefrigerador: string): Promise<string> => {
     const otp = await OTPGenerator.generateOTP(idRefrigerador);
 
     const email = 'federicacdoglio@gmail.com'; 
-    await enviarEmail(email, 'Tu OTP para Refrigerador', `Tu OTP es: ${otp}`);
+    try {
+        await enviarEmail(email, 'Tu OTP para Refrigerador', `Tu OTP es: ${otp}`);
+    } catch (error: any) {
+        if (error.response?.includes('Daily user sending limit exceeded')) {
+            console.warn('Límite diario de envío de correos excedido. Enviando OTP en la respuesta.');
+        } else {
+            throw error;
+        }
+    }
 
     return otp;
 };
@@ -150,7 +158,6 @@ export const modificarInventarioConOTP = async (
 export const emitirAlarma = async (idRefrigerador: string, idProducto: string, cantidad: number): Promise<string> => {
     const producto = await refrigeradorRepository.findProductoEnRefrigerador(idRefrigerador, idProducto);
     if (!producto || producto.cantidad < cantidad) {
-        // Registrar la alarma en la base de datos
         await refrigeradorRepository.registrarAlarma(idRefrigerador, idProducto, cantidad);
         return "Alarma emitida: cantidad excede el límite.";
     }

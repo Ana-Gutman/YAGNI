@@ -1,8 +1,8 @@
 export interface ListaPedidoDTO {
     id_cliente: number;
     nombreCliente: string;
-    id_pedido: number; // Añadir id_pedido
-    estado: string; // Añadir estado
+    id_pedido: number; 
+    estado: string; 
     fechaPedido: Date;
     horaRealizado: string;
     horaRetirado: string | null;

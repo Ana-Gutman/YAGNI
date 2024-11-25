@@ -1,5 +1,5 @@
 import Bull from 'bull';
-import redisClient from '../database/redis';
+import redisClient from './redis';
 
 const pedidoQueue = new Bull('pedido', {
   redis: {
