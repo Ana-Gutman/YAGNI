@@ -29,17 +29,19 @@ export const options = {
 
 
 export default function () {
-  const url = 'http://localhost:3000/api/pedidosCliente';
+  const url = 'http://localhost:3000/api/pedidos/listar';
   const payload = JSON.stringify({
     id_cliente: '1',
-    fechaInicio: '2024-01-01',
-    fechaFin: '2024-01-31',
+    fechaInicio: '2023-01-01',
+    fechaFin: '2024-11-24',
   });
-  const params = { headers: { 'Content-Type': 'application/json',
-    Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoiQWRtaW4iLCJpYXQiOjE3MzI0MTc1NzQsImV4cCI6MTczMjQyMTE3NH0.Y1N8Lq3483lCVdVi3v2otM_QKZBk05wqnd0kX0GCuVQ"
+
+  const params = { 
+    headers: { 'Content-Type': 'application/json', 
+    Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgyLCJyb2wiOiJBZG1pbiIsImlhdCI6MTczMjUwOTY4OSwiZXhwIjoxNzMyNTEzMjg5fQ.4UZKCEx0vRKb6tkMMVAQnWivuewLeyP2OGVVkDv6vKM"
   } };
 
-  const res = http.get(url, params);
+  const res = http.post(url, payload, params);
 
   check(res, {
     'status is 200': (r) => r.status === 200,

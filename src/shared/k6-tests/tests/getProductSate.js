@@ -27,13 +27,13 @@ export const options = {
 // };
 
 export default function () {
-  const productId = Math.floor(Math.random() * 100) + 1; // ID aleatorio
+  const productId = 1; 
   const url = `http://localhost:3000/api/inventario/${productId}/estado`;
   
   const params = {
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sIjoiQWRtaW4iLCJpYXQiOjE3MzI0MTc1NzQsImV4cCI6MTczMjQyMTE3NH0.Y1N8Lq3483lCVdVi3v2otM_QKZBk05wqnd0kX0GCuVQ", // Reemplazar con un token válido
+      Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTc5LCJyb2wiOiJBZG1pbiIsImlhdCI6MTczMjUxNDM3MywiZXhwIjoxNzMyNTE3OTczfQ.kMAYvPdnoUKI_0BcbnukmiBsjsfOMg6SLbBTseTj_PQ", // Reemplazar con un token válido
     },
   };
   const res = http.get(url, params);
