@@ -71,7 +71,7 @@ class PedidoRepository {
     
         // Crear el pedido principal
         const pedido = await Pedido.create(
-            { id_cliente, id_medio_pago, id_local, estado: "Iniciado" },
+            { id_cliente, id_medio_pago, id_local, estado: "Iniciado" , hora_de_retiro: pedidoDto.hora_de_retiro},
         );
     
         // Insertar productos asociados al pedido

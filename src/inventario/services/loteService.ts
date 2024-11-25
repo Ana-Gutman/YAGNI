@@ -45,7 +45,7 @@ export const createLote = async (
     try {
         const lote = await loteRepository.create(loteDto);
         if (!lote) {
-            throw new NotFoundError("No existe la cocina, local, producto o refrigerador en la base de datos");
+            throw new NotFoundError("No existe la cocina, local, producto o refrigerador con ese producto en ese local en la base de datos");
         }
 
         await InventarioService.updateProductState(lote.lote.id_producto.toString(), "En Tránsito");

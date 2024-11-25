@@ -31,6 +31,7 @@ export class PedidoDTO {
         id_cliente: number,
         id_medio_pago: number,
         id_local: number,
+        hora_de_retiro: Date | string | null,
         productos: ProductoPedidoDTO[],
         paymentData: {
             amount: number;
@@ -45,6 +46,7 @@ export class PedidoDTO {
         this.id_cliente = id_cliente;
         this.id_medio_pago = id_medio_pago;
         this.id_local = id_local;
+        this.hora_de_retiro = hora_de_retiro;
         this.hora_de_retiro = typeof this.hora_de_retiro === 'string' ? new Date(this.hora_de_retiro) : this.hora_de_retiro;
         this.retirado = retirado;
         this.productos = productos;
