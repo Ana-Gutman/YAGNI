@@ -1,4 +1,4 @@
-# YAGNI — Stock & Logistics Management System
+# YAGNI: Sistema de gestión de stock y logística — [FrontEnd](https://github.com/Ana-Gutman/YAGNI_frontend) 
 
 # Diagrama de contexto:
 
@@ -6,6 +6,5 @@
 
 # [Documentacón completa](./Documentacion-255163-260956/documentacion.pdf)
 
-## [Repositorio FrontEnd]([https://github.com/Ana-Gutman/YAGNI](https://github.com/Ana-Gutman/YAGNI_frontend))
 
 
